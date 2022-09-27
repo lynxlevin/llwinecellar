@@ -6,8 +6,35 @@ authors = ["lynxlevin <72173230+lynxlevin@users.noreply.github.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.9"
+Django = "^4.1.1"
+djangorestframework = "^3.14.0"
+django-filter = "^22.1"
+psycopg2 = "^2.9.3"
+urllib3 = "^1.26.12"
+django-environ = "^0.9.0"
+mypy = "^0.971"
+requests = "^2.28.1"
+isort = "^5.10.1"
 
 [tool.poetry.dev-dependencies]
+
+
+[tool.black]
+linep-length = 160
+target-version = ['py36']
+exclude = '''
+/(
+    \.git
+    | \.mypy_cache
+    | \.venv
+    | \.vscode
+)/
+'''
+
+[tool.isort]
+include_trailing_comma = true
+line_length = 160
+multi_line_output = 3
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
