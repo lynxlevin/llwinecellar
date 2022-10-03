@@ -1,5 +1,5 @@
 from users.models import User
-from . import factory
+from llwinecellar.common.test_utils import factory
 
 
 class TestSeed:
