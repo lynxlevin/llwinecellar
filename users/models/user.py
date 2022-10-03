@@ -1,10 +1,10 @@
 from typing import Optional
 
-from django.contrib.auth.models import AbstractBaseUser
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.db import models
 
 
-class UserQuerySet(models.QuerySet):
+class UserQuerySet(BaseUserManager):
     def get_by_id(self, user_id) -> Optional["User"]:
         try:
             return self.get(id=user_id)
@@ -31,7 +31,7 @@ class User(AbstractBaseUser):
     username = models.CharField(max_length=150)
     email = models.EmailField(unique=True)
 
-    objects: UserQuerySet = UserQuerySet.as_manager()
+    objects: UserQuerySet = UserQuerySet()
 
     EMAIL_FIELD = "email"
     USERNAME_FIELD = "email"
