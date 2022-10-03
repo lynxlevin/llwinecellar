@@ -45,6 +45,8 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "rest_framework",
     "users.apps.UsersConfig",
+    "wines.apps.WinesConfig",
+    "cellars.apps.CellarsConfig",
 ]
 
 MIDDLEWARE = [
