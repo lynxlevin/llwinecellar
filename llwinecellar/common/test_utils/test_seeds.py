@@ -1,12 +1,15 @@
+from cellars.models import Cellar
 from users.models import User
 from llwinecellar.common.test_utils import factory
 
 
 class TestSeed:
     users: list[User]
+    cellars: list[Cellar]
 
     def setUp(self):
         self.setUpUsers()
+        self.setUpCellars()
 
     def setUpUsers(self):
         self.users = []
@@ -21,3 +24,15 @@ class TestSeed:
         for arg in args:
             user = factory.create_user(*arg)
             self.users.append(user)
+
+    def setUpCellars(self):
+        self.cellars = []
+
+        args = [
+            ("cellar_1", [5, 6, 6, 6, 6], 6, self.users[0]),
+            ("cellar_2", [5, 6, 6, 6, 6], 0, self.users[1]),
+        ]
+
+        for arg in args:
+            cellar = factory.create_cellar(*arg)
+            self.cellars.append(cellar)
