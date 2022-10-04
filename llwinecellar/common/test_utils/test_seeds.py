@@ -1,14 +1,17 @@
 from cellars.models import Cellar
+from user_preferences.models import UserPreference
 from users.models import User
 from llwinecellar.common.test_utils import factory
 
 
 class TestSeed:
     users: list[User]
+    user_preferencs: list[UserPreference]
     cellars: list[Cellar]
 
     def setUp(self):
         self.setUpUsers()
+        self.setUpUserPreferences()
         self.setUpCellars()
 
     def setUpUsers(self):
@@ -24,6 +27,20 @@ class TestSeed:
         for arg in args:
             user = factory.create_user(*arg)
             self.users.append(user)
+
+    def setUpUserPreferences(self):
+        self.user_preferences = []
+
+        args = [
+            (self.users[0], ["in a few years", "in 5 years", "later than a decade"]),
+            (self.users[1], ["2025", "2030", "2035", "2040", "2045", "2050"]),
+            (self.users[2], ["daily", "soon", "keep"]),
+            (self.users[3], ["in a few years", "in 5 years", "later than a decade"]),
+        ]
+
+        for arg in args:
+            user_preference = factory.create_user_preference(*arg)
+            self.user_preferences.append(user_preference)
 
     def setUpCellars(self):
         self.cellars = []
