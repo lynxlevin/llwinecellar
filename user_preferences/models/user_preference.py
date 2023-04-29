@@ -13,6 +13,8 @@ class UserPreferenceQuerySet(models.QuerySet):
 
 class UserPreference(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    drink_when = models.JSONField()
+    drink_whens = models.JSONField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     objects: UserPreferenceQuerySet = UserPreferenceQuerySet.as_manager()
