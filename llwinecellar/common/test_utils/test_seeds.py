@@ -1,18 +1,22 @@
+from datetime import date
 from cellars.models import Cellar
 from user_preferences.models import UserPreference
 from users.models import User
 from llwinecellar.common.test_utils import factory
+from wines.models import Wine
 
 
 class TestSeed:
     users: list[User]
     user_preferencs: list[UserPreference]
     cellars: list[Cellar]
+    wines: list[Wine]
 
     def setUp(self):
         self.setUpUsers()
         self.setUpUserPreferences()
         self.setUpCellars()
+        self.setUpWines()
 
     def setUpUsers(self):
         self.users = []
@@ -34,8 +38,18 @@ class TestSeed:
         args = [
             (self.users[0], ["in a few years", "in 5 years", "later than a decade"]),
             (self.users[1], ["2025", "2030", "2035", "2040", "2045", "2050"]),
-            (self.users[2], ["daily", "soon", "keep"]),
-            (self.users[3], ["in a few years", "in 5 years", "later than a decade"]),
+            (
+                self.users[2],
+                [
+                    "Daily",
+                    "Anytime",
+                    "Several years",
+                    "Less than 10y",
+                    "More than 10y",
+                    "Far future",
+                ],
+            ),
+            (self.users[3], ["デイリー", "そのうち", "数年寝かす", "10年弱寝かす", "10年強寝かす", "たくさん寝かす"]),
         ]
 
         for arg in args:
@@ -53,3 +67,16 @@ class TestSeed:
         for arg in args:
             cellar = factory.create_cellar(*arg)
             self.cellars.append(cellar)
+
+    def setUpWines(self):
+        self.wines = []
+
+        args = [
+            {"user": self.users[0]},
+            {"user": self.users[0]},
+            {"user": self.users[0], "drank_at": date.today()},
+        ]
+
+        for arg in args:
+            wine = factory.create_wine(arg)
+            self.wines.append(wine)
