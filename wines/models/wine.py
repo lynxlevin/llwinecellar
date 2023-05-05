@@ -3,6 +3,7 @@ from django.db import models
 
 from users.models import User
 from ..enums import Country
+import uuid
 
 
 class WineQuerySet(models.QuerySet):
@@ -14,9 +15,8 @@ class WineQuerySet(models.QuerySet):
 
 
 class Wine(models.Model):
-    # MYMEMO: change to uuid
-    # MYMEMO: create an app to manage wine places in cellars.
     # MYMEMO: enforce choice on validation.
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     drink_when = models.TextField(blank=True, default="")
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     name = models.CharField(blank=True, default="", max_length=256)
