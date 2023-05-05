@@ -12,7 +12,7 @@ class CellarQuerySet(models.QuerySet):
             return None
 
 
-# MYMEMO: change according to ipad
+# MYMEMO: change to uuid
 class Cellar(models.Model):
     name = models.CharField(max_length=255, blank=True, default="")
     layout = models.JSONField()

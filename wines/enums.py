@@ -1,5 +1,5 @@
 from django.db import models
-from enum import IntEnum
+
 
 class Country(models.IntegerChoices):
     # Europe

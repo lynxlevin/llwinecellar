@@ -14,6 +14,7 @@ class WineQuerySet(models.QuerySet):
 
 
 class Wine(models.Model):
+    # MYMEMO: change to uuid
     # MYMEMO: create an app to manage wine places in cellars.
     # MYMEMO: enforce choice on validation.
     drink_when = models.TextField(blank=True, default="")
