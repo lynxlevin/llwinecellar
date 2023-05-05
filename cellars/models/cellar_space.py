@@ -1,4 +1,3 @@
-from typing import Optional
 from django.db import models
 
 from . import Cellar
@@ -7,11 +6,7 @@ from wines.models import Wine
 
 
 class CellarSpaceQuerySet(models.QuerySet):
-    def get_by_id(self, id) -> Optional["CellarSpace"]:
-        try:
-            return self.get(id=id)
-        except CellarSpace.DoesNotExist:
-            return None
+    pass
 
 
 class CellarSpace(models.Model):
@@ -28,4 +23,6 @@ class CellarSpace(models.Model):
     objects: CellarSpaceQuerySet = CellarSpaceQuerySet.as_manager()
 
     def __str__(self):
-        return f"{self.name} ({self.id})"
+        return (
+            f"{__class__.__name__}: Cellar: {self.cellar.id}, {self.row}-{self.column}"
+        )

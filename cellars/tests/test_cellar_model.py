@@ -1,5 +1,6 @@
 from django.test import TestCase
-from cellars.models import Cellar
+from cellars.models import Cellar, CellarSpace
+from cellars.enums import CellarSpaceType
 from llwinecellar.common.test_utils.test_seeds import TestSeed
 
 
@@ -15,3 +16,27 @@ class TestCellarModel(TestCase):
         result = Cellar.objects.get_by_id(cellar.id)
 
         self.assertEqual(result, cellar)
+
+    def test_create__cellar_spaces_are_created(self):
+        cellar = Cellar(
+            name="new_cellar",
+            layout=[4, 5, 6, 6, 6, 6],
+            has_basket=True,
+            user=self.seeds.users[0],
+        )
+        cellar.save()
+        cellar_spaces = CellarSpace.objects.filter(cellar=cellar).order_by(
+            "row", "column"
+        )
+
+        total_capacity = sum(cellar.layout)
+        self.assertEqual(total_capacity, len(cellar_spaces))
+
+        cellar_spaces = cellar_spaces.iterator()
+        for index, capacity in enumerate(cellar.layout):
+            row = index + 1
+            for column in range(1, capacity + 1):
+                cellar_space = next(cellar_spaces)
+                self.assertEqual(row, cellar_space.row)
+                self.assertEqual(column, cellar_space.column)
+                self.assertEqual(CellarSpaceType.RACK, cellar_space.type)
