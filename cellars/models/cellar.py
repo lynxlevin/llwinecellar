@@ -12,10 +12,11 @@ class CellarQuerySet(models.QuerySet):
             return None
 
 
+# MYMEMO: change according to ipad
 class Cellar(models.Model):
     name = models.CharField(max_length=255, blank=True, default="")
     layout = models.JSONField()
-    basket_capacity = models.SmallIntegerField()
+    has_basket = models.BooleanField()
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

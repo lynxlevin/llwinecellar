@@ -60,8 +60,8 @@ class TestSeed:
         self.cellars = []
 
         args = [
-            ("cellar_1", [5, 6, 6, 6, 6], 6, self.users[0]),
-            ("cellar_2", [5, 6, 6, 6, 6], 0, self.users[1]),
+            ("cellar_1", [5, 6, 6, 6, 6], True, self.users[0]),
+            ("cellar_2", [5, 6, 6, 6, 6], False, self.users[1]),
         ]
 
         for arg in args:

@@ -17,12 +17,8 @@ def create_user_preference(user: User, drink_whens: list[str]) -> UserPreference
     return user_preference
 
 
-def create_cellar(
-    name: str, layout: list[int], basket_capacity: int, user: User
-) -> Cellar:
-    cellar = Cellar(
-        name=name, layout=layout, basket_capacity=basket_capacity, user=user
-    )
+def create_cellar(name: str, layout: list[int], has_basket: bool, user: User) -> Cellar:
+    cellar = Cellar(name=name, layout=layout, has_basket=has_basket, user=user)
     cellar.save()
     return cellar
 
