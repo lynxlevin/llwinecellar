@@ -26,7 +26,7 @@ class CellarSpace(models.Model):
     class Meta:
         constraints = (
             models.UniqueConstraint(
-                fields=["row", "column"],
+                fields=["row", "column", "cellar"],
                 name="unique_row_column_for_rack",
                 condition=models.Q(type=CellarSpaceType.RACK),
             ),

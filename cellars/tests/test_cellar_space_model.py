@@ -11,7 +11,7 @@ class TestCellarSpaceModel(TestCase):
         cls.seeds = TestSeed()
         cls.seeds.setUp()
 
-    def test_constraint__error__same_row_and_column(self):
+    def test_constraint__error__same_row_and_column_same_cellar(self):
         cellar = factory.create_cellar(
             {"layout": [4, 5, 6, 6, 6, 6], "user": self.seeds.users[0]}
         )
@@ -31,3 +31,11 @@ class TestCellarSpaceModel(TestCase):
 
         another_cellar_space = CellarSpace(cellar=cellar, type=CellarSpaceType.BASKET)
         another_cellar_space.save()
+
+    def test_constraint__ok__same_row_and_column_different_cellar(self):
+        _cellar = factory.create_cellar(
+            {"layout": [4, 5, 6, 6, 6, 6], "user": self.seeds.users[0]}
+        )
+        _another_cellar = factory.create_cellar(
+            {"layout": [4, 5, 6, 6, 6, 6], "user": self.seeds.users[0]}
+        )
