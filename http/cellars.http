@@ -1,0 +1,36 @@
+# Cellar
+
+###
+# @name get_csrf
+GET {{endpoint}}/user/csrf/
+
+###
+# @name login
+POST {{endpoint}}/user/login/
+Content-Type: application/json
+X-CSRFToken: {{get_csrf.response.headers.X-CSRFToken}}
+
+{
+  "email": "{{email}}",
+  "password": "{{password}}"
+}
+
+
+###
+# @name create
+POST {{endpoint}}/api/cellars/
+Content-Type: application/json
+X-CSRFToken: {{get_csrf.response.headers.X-CSRFToken}}
+
+{
+  "name": "Forester",
+  "layout": [5, 6, 6, 6, 6],
+  "has_basket": "true"
+}
+
+
+###
+# @name list
+GET {{endpoint}}/api/cellars/
+
+
