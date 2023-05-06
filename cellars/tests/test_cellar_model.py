@@ -1,7 +1,8 @@
 from django.test import TestCase
-from cellars.models import Cellar, CellarSpace
+
 from cellars.enums import CellarSpaceType
-from llwinecellar.common.test_utils import factory, TestSeed
+from cellars.models import Cellar, CellarSpace
+from llwinecellar.common.test_utils import TestSeed, factory
 
 
 class TestCellarModel(TestCase):

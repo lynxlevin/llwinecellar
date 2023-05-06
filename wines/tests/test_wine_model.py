@@ -1,6 +1,7 @@
 from django.test import TestCase
+
+from llwinecellar.common.test_utils import TestSeed, factory
 from wines.models import Wine
-from llwinecellar.common.test_utils import factory, TestSeed
 
 
 class TestWineModel(TestCase):

@@ -1,4 +1,5 @@
 from django.test import TestCase
+
 from llwinecellar.common.test_utils import TestSeed
 from user_preferences.models import UserPreference
 

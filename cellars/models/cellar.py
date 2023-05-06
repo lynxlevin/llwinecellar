@@ -1,10 +1,12 @@
+import uuid
 from typing import Optional
+
 from django.db import models
 from django.db.models.signals import post_save
-from ..enums import CellarSpaceType
-import uuid
 
 from users.models import User
+
+from ..enums import CellarSpaceType
 
 
 class CellarQuerySet(models.QuerySet):

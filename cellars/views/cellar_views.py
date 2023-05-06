@@ -1,14 +1,15 @@
 import logging
 
-from rest_framework import viewsets
+from rest_framework import status, viewsets
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from ..models import Cellar
-from ..use_cases import ListCellars, CreateCellar
-from ..serializers import CellarsSerializer, CellarSerializer
+
 from llwinecellar.exception_handler import exception_handler_with_logging
-from rest_framework import status
+
+from ..models import Cellar
+from ..serializers import CellarSerializer, CellarsSerializer
+from ..use_cases import CreateCellar, ListCellars
 
 logger = logging.getLogger(__name__)
 

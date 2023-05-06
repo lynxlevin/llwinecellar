@@ -1,9 +1,11 @@
-from django.core.management.base import BaseCommand, CommandParser
 from datetime import datetime
-from wines.models import Wine
-from wines.enums import Country
-from cellars.models import CellarSpace, Cellar
+
+from django.core.management.base import BaseCommand, CommandParser
+
 from cellars.enums import CellarSpaceType
+from cellars.models import Cellar, CellarSpace
+from wines.enums import Country
+from wines.models import Wine
 
 FILE_DIR = "wines/fixtures"
 

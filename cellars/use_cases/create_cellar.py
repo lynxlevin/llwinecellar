@@ -1,7 +1,9 @@
 import logging
 
 from rest_framework import exceptions
+
 from users.models import User
+
 from ..models import Cellar
 
 logger = logging.getLogger(__name__)

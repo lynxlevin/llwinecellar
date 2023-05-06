@@ -1,8 +1,8 @@
 from django.contrib import admin
 from django.urls import include, path
 from rest_framework import routers
-from cellars.views import cellar_views
 
+from cellars.views import cellar_views
 
 router = routers.DefaultRouter()
 router.register(r"cellars", cellar_views.CellarViewSet)

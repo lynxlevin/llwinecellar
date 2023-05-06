@@ -1,6 +1,6 @@
+from llwinecellar.common.test_utils import factory
 from user_preferences.models import UserPreference
 from users.models import User
-from llwinecellar.common.test_utils import factory
 
 
 class TestSeed:

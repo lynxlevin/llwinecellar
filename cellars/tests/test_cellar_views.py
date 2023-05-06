@@ -1,6 +1,8 @@
 from django.test import Client, TestCase
 from rest_framework import status
+
 from llwinecellar.common.test_utils import TestSeed, factory
+
 from ..models import Cellar
 
 
@@ -71,9 +73,9 @@ class TestUserRelationViews(TestCase):
         client = Client()
         client.force_login(user)
 
-        if method is "get":
+        if method == "get":
             response = client.get(path)
-        elif method is "post":
+        elif method == "post":
             response = client.post(path, params, content_type="application/json")
 
         return (response.status_code, response.json())

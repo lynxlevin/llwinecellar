@@ -1,11 +1,12 @@
+import uuid
+from typing import Optional
+
 from django.db import models
 
-from typing import Optional
-from . import Cellar
-from ..enums import CellarSpaceType
 from wines.models import Wine
 
-import uuid
+from ..enums import CellarSpaceType
+from . import Cellar
 
 
 class CellarSpaceQuerySet(models.QuerySet):

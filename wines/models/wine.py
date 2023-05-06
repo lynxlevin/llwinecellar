@@ -1,9 +1,11 @@
+import uuid
 from typing import Optional
+
 from django.db import models
 
 from users.models import User
+
 from ..enums import Country
-import uuid
 
 
 class WineQuerySet(models.QuerySet):

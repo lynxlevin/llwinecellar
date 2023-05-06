@@ -1,8 +1,9 @@
-from django.test import TestCase
 from django.db.utils import IntegrityError
-from cellars.models import CellarSpace
+from django.test import TestCase
+
 from cellars.enums import CellarSpaceType
-from llwinecellar.common.test_utils import factory, TestSeed
+from cellars.models import CellarSpace
+from llwinecellar.common.test_utils import TestSeed, factory
 
 
 class TestCellarSpaceModel(TestCase):

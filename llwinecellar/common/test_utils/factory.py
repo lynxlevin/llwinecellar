@@ -1,10 +1,11 @@
+from datetime import date
+from typing import Optional, TypedDict
+
 from cellars.models import Cellar
 from user_preferences.models import UserPreference
 from users.models import User
-from wines.models import Wine
-from typing import TypedDict, Optional
 from wines.enums import Country
-from datetime import date
+from wines.models import Wine
 
 
 def create_user(username: str, email: str, password: str) -> User:
