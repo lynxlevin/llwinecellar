@@ -6,6 +6,7 @@ from wines.models import Wine
 
 import uuid
 
+
 class CellarSpaceQuerySet(models.QuerySet):
     pass
 
@@ -21,6 +22,15 @@ class CellarSpace(models.Model):
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        constraints = (
+            models.UniqueConstraint(
+                fields=["row", "column"],
+                name="unique_row_column_for_rack",
+                condition=models.Q(type=CellarSpaceType.RACK),
+            ),
+        )
 
     objects: CellarSpaceQuerySet = CellarSpaceQuerySet.as_manager()
 
