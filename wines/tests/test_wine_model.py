@@ -1,6 +1,6 @@
 from django.test import TestCase
 from wines.models import Wine
-from llwinecellar.common.test_utils.test_seeds import TestSeed
+from llwinecellar.common.test_utils import factory, TestSeed
 
 
 class TestWineModel(TestCase):
@@ -10,7 +10,7 @@ class TestWineModel(TestCase):
         cls.seeds.setUp()
 
     def test_get_by_id(self):
-        wine = self.seeds.wines[0]
+        wine = factory.create_wine({"user": self.seeds.users[0]})
 
         result = Wine.objects.get_by_id(wine.id)
 

@@ -1,5 +1,5 @@
 from django.test import TestCase
-from llwinecellar.common.test_utils.test_seeds import TestSeed
+from llwinecellar.common.test_utils import TestSeed
 
 from users.models import User
 

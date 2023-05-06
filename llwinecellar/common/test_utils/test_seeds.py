@@ -1,22 +1,15 @@
-from datetime import date
-from cellars.models import Cellar
 from user_preferences.models import UserPreference
 from users.models import User
 from llwinecellar.common.test_utils import factory
-from wines.models import Wine
 
 
 class TestSeed:
     users: list[User]
     user_preferencs: list[UserPreference]
-    cellars: list[Cellar]
-    wines: list[Wine]
 
     def setUp(self):
         self.setUpUsers()
         self.setUpUserPreferences()
-        self.setUpCellars()
-        self.setUpWines()
 
     def setUpUsers(self):
         self.users = []
@@ -55,28 +48,3 @@ class TestSeed:
         for arg in args:
             user_preference = factory.create_user_preference(*arg)
             self.user_preferences.append(user_preference)
-
-    def setUpCellars(self):
-        self.cellars = []
-
-        args = [
-            ("cellar_1", [5, 6, 6, 6, 6], True, self.users[0]),
-            ("cellar_2", [5, 6, 6, 6, 6], False, self.users[1]),
-        ]
-
-        for arg in args:
-            cellar = factory.create_cellar(*arg)
-            self.cellars.append(cellar)
-
-    def setUpWines(self):
-        self.wines = []
-
-        args = [
-            {"user": self.users[0]},
-            {"user": self.users[0]},
-            {"user": self.users[0], "drank_at": date.today()},
-        ]
-
-        for arg in args:
-            wine = factory.create_wine(arg)
-            self.wines.append(wine)

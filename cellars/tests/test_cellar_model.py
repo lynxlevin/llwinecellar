@@ -1,7 +1,7 @@
 from django.test import TestCase
 from cellars.models import Cellar, CellarSpace
 from cellars.enums import CellarSpaceType
-from llwinecellar.common.test_utils.test_seeds import TestSeed
+from llwinecellar.common.test_utils import factory, TestSeed
 
 
 class TestCellarModel(TestCase):
@@ -11,20 +11,16 @@ class TestCellarModel(TestCase):
         cls.seeds.setUp()
 
     def test_get_by_id(self):
-        cellar = self.seeds.cellars[0]
+        cellar = factory.create_cellar({"user": self.seeds.users[0]})
 
         result = Cellar.objects.get_by_id(cellar.id)
 
         self.assertEqual(result, cellar)
 
     def test_create__cellar_spaces_are_created(self):
-        cellar = Cellar(
-            name="new_cellar",
-            layout=[4, 5, 6, 6, 6, 6],
-            has_basket=True,
-            user=self.seeds.users[0],
+        cellar = factory.create_cellar(
+            {"layout": [4, 5, 6, 6, 6, 6], "user": self.seeds.users[0]}
         )
-        cellar.save()
         cellar_spaces = CellarSpace.objects.filter(cellar=cellar).order_by(
             "row", "column"
         )
