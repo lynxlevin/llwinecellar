@@ -10,30 +10,27 @@ class TestUserRelationViews(TestCase):
         cls.seeds = TestSeed()
         cls.seeds.setUp()
 
+        cls.user = cls.seeds.users[0]
+        cls.base_path = "/api/cellars/"
+
     def test_list(self):
         """
         Get /api/cellars/
         """
-        user = self.seeds.users[0]
-        cellar_1 = factory.create_cellar({"user": user})
-        cellar_2 = factory.create_cellar({"user": user})
+        cellar_1 = factory.create_cellar({"user": self.user})
+        cellar_2 = factory.create_cellar({"user": self.user})
 
         _cellar_for_different_user = factory.create_cellar(
             {"user": self.seeds.users[1]}
         )
 
-        client = Client()
-        client.force_login(user)
-        response = client.get("/api/cellars/")
+        status_code, body = self._make_request("get", self.base_path, self.user)
 
-        self.assertEqual(status.HTTP_200_OK, response.status_code)
+        self.assertEqual(status.HTTP_200_OK, status_code)
 
-        data = response.data
-        self.assertNotEqual(0, len(data))
-
-        cellars = data["cellars"]
-
+        cellars = body["cellars"]
         self.assertEqual(2, len(cellars))
+
         self.assertEqual(str(cellar_1.id), cellars[0]["id"])
         self.assertEqual(cellar_1.name, cellars[0]["name"])
         self.assertEqual(cellar_1.layout, cellars[0]["layout"])
@@ -43,28 +40,40 @@ class TestUserRelationViews(TestCase):
         self.assertEqual(cellar_2.name, cellars[1]["name"])
         self.assertEqual(cellar_2.layout, cellars[1]["layout"])
         self.assertEqual(cellar_2.has_basket, cellars[1]["has_basket"])
-        # MYMEMO: add exceptions
 
     def test_create(self):
         """
         Post /api/cellars/
         """
-        user = self.seeds.users[0]
         params = {
             "name": "Forester",
             "layout": [5, 6, 6, 6, 6],
-            "has_basket": "true",
+            "has_basket": True,
         }
 
-        client = Client()
-        client.force_login(user)
-        response = client.post("/api/cellars/", params, content_type="application/json")
+        status_code, body = self._make_request(
+            "post", self.base_path, self.user, params
+        )
 
-        self.assertEqual(status.HTTP_201_CREATED, response.status_code)
+        self.assertEqual(status.HTTP_201_CREATED, status_code)
 
-        body = response.json()
         created_cellar = Cellar.objects.get_by_id(body["id"])
-
         self.assertEqual(params["name"], created_cellar.name)
         self.assertEqual(params["layout"], created_cellar.layout)
-        self.assertEqual(params["has_basket"] is "true", created_cellar.has_basket)
+        self.assertEqual(params["has_basket"], created_cellar.has_basket)
+        self.assertEqual(self.user.id, created_cellar.user_id)
+
+    """
+    Utility functions
+    """
+
+    def _make_request(self, method, path, user, params=None):
+        client = Client()
+        client.force_login(user)
+
+        if method is "get":
+            response = client.get(path)
+        elif method is "post":
+            response = client.post(path, params, content_type="application/json")
+
+        return (response.status_code, response.json())
