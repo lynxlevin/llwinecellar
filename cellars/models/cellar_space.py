@@ -1,5 +1,6 @@
 from django.db import models
 
+from typing import Optional
 from . import Cellar
 from ..enums import CellarSpaceType
 from wines.models import Wine
@@ -8,7 +9,13 @@ import uuid
 
 
 class CellarSpaceQuerySet(models.QuerySet):
-    pass
+    def get_by_cellar_row_column(
+        self, cellar_id, row, column
+    ) -> Optional["CellarSpace"]:
+        try:
+            return self.get(cellar_id=cellar_id, row=row, column=column)
+        except CellarSpace.DoesNotExist:
+            return None
 
 
 class CellarSpace(models.Model):

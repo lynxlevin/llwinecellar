@@ -39,3 +39,13 @@ class TestCellarSpaceModel(TestCase):
         _another_cellar = factory.create_cellar(
             {"layout": [5, 6, 6, 6, 6], "user": self.seeds.users[0]}
         )
+
+    def test_get_by_cellar_row_column(self):
+        cellar = factory.create_cellar(
+            {"layout": [5, 6, 6, 6, 6], "user": self.seeds.users[0]}
+        )
+        cellar_space = CellarSpace.objects.get_by_cellar_row_column(cellar.id, 2, 3)
+
+        self.assertEqual(cellar.id, cellar_space.cellar_id)
+        self.assertEqual(2, cellar_space.row)
+        self.assertEqual(3, cellar_space.column)
