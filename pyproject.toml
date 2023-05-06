@@ -31,9 +31,10 @@ exclude = '''
 '''
 
 [tool.ruff]
+# https://beta.ruff.rs/docs/settings/
 select = ["E", "F", "I"]
 line-length = 160
-ignore = ["F401"]
+unfixable = ["F401", "F841"]
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
