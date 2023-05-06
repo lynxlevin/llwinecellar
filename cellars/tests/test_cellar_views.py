@@ -1,6 +1,7 @@
 from django.test import Client, TestCase
 from rest_framework import status
 from llwinecellar.common.test_utils import TestSeed, factory
+from ..models import Cellar
 
 
 class TestUserRelationViews(TestCase):
@@ -43,3 +44,27 @@ class TestUserRelationViews(TestCase):
         self.assertEqual(cellar_2.layout, cellars[1]["layout"])
         self.assertEqual(cellar_2.has_basket, cellars[1]["has_basket"])
         # MYMEMO: add exceptions
+
+    def test_create(self):
+        """
+        Post /api/cellars/
+        """
+        user = self.seeds.users[0]
+        params = {
+            "name": "Forester",
+            "layout": [5, 6, 6, 6, 6],
+            "has_basket": "true",
+        }
+
+        client = Client()
+        client.force_login(user)
+        response = client.post("/api/cellars/", params, content_type="application/json")
+
+        self.assertEqual(status.HTTP_201_CREATED, response.status_code)
+
+        body = response.json()
+        created_cellar = Cellar.objects.get_by_id(body["id"])
+
+        self.assertEqual(params["name"], created_cellar.name)
+        self.assertEqual(params["layout"], created_cellar.layout)
+        self.assertEqual(params["has_basket"] is "true", created_cellar.has_basket)

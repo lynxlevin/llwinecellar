@@ -12,7 +12,7 @@ class TestCellarModel(TestCase):
 
     def test_create__cellar_spaces_are_created(self):
         cellar = factory.create_cellar(
-            {"layout": [4, 5, 6, 6, 6, 6], "user": self.seeds.users[0]}
+            {"layout": [5, 6, 6, 6, 6], "user": self.seeds.users[0]}
         )
         cellar_spaces = CellarSpace.objects.filter(cellar=cellar).order_by(
             "row", "column"
