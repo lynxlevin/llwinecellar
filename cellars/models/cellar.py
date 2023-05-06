@@ -14,6 +14,13 @@ class CellarQuerySet(models.QuerySet):
         except Cellar.DoesNotExist:
             return None
 
+    def filter_eq_user_id(self, user_id) -> "CellarQuerySet":
+        return self.filter(user_id=user_id)
+
+    def order_by_created_at(self, desc: bool = False) -> "CellarQuerySet":
+        key = "-created_at" if desc else "created_at"
+        return self.order_by(key)
+
 
 class Cellar(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
