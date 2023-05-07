@@ -6,7 +6,7 @@ from llwinecellar.common.test_utils import TestSeed, factory
 from ..models import Cellar
 
 
-class TestUserRelationViews(TestCase):
+class TestCellarViews(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.seeds = TestSeed()

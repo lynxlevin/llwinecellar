@@ -29,7 +29,7 @@ class TestSeed:
         self.user_preferences = []
 
         args = [
-            (self.users[0], ["in a few years", "in 5 years", "later than a decade"]),
+            (self.users[0], ["デイリー", "そのうち", "数年寝かす", "10年弱寝かす", "10年強寝かす", "たくさん寝かす"]),
             (self.users[1], ["2025", "2030", "2035", "2040", "2045", "2050"]),
             (
                 self.users[2],
@@ -42,7 +42,7 @@ class TestSeed:
                     "Far future",
                 ],
             ),
-            (self.users[3], ["デイリー", "そのうち", "数年寝かす", "10年弱寝かす", "10年強寝かす", "たくさん寝かす"]),
+            (self.users[3], ["in a few years", "in 5 years", "later than a decade"]),
         ]
 
         for arg in args:

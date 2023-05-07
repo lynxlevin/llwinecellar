@@ -2,7 +2,6 @@ from datetime import datetime
 
 from django.core.management.base import BaseCommand, CommandParser
 
-from cellars.enums import CellarSpaceType
 from cellars.models import Cellar, CellarSpace
 from wines.enums import Country
 from wines.models import Wine
