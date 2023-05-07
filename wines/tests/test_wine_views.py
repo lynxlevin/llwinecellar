@@ -19,6 +19,7 @@ class TestWineViews(TestCase):
         cls.preference = cls.seeds.user_preferences[0]
         cls.base_path = "/api/wines/"
 
+    # MYMEMO: CellarSpace はどうする？create?updateのみ?別のAPI?
     def test_create(self):
         """
         Post /api/wines/

@@ -1,0 +1,45 @@
+# Wine
+
+###
+# @name get_csrf
+GET {{endpoint}}/user/csrf/
+
+###
+# @name login
+POST {{endpoint}}/user/login/
+Content-Type: application/json
+X-CSRFToken: {{get_csrf.response.headers.X-CSRFToken}}
+
+{
+  "email": "{{email}}",
+  "password": "{{password}}"
+}
+
+
+###
+# @name create
+POST {{endpoint}}/api/wines/
+Content-Type: application/json
+X-CSRFToken: {{get_csrf.response.headers.X-CSRFToken}}
+
+{
+    "drink_when": "10年弱寝かす",
+    "name": "Gevrey Chambertin",
+    "producer": "Domaine Charlopin Tissier",
+    "country": 101,
+    "region_1": "Bourgogne",
+    "region_2": "Côtes de Nuits",
+    "region_3": "Gevrey Chambertin",
+    "region_4": "",
+    "region_5": "",
+    "cepage": [{"grape": "Pinot Noir", "percent": 100}],
+    "vintage": 2019,
+    "bought_at": "2023-05-07",
+    "bought_from": "伊勢屋",
+    "price_with_tax": 13000,
+    "drunk_at": null,
+    "note": "テスト用のノート"
+}
+
+
+
