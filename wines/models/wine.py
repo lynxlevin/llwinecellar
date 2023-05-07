@@ -18,6 +18,9 @@ class WineQuerySet(models.QuerySet):
     def filter_eq_user_id(self, user_id) -> "WineQuerySet":
         return self.filter(user_id=user_id)
 
+    def filter_eq_cellar_id(self, cellar_id) -> "WineQuerySet":
+        return self.filter(cellarspace__cellar_id=cellar_id)
+
 
 class Wine(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
