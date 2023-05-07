@@ -15,6 +15,9 @@ class WineQuerySet(models.QuerySet):
         except Wine.DoesNotExist:
             return None
 
+    def filter_eq_user_id(self, user_id) -> "WineQuerySet":
+        return self.filter(user_id=user_id)
+
 
 class Wine(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
