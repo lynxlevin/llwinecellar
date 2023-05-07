@@ -26,3 +26,7 @@ class WineSerializer(serializers.Serializer):
     )
     drunk_at = serializers.DateField(allow_null=True)
     note = serializers.CharField(allow_blank=True)
+
+
+class WinesSerializer(serializers.Serializer):
+    wines = WineSerializer(many=True, read_only=True)

@@ -3,7 +3,7 @@ from datetime import datetime
 from django.test import Client, TestCase
 from rest_framework import status
 
-from llwinecellar.common.test_utils import TestSeed
+from llwinecellar.common.test_utils import TestSeed, factory
 
 from ..enums import Country
 from ..models import Wine
@@ -19,7 +19,49 @@ class TestWineViews(TestCase):
         cls.preference = cls.seeds.user_preferences[0]
         cls.base_path = "/api/wines/"
 
-    # MYMEMO: CellarSpace はどうする？create?updateのみ?別のAPI?
+    def test_list__all(self):
+        """
+        Get /api/wines/
+        """
+        wines = [
+            factory.create_wine({"user": self.user, "name": "test_wine_1"}),
+            factory.create_wine({"user": self.user, "name": "test_wine_2"}),
+            factory.create_wine({"user": self.user, "name": "test_wine_3"}),
+            factory.create_wine({"user": self.user, "name": "test_wine_4"}),
+        ]
+        _wine_different_user = factory.create_wine(
+            {"user": self.seeds.users[1], "name": "different_user's_wine"}
+        )
+
+        status_code, body = self._make_request("get", self.base_path, self.user)
+
+        self.assertEqual(status.HTTP_200_OK, status_code)
+
+        self.assertEqual(len(wines), len(body["wines"]))
+
+        for index, wine in enumerate(wines):
+            self.assertEqual(wine.name, body["wines"][index]["name"])
+
+    def test_list__cellar(self):
+        """
+        Get /api/wines/?cellar_id={cellar_id}
+        """
+
+    def test_list__only_drunk(self):
+        """
+        Get /api/wines/?only_drunk=true
+        """
+
+    def test_list__not_in_cellars(self):
+        """
+        Get /api/wines/?not_in_cellars=true
+        """
+
+    def test_list__no_record__both_cellar_and_not_in_cellars(self):
+        """
+        Get /api/wines/?cellar_id={cellar_id}&not_in_cellars=true
+        """
+
     def test_create(self):
         """
         Post /api/wines/
@@ -44,7 +86,7 @@ class TestWineViews(TestCase):
         }
 
         status_code, body = self._make_request(
-            "post", self.base_path, self.user, params
+            "post", self.base_path, self.user, params=params
         )
 
         self.assertEqual(status.HTTP_201_CREATED, status_code)
@@ -76,7 +118,7 @@ class TestWineViews(TestCase):
         }
 
         status_code, body = self._make_request(
-            "post", self.base_path, self.user, params
+            "post", self.base_path, self.user, params=params
         )
 
         self.assertEqual(status.HTTP_201_CREATED, status_code)
@@ -88,7 +130,7 @@ class TestWineViews(TestCase):
     Utility functions
     """
 
-    def _make_request(self, method, path, user, params=None):
+    def _make_request(self, method, path, user, params=None, query=None):
         client = Client()
         client.force_login(user)
 

@@ -8,8 +8,8 @@ from rest_framework.response import Response
 from llwinecellar.exception_handler import exception_handler_with_logging
 
 from ..models import Wine
-from ..serializers import WineSerializer
-from ..use_cases import CreateWine
+from ..serializers import WineSerializer, WinesSerializer
+from ..use_cases import CreateWine, ListWine
 
 logger = logging.getLogger(__name__)
 
@@ -19,6 +19,16 @@ class WineViewSet(viewsets.GenericViewSet):
     serializer_class = WineSerializer
     authentication_classes = [SessionAuthentication]
     permission_classes = [IsAuthenticated]
+
+    def list(self, request, use_case=ListWine(), format=None):
+        try:
+            wines = use_case.execute(user=request.user)
+
+            serializer = WinesSerializer({"wines": wines})
+            return Response(serializer.data)
+
+        except Exception as exc:
+            return exception_handler_with_logging(exc)
 
     def create(self, request, use_case=CreateWine(), format=None):
         try:
