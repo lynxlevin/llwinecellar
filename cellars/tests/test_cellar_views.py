@@ -22,9 +22,7 @@ class TestCellarViews(TestCase):
         cellar_1 = factory.create_cellar({"user": self.user})
         cellar_2 = factory.create_cellar({"user": self.user})
 
-        _cellar_for_different_user = factory.create_cellar(
-            {"user": self.seeds.users[1]}
-        )
+        _cellar_for_different_user = factory.create_cellar({"user": self.seeds.users[1]})
 
         status_code, body = self._make_request("get", self.base_path, self.user)
 
@@ -53,9 +51,7 @@ class TestCellarViews(TestCase):
             "has_basket": True,
         }
 
-        status_code, body = self._make_request(
-            "post", self.base_path, self.user, params
-        )
+        status_code, body = self._make_request("post", self.base_path, self.user, params)
 
         self.assertEqual(status.HTTP_201_CREATED, status_code)
 

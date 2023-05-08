@@ -57,9 +57,7 @@ class TestCellarModel(TestCase):
     """
 
     def _assert_cellar_spaces_created_for_each_row_and_column(self, cellar: Cellar):
-        cellar_spaces = CellarSpace.objects.filter(cellar=cellar).order_by(
-            "row", "column"
-        )
+        cellar_spaces = CellarSpace.objects.filter(cellar=cellar).order_by("row", "column")
 
         total_capacity = sum(cellar.layout)
         self.assertEqual(total_capacity, cellar_spaces.count())

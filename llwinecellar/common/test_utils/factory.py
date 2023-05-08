@@ -86,9 +86,7 @@ def create_wine(params: WineParams) -> Wine:
     if position := params.get("position"):
         row, column = position.split("-")
         cellar_id = params["cellar_id"]
-        cellar_space = CellarSpace.objects.get_by_cellar_row_column(
-            cellar_id=cellar_id, row=row, column=column
-        )
+        cellar_space = CellarSpace.objects.get_by_cellar_row_column(cellar_id=cellar_id, row=row, column=column)
         cellar_space.wine = wine
         cellar_space.save()
 

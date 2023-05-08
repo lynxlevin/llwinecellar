@@ -12,12 +12,8 @@ class TestWineModel(TestCase):
 
         cls.user = cls.seeds.users[0]
         cls.cellars = [
-            factory.create_cellar(
-                {"user": cls.user, "layout": [5], "name": "cellar 1"}
-            ),
-            factory.create_cellar(
-                {"user": cls.user, "layout": [6], "name": "cellar 2"}
-            ),
+            factory.create_cellar({"user": cls.user, "layout": [5], "name": "cellar 1"}),
+            factory.create_cellar({"user": cls.user, "layout": [6], "name": "cellar 2"}),
         ]
         cls.wines_in_cellar1 = [
             factory.create_wine(
@@ -59,9 +55,7 @@ class TestWineModel(TestCase):
             factory.create_wine({"user": cls.user, "name": "test_wine_5"}),
             factory.create_wine({"user": cls.user, "name": "test_wine_6"}),
         ]
-        cls.wine_different_user = factory.create_wine(
-            {"user": cls.seeds.users[1], "name": "different_user's_wine"}
-        )
+        cls.wine_different_user = factory.create_wine({"user": cls.seeds.users[1], "name": "different_user's_wine"})
 
     def test_get_by_id(self):
         wine = factory.create_wine({"user": self.seeds.users[0]})

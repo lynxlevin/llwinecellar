@@ -56,23 +56,15 @@ class Command(BaseCommand):
                 note=next(li),
                 user_id=1,
             )
-            wine.bought_at = (
-                datetime.strptime(wine.bought_at, "%Y/%m/%d")
-                if wine.bought_at
-                else None
-            )
-            wine.drunk_at = (
-                datetime.strptime(wine.drunk_at, "%Y/%m/%d") if wine.drunk_at else None
-            )
+            wine.bought_at = datetime.strptime(wine.bought_at, "%Y/%m/%d") if wine.bought_at else None
+            wine.drunk_at = datetime.strptime(wine.drunk_at, "%Y/%m/%d") if wine.drunk_at else None
             wines.append(wine)
 
             position = next(li)
             if position != "":
                 row, column = position.split("-")
 
-                cellar_space = CellarSpace.objects.get_by_cellar_row_column(
-                    cellar.id, row, column
-                )
+                cellar_space = CellarSpace.objects.get_by_cellar_row_column(cellar.id, row, column)
                 cellar_space.wine = wine
                 cellar_spaces.append(cellar_space)
 

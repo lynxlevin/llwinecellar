@@ -49,9 +49,7 @@ class Cellar(models.Model):
         for index, capacity in enumerate(instance.layout):
             row = index + 1
             for column in range(1, capacity + 1):
-                cellar_space = CellarSpace(
-                    cellar=instance, row=row, column=column, type=CellarSpaceType.RACK
-                )
+                cellar_space = CellarSpace(cellar=instance, row=row, column=column, type=CellarSpaceType.RACK)
                 cellar_spaces.append(cellar_space)
 
         CellarSpace.objects.bulk_create(cellar_spaces)

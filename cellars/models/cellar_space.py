@@ -10,9 +10,7 @@ from . import Cellar
 
 
 class CellarSpaceQuerySet(models.QuerySet):
-    def get_by_cellar_row_column(
-        self, cellar_id, row, column
-    ) -> Optional["CellarSpace"]:
+    def get_by_cellar_row_column(self, cellar_id, row, column) -> Optional["CellarSpace"]:
         try:
             return self.get(cellar_id=cellar_id, row=row, column=column)
         except CellarSpace.DoesNotExist:
@@ -25,9 +23,7 @@ class CellarSpace(models.Model):
     wine = models.ForeignKey(Wine, on_delete=models.SET_NULL, null=True)
     row = models.PositiveSmallIntegerField(blank=True, null=True)
     column = models.PositiveSmallIntegerField(blank=True, null=True)
-    type = models.IntegerField(
-        choices=CellarSpaceType.choices, default=CellarSpaceType.RACK
-    )
+    type = models.IntegerField(choices=CellarSpaceType.choices, default=CellarSpaceType.RACK)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
