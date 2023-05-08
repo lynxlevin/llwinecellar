@@ -19,69 +19,49 @@ class TestWineViews(TestCase):
         cls.user = cls.seeds.users[0]
         cls.preference = cls.seeds.user_preferences[0]
         cls.cellar = factory.create_cellar({"user": cls.user, "layout": [5]})
+
         cls.wines_in_cellar = [
             factory.create_wine(
-                {
-                    "user": cls.user,
-                    "name": "test_wine_1",
-                    "position": "1-1",
-                    "cellar_id": cls.cellar.id,
-                }
-            ),
-            factory.create_wine(
-                {
-                    "user": cls.user,
-                    "name": "test_wine_2",
-                    "position": "1-2",
-                    "cellar_id": cls.cellar.id,
-                }
-            ),
+                {"user": cls.user, "name": "wine_in_cellar", "position": "1-1", "cellar_id": cls.cellar.id}
+            )
         ]
         cls.wines_not_in_cellar = [
-            factory.create_wine({"user": cls.user, "name": "test_wine_3"}),
-            factory.create_wine({"user": cls.user, "name": "test_wine_4"}),
+            factory.create_wine({"user": cls.user, "name": "wine_not_in_cellar"}),
         ]
-        cls.wine_different_user = factory.create_wine(
-            {"user": cls.seeds.users[1], "name": "different_user's_wine"}
-        )
+        cls.wines_drunk = [
+            factory.create_wine({"user": cls.user, "name": "wine_drunk", "drunk_at": datetime.now().date()})
+        ]
+        cls.wine_different_user = factory.create_wine({"user": cls.seeds.users[1], "name": "different_user's_wine"})
 
     def test_list__all(self):
         """
         Get /api/wines/
         """
         status_code, body = self._make_request("get", self.base_path, self.user)
-
         self.assertEqual(status.HTTP_200_OK, status_code)
 
-        expected_wines = [*self.wines_in_cellar, *self.wines_not_in_cellar]
-
-        self.assertEqual(len(expected_wines), len(body["wines"]))
-
-        for index, wine in enumerate(expected_wines):
-            self.assertEqual(wine.name, body["wines"][index]["name"])
+        expected = [*self.wines_in_cellar, *self.wines_not_in_cellar, *self.wines_drunk]
+        self._assert_listed_wines_equal_expected(expected, body["wines"])
 
     def test_list__cellar(self):
         """
         Get /api/wines/?cellar_id={cellar_id}
         """
-
-        status_code, body = self._make_request(
-            "get", self.base_path, self.user, query=f"cellar_id={self.cellar.id}"
-        )
-
+        status_code, body = self._make_request("get", self.base_path, self.user, query=f"cellar_id={self.cellar.id}")
         self.assertEqual(status.HTTP_200_OK, status_code)
 
-        expected_wines = self.wines_in_cellar
+        expected = self.wines_in_cellar
+        self._assert_listed_wines_equal_expected(expected, body["wines"])
 
-        self.assertEqual(len(expected_wines), len(body["wines"]))
-
-        for index, wine in enumerate(expected_wines):
-            self.assertEqual(wine.name, body["wines"][index]["name"])
-
-    def test_list__filter_drunk(self):
+    def test_list__is_drunk(self):
         """
-        Get /api/wines/?filter_drunk=true
+        Get /api/wines/?is_drunk=true
         """
+        status_code, body = self._make_request("get", self.base_path, self.user, query="is_drunk=true")
+        self.assertEqual(status.HTTP_200_OK, status_code)
+
+        expected = self.wines_drunk
+        self._assert_listed_wines_equal_expected(expected, body["wines"])
 
     def test_list__in_cellars_false(self):
         """
@@ -116,9 +96,7 @@ class TestWineViews(TestCase):
             "note": "テスト用のノート",
         }
 
-        status_code, body = self._make_request(
-            "post", self.base_path, self.user, params=params
-        )
+        status_code, body = self._make_request("post", self.base_path, self.user, params=params)
 
         self.assertEqual(status.HTTP_201_CREATED, status_code)
 
@@ -148,9 +126,7 @@ class TestWineViews(TestCase):
             "note": "",
         }
 
-        status_code, body = self._make_request(
-            "post", self.base_path, self.user, params=params
-        )
+        status_code, body = self._make_request("post", self.base_path, self.user, params=params)
 
         self.assertEqual(status.HTTP_201_CREATED, status_code)
 
@@ -174,12 +150,16 @@ class TestWineViews(TestCase):
 
         return (response.status_code, response.json())
 
+    def _assert_listed_wines_equal_expected(self, expected, listed):
+        self.assertEqual(len(expected), len(listed))
+
+        for index, wine in enumerate(expected):
+            self.assertEqual(wine.name, listed[index]["name"])
+
     def _assert_wine_created_according_to_params(self, params, wine):
         def assert_date_equals(param, wine_field):
             if param:
-                self.assertEqual(
-                    datetime.strptime(param, "%Y-%m-%d").date(), wine_field
-                )
+                self.assertEqual(datetime.strptime(param, "%Y-%m-%d").date(), wine_field)
             else:
                 self.assertIsNone(wine_field)
 
