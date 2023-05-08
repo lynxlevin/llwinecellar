@@ -67,11 +67,11 @@ class TestWineViews(TestCase):
         """
         Get /api/wines/?in_cellars=false
         """
+        status_code, body = self._make_request("get", self.base_path, self.user, query="in_cellars=false")
+        self.assertEqual(status.HTTP_200_OK, status_code)
 
-    def test_list__no_record__both_cellar_and_in_cellars_false(self):
-        """
-        Get /api/wines/?cellar_id={cellar_id}&in_cellars=false
-        """
+        expected = [*self.wines_not_in_cellar, *self.wines_drunk]
+        self._assert_listed_wines_equal_expected(expected, body["wines"])
 
     def test_create(self):
         """

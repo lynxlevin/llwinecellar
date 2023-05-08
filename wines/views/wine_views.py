@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 
 class WineViewSet(viewsets.GenericViewSet):
-    queryset = Wine.objects.all()  # MYMEMO: is this necessary?
+    queryset = Wine.objects.all()
     serializer_class = WineSerializer
     authentication_classes = [SessionAuthentication]
     permission_classes = [IsAuthenticated]

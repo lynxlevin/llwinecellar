@@ -1,7 +1,5 @@
 import logging
 
-from rest_framework import exceptions
-
 from users.models import User
 
 from ..models import Wine
@@ -21,8 +19,11 @@ class ListWine:
         if cellar_id := queries.get("cellar_id"):
             qs = qs.filter_eq_cellar_id(cellar_id)
 
-        if is_drunk := queries.get("is_drunk"):
+        if (is_drunk := queries.get("is_drunk")) is not None:
             qs = qs.filter_is_drunk(is_drunk)
+
+        if (in_cellars := queries.get("in_cellars")) is not None:
+            qs = qs.filter_eq_cellarspace__isnull(not in_cellars)
 
         wines = qs.all()
 

@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 
 class CellarViewSet(viewsets.GenericViewSet):
-    queryset = Cellar.objects.all()  # MYMEMO: is this necessary?
+    queryset = Cellar.objects.all()
     serializer_class = CellarSerializer
     authentication_classes = [SessionAuthentication]
     permission_classes = [IsAuthenticated]
