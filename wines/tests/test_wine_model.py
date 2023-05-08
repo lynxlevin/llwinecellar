@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django.test import TestCase
 
 from llwinecellar.common.test_utils import TestSeed, factory
@@ -19,16 +21,8 @@ class TestWineModel(TestCase):
             factory.create_wine(
                 {
                     "user": cls.user,
-                    "name": "test_wine_1",
+                    "name": "wine_in_cellar1",
                     "position": "1-1",
-                    "cellar_id": cls.cellars[0].id,
-                }
-            ),
-            factory.create_wine(
-                {
-                    "user": cls.user,
-                    "name": "test_wine_2",
-                    "position": "1-2",
                     "cellar_id": cls.cellars[0].id,
                 }
             ),
@@ -37,23 +31,15 @@ class TestWineModel(TestCase):
             factory.create_wine(
                 {
                     "user": cls.user,
-                    "name": "test_wine_3",
+                    "name": "wine_in_cellar2",
                     "position": "1-1",
                     "cellar_id": cls.cellars[1].id,
                 }
             ),
-            factory.create_wine(
-                {
-                    "user": cls.user,
-                    "name": "test_wine_4",
-                    "position": "1-2",
-                    "cellar_id": cls.cellars[1].id,
-                }
-            ),
         ]
-        cls.wines_not_in_cellar = [
-            factory.create_wine({"user": cls.user, "name": "test_wine_5"}),
-            factory.create_wine({"user": cls.user, "name": "test_wine_6"}),
+        cls.wines_not_in_cellar = [factory.create_wine({"user": cls.user, "name": "wine_not_in_cellar"})]
+        cls.wines_drunk = [
+            factory.create_wine({"user": cls.user, "name": "wine_drunk", "drunk_at": datetime.now().date()})
         ]
         cls.wine_different_user = factory.create_wine({"user": cls.seeds.users[1], "name": "different_user's_wine"})
 
@@ -66,25 +52,34 @@ class TestWineModel(TestCase):
 
     def test_filter_eq_user_id(self):
         result = Wine.objects.filter_eq_user_id(self.user.id)
-
-        expected_wines = [
+        expected = [
             *self.wines_in_cellar1,
             *self.wines_in_cellar2,
             *self.wines_not_in_cellar,
+            *self.wines_drunk,
         ]
 
-        self.assertEqual(len(expected_wines), result.count())
-
-        result = result.iterator()
-        for wine in expected_wines:
-            self.assertEqual(wine.name, next(result).name)
+        self._assert_filtered_wines(expected, result)
 
     def test_filter_eq_cellar_id(self):
         result = Wine.objects.filter_eq_cellar_id(self.cellars[0].id)
+        expected = self.wines_in_cellar1
 
-        expected_wines = self.wines_in_cellar1
-        self.assertEqual(len(expected_wines), result.count())
+        self._assert_filtered_wines(expected, result)
 
-        result = result.iterator()
-        for wine in expected_wines:
-            self.assertEqual(wine.name, next(result).name)
+    def test_filter_is_drunk(self):
+        result = Wine.objects.filter_is_drunk()
+        expected = self.wines_drunk
+
+        self._assert_filtered_wines(expected, result)
+
+    """
+    Utility Functions
+    """
+
+    def _assert_filtered_wines(self, expected, filtered):
+        self.assertEqual(len(expected), filtered.count())
+
+        filtered = filtered.iterator()
+        for wine in expected:
+            self.assertEqual(wine.name, next(filtered).name)
