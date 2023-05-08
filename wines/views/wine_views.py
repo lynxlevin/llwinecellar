@@ -8,7 +8,7 @@ from rest_framework.response import Response
 from llwinecellar.exception_handler import exception_handler_with_logging
 
 from ..models import Wine
-from ..serializers import WineSerializer, WinesSerializer
+from ..serializers import ListWineQuerySerializer, WineSerializer, WinesSerializer
 from ..use_cases import CreateWine, ListWine
 
 logger = logging.getLogger(__name__)
@@ -22,7 +22,11 @@ class WineViewSet(viewsets.GenericViewSet):
 
     def list(self, request, use_case=ListWine(), format=None):
         try:
-            wines = use_case.execute(user=request.user)
+            serializer = ListWineQuerySerializer(data=request.GET.dict())
+            serializer.is_valid(raise_exception=True)
+
+            queries = serializer.validated_data
+            wines = use_case.execute(user=request.user, queries=queries)
 
             serializer = WinesSerializer({"wines": wines})
             return Response(serializer.data)

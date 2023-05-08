@@ -30,3 +30,7 @@ class WineSerializer(serializers.Serializer):
 
 class WinesSerializer(serializers.Serializer):
     wines = WineSerializer(many=True, read_only=True)
+
+
+class ListWineQuerySerializer(serializers.Serializer):
+    cellar_id = serializers.UUIDField(required=False)

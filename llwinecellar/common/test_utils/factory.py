@@ -1,7 +1,7 @@
 from datetime import date
 from typing import Optional, TypedDict
 
-from cellars.models import Cellar
+from cellars.models import Cellar, CellarSpace
 from user_preferences.models import UserPreference
 from users.models import User
 from wines.enums import Country
@@ -57,6 +57,8 @@ class WineParams(TypedDict):
     price_with_tax: Optional[int]
     drunk_at: Optional[date]
     note: Optional[str]
+    position: Optional[str]
+    cellar_id: Optional[str]
 
 
 def create_wine(params: WineParams) -> Wine:
@@ -80,4 +82,14 @@ def create_wine(params: WineParams) -> Wine:
         note=params.get("note", ""),
     )
     wine.save()
+
+    if position := params.get("position"):
+        row, column = position.split("-")
+        cellar_id = params["cellar_id"]
+        cellar_space = CellarSpace.objects.get_by_cellar_row_column(
+            cellar_id=cellar_id, row=row, column=column
+        )
+        cellar_space.wine = wine
+        cellar_space.save()
+
     return wine

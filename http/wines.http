@@ -15,6 +15,13 @@ X-CSRFToken: {{get_csrf.response.headers.X-CSRFToken}}
   "password": "{{password}}"
 }
 
+###
+# @name list_all
+GET {{endpoint}}/api/wines/
+
+###
+# @name list_cellar
+GET {{endpoint}}/api/wines/?cellar_id=aa38eecc-7e8d-42c0-90a0-ad39ba584734
 
 ###
 # @name create

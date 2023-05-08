@@ -13,9 +13,14 @@ class ListWine:
     def __init__(self):
         self.exception_log_title = f"{__class__.__name__}_exception"
 
-    def execute(self, user: User):
-        logger.info(self.__class__.__name__, extra={"user": user})
+    def execute(self, user: User, queries: dict):
+        logger.info(self.__class__.__name__, extra={"user": user, "queries": queries})
 
-        wines = Wine.objects.filter_eq_user_id(user.id).all()
+        qs = Wine.objects.filter_eq_user_id(user.id)
+
+        if cellar_id := queries.get("cellar_id"):
+            qs = qs.filter_eq_cellar_id(cellar_id)
+
+        wines = qs.all()
 
         return wines
