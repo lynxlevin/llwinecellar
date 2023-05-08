@@ -41,7 +41,7 @@ class TestWineModel(TestCase):
         cls.wines_drunk = [
             factory.create_wine({"user": cls.user, "name": "wine_drunk", "drunk_at": datetime.now().date()})
         ]
-        cls.wine_different_user = factory.create_wine({"user": cls.seeds.users[1], "name": "different_user's_wine"})
+        cls.wines_different_user = [factory.create_wine({"user": cls.seeds.users[1], "name": "different_user's_wine"})]
 
     def test_get_by_id(self):
         wine = factory.create_wine({"user": self.seeds.users[0]})
@@ -70,6 +70,12 @@ class TestWineModel(TestCase):
     def test_filter_is_drunk(self):
         result = Wine.objects.filter_is_drunk()
         expected = self.wines_drunk
+
+        self._assert_filtered_wines(expected, result)
+
+    def test_filter_eq_cellarspace__isnull(self):
+        result = Wine.objects.filter_eq_cellarspace__isnull()
+        expected = [*self.wines_not_in_cellar, *self.wines_drunk, *self.wines_different_user]
 
         self._assert_filtered_wines(expected, result)
 

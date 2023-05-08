@@ -24,6 +24,9 @@ class WineQuerySet(models.QuerySet):
     def filter_is_drunk(self, flag=True) -> "WineQuerySet":
         return self.filter(drunk_at__isnull=not flag)
 
+    def filter_eq_cellarspace__isnull(self, flag=True) -> "WineQuerySet":
+        return self.filter(cellarspace__isnull=flag)
+
 
 class Wine(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
