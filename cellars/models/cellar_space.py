@@ -20,7 +20,7 @@ class CellarSpaceQuerySet(models.QuerySet):
 class CellarSpace(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     cellar = models.ForeignKey(Cellar, on_delete=models.CASCADE)
-    wine = models.ForeignKey(Wine, on_delete=models.SET_NULL, null=True)
+    wine = models.OneToOneField(Wine, on_delete=models.SET_NULL, null=True)
     row = models.PositiveSmallIntegerField(blank=True, null=True)
     column = models.PositiveSmallIntegerField(blank=True, null=True)
     type = models.IntegerField(choices=CellarSpaceType.choices, default=CellarSpaceType.RACK)
