@@ -14,7 +14,7 @@ class ListWine:
     def execute(self, user: User, queries: dict):
         logger.info(self.__class__.__name__, extra={"user": user, "queries": queries})
 
-        qs = Wine.objects.filter_eq_user_id(user.id)
+        qs = Wine.objects.filter_eq_user_id(user.id).select_cellarspace()
 
         if cellar_id := queries.get("cellar_id"):
             qs = qs.filter_eq_cellar_id(cellar_id)
@@ -25,6 +25,6 @@ class ListWine:
         if (in_cellars := queries.get("in_cellars")) is not None:
             qs = qs.filter_eq_cellarspace__isnull(not in_cellars)
 
-        wines = qs.all()
+        wines = qs.order_by("created_at").all()
 
         return wines

@@ -155,6 +155,14 @@ class TestWineViews(TestCase):
 
         for index, wine in enumerate(expected):
             self.assertEqual(wine.name, listed[index]["name"])
+            if hasattr(wine, "cellarspace"):
+                self.assertEqual(str(wine.cellarspace.cellar_id), listed[index]["cellar_id"])
+                self.assertEqual(wine.cellarspace.row, listed[index]["row"])
+                self.assertEqual(wine.cellarspace.column, listed[index]["column"])
+            else:
+                self.assertIsNone(listed[index]["cellar_id"])
+                self.assertIsNone(listed[index]["row"])
+                self.assertIsNone(listed[index]["column"])
 
     def _assert_wine_created_according_to_params(self, params, wine):
         def assert_date_equals(param, wine_field):

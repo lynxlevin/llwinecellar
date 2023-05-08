@@ -27,6 +27,9 @@ class WineQuerySet(models.QuerySet):
     def filter_eq_cellarspace__isnull(self, flag=True) -> "WineQuerySet":
         return self.filter(cellarspace__isnull=flag)
 
+    def select_cellarspace(self) -> "WineQuerySet":
+        return self.select_related("cellarspace")
+
 
 class Wine(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -54,3 +57,24 @@ class Wine(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     objects: WineQuerySet = WineQuerySet.as_manager()
+
+    @property
+    def cellar_id(self):
+        if hasattr(self, "cellarspace"):
+            return self.cellarspace.cellar_id
+        else:
+            return None
+
+    @property
+    def row(self) -> int:
+        if hasattr(self, "cellarspace"):
+            return self.cellarspace.row
+        else:
+            return None
+
+    @property
+    def column(self) -> int:
+        if hasattr(self, "cellarspace"):
+            return self.cellarspace.column
+        else:
+            return None

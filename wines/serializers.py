@@ -23,6 +23,10 @@ class WineSerializer(serializers.Serializer):
     drunk_at = serializers.DateField(allow_null=True)
     note = serializers.CharField(allow_blank=True)
 
+    cellar_id = serializers.UUIDField(read_only=True)
+    row = serializers.IntegerField(read_only=True)
+    column = serializers.IntegerField(read_only=True)
+
 
 class WinesSerializer(serializers.Serializer):
     wines = WineSerializer(many=True, read_only=True)
