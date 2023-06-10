@@ -18,6 +18,10 @@ class CellarSpaceQuerySet(models.QuerySet):
 
 
 class CellarSpace(models.Model):
+    """
+    Spaces for rack are automatically created on Cellar creation.
+    """
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     cellar = models.ForeignKey(Cellar, on_delete=models.CASCADE)
     wine = models.OneToOneField(Wine, on_delete=models.SET_NULL, null=True)

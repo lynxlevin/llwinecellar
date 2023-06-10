@@ -38,7 +38,7 @@ class Wine(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     name = models.CharField(blank=True, default="", max_length=256)
     producer = models.CharField(blank=True, default="", max_length=128)
-    country = models.IntegerField(choices=Country.choices, blank=True, null=True)
+    country = models.IntegerField(choices=Country.choices, blank=True, null=True)  # MYMEMO: make this like in isviz
     region_1 = models.CharField(blank=True, default="", max_length=128)
     region_2 = models.CharField(blank=True, default="", max_length=128)
     region_3 = models.CharField(blank=True, default="", max_length=128)
