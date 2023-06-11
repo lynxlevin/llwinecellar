@@ -1,7 +1,7 @@
 from django.test import Client, TestCase
 from rest_framework import status
 
-from llwinecellar.common.test_utils import TestSeed, factory
+from llwinecellar.common.test_utils import CellarFactory, UserFactory
 
 from ..models import Cellar
 
@@ -9,23 +9,23 @@ from ..models import Cellar
 class TestCellarViews(TestCase):
     @classmethod
     def setUpTestData(cls):
-        cls.seeds = TestSeed()
-        cls.seeds.setUp()
-
-        cls.user = cls.seeds.users[0]
         cls.base_path = "/api/cellars/"
+
+        cls.user = UserFactory()
 
     def test_list(self):
         """
         Get /api/cellars/
         """
-        cellar_1 = factory.create_cellar({"user": self.user})
-        cellar_2 = factory.create_cellar({"user": self.user})
+        # Arrange
+        cellar_1 = CellarFactory(user=self.user)
+        cellar_2 = CellarFactory(user=self.user)
+        _cellar_for_different_user = CellarFactory()
 
-        _cellar_for_different_user = factory.create_cellar({"user": self.seeds.users[1]})
-
+        # Act
         status_code, body = self._make_request("get", self.base_path, self.user)
 
+        # Assert
         self.assertEqual(status.HTTP_200_OK, status_code)
 
         cellars = body["cellars"]
@@ -45,14 +45,17 @@ class TestCellarViews(TestCase):
         """
         Post /api/cellars/
         """
+        # Arrange
         params = {
             "name": "Forester",
             "layout": [5, 6, 6, 6, 6],
             "has_basket": True,
         }
 
+        # Act
         status_code, body = self._make_request("post", self.base_path, self.user, params)
 
+        # Assert
         self.assertEqual(status.HTTP_201_CREATED, status_code)
 
         created_cellar = Cellar.objects.get_by_id(body["id"])

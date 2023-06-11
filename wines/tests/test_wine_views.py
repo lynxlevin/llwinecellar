@@ -3,7 +3,7 @@ from datetime import datetime
 from django.test import Client, TestCase
 from rest_framework import status
 
-from llwinecellar.common.test_utils import TestSeed, factory
+from llwinecellar.common.test_utils import CellarFactory, DrunkWineFactory, PlacedWineFactory, UserFactory, WineFactory
 
 from ..enums import Country
 from ..models import Wine
@@ -12,26 +12,15 @@ from ..models import Wine
 class TestWineViews(TestCase):
     @classmethod
     def setUpTestData(cls):
-        cls.seeds = TestSeed()
-        cls.seeds.setUp()
-
         cls.base_path = "/api/wines/"
-        cls.user = cls.seeds.users[0]
-        cls.preference = cls.seeds.user_preferences[0]
-        cls.cellar = factory.create_cellar({"user": cls.user, "layout": [5]})
+        cls.user = UserFactory()
+        cls.preference = cls.user.userpreference
+        cls.cellar = CellarFactory(user=cls.user)
 
-        cls.wines_in_cellar = [
-            factory.create_wine(
-                {"user": cls.user, "name": "wine_in_cellar", "position": "1-1", "cellar_id": cls.cellar.id}
-            )
-        ]
-        cls.wines_not_in_cellar = [
-            factory.create_wine({"user": cls.user, "name": "wine_not_in_cellar"}),
-        ]
-        cls.wines_drunk = [
-            factory.create_wine({"user": cls.user, "name": "wine_drunk", "drunk_at": datetime.now().date()})
-        ]
-        cls.wine_different_user = factory.create_wine({"user": cls.seeds.users[1], "name": "different_user's_wine"})
+        cls.wines_in_cellar = [PlacedWineFactory(row=1, column=1, cellar=cls.cellar, user=cls.user)]
+        cls.wines_not_in_cellar = [WineFactory(user=cls.user)]
+        cls.wines_drunk = [DrunkWineFactory(user=cls.user)]
+        cls.wines_different_user = [WineFactory()]
 
     def test_list__all(self):
         """
