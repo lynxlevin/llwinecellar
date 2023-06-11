@@ -2,41 +2,34 @@ from django.test import TestCase
 
 from cellars.enums import CellarSpaceType
 from cellars.models import Cellar, CellarSpace
-from llwinecellar.common.test_utils import TestSeed, factory
+from llwinecellar.common.test_utils import CellarFactory
 
 
 class TestCellarModel(TestCase):
-    @classmethod
-    def setUpTestData(cls):
-        cls.seeds = TestSeed()
-        cls.seeds.setUp()
-
-        cls.user = cls.seeds.users[0]
-
-    def test_create(self):
-        cellar = factory.create_cellar({"layout": [5, 6, 6, 6, 6], "user": self.user})
+    def test_create__cellar_spaces_automatically_created(self):
+        cellar = CellarFactory()
 
         self._assert_cellar_spaces_created_for_each_row_and_column(cellar)
 
     def test_get_by_id(self):
-        cellar = factory.create_cellar({"user": self.user})
+        cellar = CellarFactory()
 
         result = Cellar.objects.get_by_id(cellar.id)
 
         self.assertEqual(result, cellar)
 
     def test_filter_eq_user_id(self):
-        cellar = factory.create_cellar({"user": self.user})
-        _cellar_different_user = factory.create_cellar({"user": self.seeds.users[1]})
+        cellar = CellarFactory()
+        _cellar_different_user = CellarFactory()
 
-        result = Cellar.objects.filter_eq_user_id(self.user.id)
+        result = Cellar.objects.filter_eq_user_id(cellar.user.id)
 
         self.assertEqual(1, result.count())
         self.assertEqual(cellar.id, result.all()[0].id)
 
     def test_order_by_created_at__asc(self):
-        cellar_1 = factory.create_cellar({"user": self.user})
-        cellar_2 = factory.create_cellar({"user": self.user})
+        cellar_1 = CellarFactory()
+        cellar_2 = CellarFactory()
 
         result = Cellar.objects.order_by_created_at().all()
 
@@ -44,8 +37,8 @@ class TestCellarModel(TestCase):
         self.assertEqual(cellar_2.id, result[1].id)
 
     def test_order_by_created_at__desc(self):
-        cellar_1 = factory.create_cellar({"user": self.user})
-        cellar_2 = factory.create_cellar({"user": self.user})
+        cellar_1 = CellarFactory()
+        cellar_2 = CellarFactory()
 
         result = Cellar.objects.order_by_created_at(desc=True).all()
 

@@ -1,50 +1,29 @@
-from datetime import datetime
-
 from django.test import TestCase
 
-from llwinecellar.common.test_utils import TestSeed, factory
+from llwinecellar.common.test_utils import CellarFactory, DrunkWineFactory, PlacedWineFactory, UserFactory, WineFactory
 from wines.models import Wine
 
 
 class TestWineModel(TestCase):
     @classmethod
     def setUpTestData(cls):
-        cls.seeds = TestSeed()
-        cls.seeds.setUp()
-
-        cls.user = cls.seeds.users[0]
+        cls.user = UserFactory()
         cls.cellars = [
-            factory.create_cellar({"user": cls.user, "layout": [5], "name": "cellar 1"}),
-            factory.create_cellar({"user": cls.user, "layout": [6], "name": "cellar 2"}),
+            CellarFactory(user=cls.user),
+            CellarFactory(user=cls.user),
         ]
         cls.wines_in_cellar1 = [
-            factory.create_wine(
-                {
-                    "user": cls.user,
-                    "name": "wine_in_cellar1",
-                    "position": "1-1",
-                    "cellar_id": cls.cellars[0].id,
-                }
-            ),
+            PlacedWineFactory(row=1, column=1, cellar=cls.cellars[0], user=cls.user),
         ]
         cls.wines_in_cellar2 = [
-            factory.create_wine(
-                {
-                    "user": cls.user,
-                    "name": "wine_in_cellar2",
-                    "position": "1-1",
-                    "cellar_id": cls.cellars[1].id,
-                }
-            ),
+            PlacedWineFactory(row=1, column=1, cellar=cls.cellars[1], user=cls.user),
         ]
-        cls.wines_not_in_cellar = [factory.create_wine({"user": cls.user, "name": "wine_not_in_cellar"})]
-        cls.wines_drunk = [
-            factory.create_wine({"user": cls.user, "name": "wine_drunk", "drunk_at": datetime.now().date()})
-        ]
-        cls.wines_different_user = [factory.create_wine({"user": cls.seeds.users[1], "name": "different_user's_wine"})]
+        cls.wines_not_in_cellar = [WineFactory(user=cls.user)]
+        cls.wines_drunk = [DrunkWineFactory(user=cls.user)]
+        cls.wines_different_user = [WineFactory()]
 
     def test_get_by_id(self):
-        wine = factory.create_wine({"user": self.seeds.users[0]})
+        wine = WineFactory(user=self.user)
 
         result = Wine.objects.get_by_id(wine.id)
 
@@ -74,10 +53,10 @@ class TestWineModel(TestCase):
         self._assert_filtered_wines(expected, result)
 
     def test_filter_eq_cellarspace__isnull(self):
-        result = Wine.objects.filter_eq_cellarspace__isnull()
+        wines_not_in_cellar = Wine.objects.filter_eq_cellarspace__isnull().order_by("created_at")
         expected = [*self.wines_not_in_cellar, *self.wines_drunk, *self.wines_different_user]
 
-        self._assert_filtered_wines(expected, result)
+        self._assert_filtered_wines(expected, wines_not_in_cellar)
 
     """
     Utility Functions
