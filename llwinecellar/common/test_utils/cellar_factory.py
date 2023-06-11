@@ -6,6 +6,10 @@ from .user_factory import UserFactory
 
 
 class CellarFactory(factory.django.DjangoModelFactory):
+    """
+    CellarSpaces for racks are automatically created by post_create function
+    """
+
     class Meta:
         model = Cellar
 
