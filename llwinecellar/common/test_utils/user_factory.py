@@ -5,7 +5,18 @@ from user_preferences.models import UserPreference
 from users.models import User
 
 
-class UserPreferenceFactory(factory.django.DjangoModelFactory):
+class PrivateUserPreferenceFactory(factory.django.DjangoModelFactory):
+    """
+    Automatically created on initializing UserFactory.
+    """
+
+    class Meta:
+        model = UserPreference
+
+    drink_whens = ["デイリー", "そのうち", "数年寝かす", "10年弱寝かす", "10年強寝かす", "たくさん寝かす"]
+
+
+class RandomUserPreferenceFactory(factory.django.DjangoModelFactory):
     """
     Automatically created on initializing UserFactory.
     """
@@ -31,6 +42,6 @@ class UserFactory(factory.django.DjangoModelFactory):
     email = factory.LazyAttribute(lambda obj: f"{obj.username}@example.com")
 
     userpreference = factory.RelatedFactory(
-        UserPreferenceFactory,
+        PrivateUserPreferenceFactory,
         factory_related_name="user",
     )

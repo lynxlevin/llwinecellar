@@ -9,7 +9,7 @@ from llwinecellar.exception_handler import exception_handler_with_logging
 
 from ..models import Wine
 from ..serializers import ListWineQuerySerializer, WineSerializer, WinesSerializer
-from ..use_cases import CreateWine, ListWine
+from ..use_cases import CreateWine, ListWine, UpdateWine
 
 logger = logging.getLogger(__name__)
 
@@ -19,6 +19,8 @@ class WineViewSet(viewsets.GenericViewSet):
     serializer_class = WineSerializer
     authentication_classes = [SessionAuthentication]
     permission_classes = [IsAuthenticated]
+
+    # MYMEMO: add a function to place wine
 
     def list(self, request, use_case=ListWine(), format=None):
         try:
@@ -44,6 +46,20 @@ class WineViewSet(viewsets.GenericViewSet):
 
             serializer = self.get_serializer(wine)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        except Exception as exc:
+            return exception_handler_with_logging(exc)
+
+    def update(self, request, use_case=UpdateWine(), format=None, pk=None):
+        try:
+            serializer = self.get_serializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+
+            data = serializer.validated_data
+            wine = use_case.execute(user=request.user, wine_id=pk, data=data)
+
+            serializer = self.get_serializer(wine)
+            return Response(serializer.data)
 
         except Exception as exc:
             return exception_handler_with_logging(exc)
