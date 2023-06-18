@@ -20,7 +20,7 @@ class WineViewSet(viewsets.GenericViewSet):
     authentication_classes = [SessionAuthentication]
     permission_classes = [IsAuthenticated]
 
-    # MYMEMO: add a function to place wine
+    # MYMEMO: add a function to place wine or bulk_place wines
 
     def list(self, request, use_case=ListWine(), format=None):
         try:

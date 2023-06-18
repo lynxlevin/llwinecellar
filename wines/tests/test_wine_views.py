@@ -1,5 +1,4 @@
 import logging
-from datetime import datetime
 
 from django.test import Client, TestCase
 from rest_framework import status
@@ -13,6 +12,8 @@ logger = logging.getLogger(__name__)
 
 
 class TestWineViews(TestCase):
+    maxDiff = None
+
     @classmethod
     def setUpTestData(cls):
         cls.base_path = "/api/wines/"
@@ -225,20 +226,33 @@ class TestWineViews(TestCase):
 
         return (response.status_code, response.json())
 
-    def _assert_listed_wines_equal_expected(self, expected, listed):
-        self.assertEqual(len(expected), len(listed))
+    def _assert_listed_wines_equal_expected(self, expected_wines, listed_wines):
+        self.assertEqual(len(expected_wines), len(listed_wines))
 
-        # MYMEMO: refactor using zip
-        for index, wine in enumerate(expected):
-            self.assertEqual(wine.name, listed[index]["name"])
-            if hasattr(wine, "cellarspace"):
-                self.assertEqual(str(wine.cellarspace.cellar_id), listed[index]["cellar_id"])
-                self.assertEqual(wine.cellarspace.row, listed[index]["row"])
-                self.assertEqual(wine.cellarspace.column, listed[index]["column"])
-            else:
-                self.assertIsNone(listed[index]["cellar_id"])
-                self.assertIsNone(listed[index]["row"])
-                self.assertIsNone(listed[index]["column"])
+        for expected, listed in zip(expected_wines, listed_wines):
+            dict = {
+                "id": str(expected.id),
+                "drink_when": expected.drink_when,
+                "name": expected.name,
+                "producer": expected.producer,
+                "country": expected.country.value,
+                "region_1": expected.region_1,
+                "region_2": expected.region_2,
+                "region_3": expected.region_3,
+                "region_4": expected.region_4,
+                "region_5": expected.region_5,
+                "cepage": expected.cepage,
+                "vintage": expected.vintage,
+                "bought_at": expected.bought_at.strftime("%Y-%m-%d") if expected.bought_at is not None else None,
+                "bought_from": expected.bought_from,
+                "price_with_tax": expected.price_with_tax,
+                "drunk_at": expected.drunk_at.strftime("%Y-%m-%d") if expected.drunk_at is not None else None,
+                "note": expected.note,
+                "cellar_id": str(expected.cellarspace.cellar_id) if hasattr(expected, "cellarspace") else None,
+                "row": expected.cellarspace.row if hasattr(expected, "cellarspace") else None,
+                "column": expected.cellarspace.column if hasattr(expected, "cellarspace") else None,
+            }
+            self.assertDictEqual(dict, listed)
 
     def _assert_wine_is_same_as_params(self, params, wine):
         dict = {
