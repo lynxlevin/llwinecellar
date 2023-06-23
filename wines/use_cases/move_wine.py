@@ -17,18 +17,22 @@ class MoveWine:
 
         wine = Wine.objects.select_cellarspace().get_by_id(wine_id)
 
-        cellar_space = CellarSpace.objects.get_by_cellar_row_column(**data)
+        from_cellar_space = wine.cellarspace if hasattr(wine, "cellarspace") else None
+        to_cellar_space = CellarSpace.objects.get_by_cellar_row_column(**data)
 
-        cellar_space.wine = wine
-        cellar_space.save()
+        if from_cellar_space:
+            from_cellar_space.wine_id = None
+            from_cellar_space.save(update_fields=["wine_id", "updated_at"])
+        to_cellar_space.wine = wine
+        to_cellar_space.save(update_fields=["wine_id", "updated_at"])
 
         return {
             "wines": [
                 {
                     "id": wine.id,
-                    "cellar_id": cellar_space.cellar_id,
-                    "row": cellar_space.row,
-                    "column": cellar_space.column,
+                    "cellar_id": to_cellar_space.cellar_id,
+                    "row": to_cellar_space.row,
+                    "column": to_cellar_space.column,
                 },
             ],
         }
