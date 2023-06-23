@@ -2,14 +2,21 @@ import logging
 
 from rest_framework import status, viewsets
 from rest_framework.authentication import SessionAuthentication
+from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from llwinecellar.exception_handler import exception_handler_with_logging
 
 from ..models import Wine
-from ..serializers import ListWineQuerySerializer, WineSerializer, WinesSerializer
-from ..use_cases import CreateWine, ListWine, UpdateWine
+from ..serializers import (
+    ListWineQuerySerializer,
+    MoveWineResponseSerializer,
+    MoveWineSerializer,
+    WineSerializer,
+    WinesSerializer,
+)
+from ..use_cases import CreateWine, ListWine, MoveWine, UpdateWine
 
 logger = logging.getLogger(__name__)
 
@@ -19,8 +26,6 @@ class WineViewSet(viewsets.GenericViewSet):
     serializer_class = WineSerializer
     authentication_classes = [SessionAuthentication]
     permission_classes = [IsAuthenticated]
-
-    # MYMEMO: add a function to place wine or bulk_place wines
 
     def list(self, request, use_case=ListWine(), format=None):
         try:
@@ -59,6 +64,22 @@ class WineViewSet(viewsets.GenericViewSet):
             wine = use_case.execute(user=request.user, wine_id=pk, data=data)
 
             serializer = self.get_serializer(wine)
+            return Response(serializer.data)
+
+        except Exception as exc:
+            return exception_handler_with_logging(exc)
+
+    # MYMEMO: change method name to move
+    @action(detail=True, methods=["put"])
+    def space(self, request, use_case=MoveWine(), format=None, pk=None):
+        try:
+            serializer = MoveWineSerializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+
+            data = serializer.validated_data
+            wines = use_case.execute(user=request.user, wine_id=pk, data=data)
+
+            serializer = MoveWineResponseSerializer(wines)
             return Response(serializer.data)
 
         except Exception as exc:
