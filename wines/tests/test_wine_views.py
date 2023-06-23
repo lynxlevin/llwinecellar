@@ -370,6 +370,9 @@ class TestWineViews(TestCase):
     #     self.assertEqual(1, len(body["wines"]))
     #     self._assert_dict_contains_subset(expected["wines"][0], body["wines"][0])
 
+    # def test_move_wine__from_outside_to_filled_rack(self):
+    # Should be the same
+
     """
     Utility functions
     """
