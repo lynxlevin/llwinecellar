@@ -207,6 +207,163 @@ class TestWineViews(TestCase):
         }
         self._assert_dict_contains_subset(expected, body)
 
+    def test_move_wine__from_outside(self):
+        """
+        Put /ai/wines/{wine_id}/space
+        Place a new wine to a cellar space.
+        """
+        # Arrange
+        cellar = CellarFactory()
+        wine = WineFactory(user=cellar.user)
+        params = {
+            "move_to": {
+                "cellar_id": str(cellar.id),
+                "row": 1,
+                "column": 1,
+            },
+        }
+
+        # Act
+        status_code, body = self._make_request("put", f"{self.base_path}{str(wine.id)}/space", self.user, params=params)
+
+        # Assert
+        self.assertEqual(status.HTTP_200_OK, status_code)
+
+        wine = Wine.objects.select_cellarspace().get_by_id(wine.id)
+        self.assertEqual(cellar.id, wine.cellar_id)
+        self.assertEqual(params["move_to"]["row"], wine.row)
+        self.assertEqual(params["move_to"]["column"], wine.column)
+
+        expected = [
+            {
+                "id": str(wine.id),
+                **params["move_to"],
+            }
+        ]
+        self.assertEqual(1, len(body))
+        self._assert_dict_contains_subset(expected[0], body[0])
+
+    # def test_move_wine__from_rack_to_empty_rack(self):
+    #     """
+    #     Put /ai/wines/{wine_id}/space
+    #     Move a wine to an empty rack.
+    #     """
+    #     # Arrange
+    #     cellar = CellarFactory()
+    #     wine = PlacedWineFactory(user=cellar.user, row=1, column=1, cellar=cellar)
+    #     params = {
+    #         "move_to": {
+    #             "cellar_id": str(cellar.id),
+    #             "row": 2,
+    #             "column": 3,
+    #         },
+    #     }
+
+    #     # Act
+    #     status_code, body = self._make_request("put", f"{self.base_path}{str(wine.id)}/space", self.user, params=params)
+
+    #     # Assert
+    #     self.assertEqual(status.HTTP_200_OK, status_code)
+
+    #     wine = Wine.objects.select_cellarspace().get_by_id(wine.id)
+    #     self.assertEqual(cellar.id, wine.cellar_id)
+    #     self.assertEqual(params["move_to"]["row"], wine.row)
+    #     self.assertEqual(params["move_to"]["column"], wine.column)
+
+    #     expected = [
+    #         {
+    #             "id": str(wine.id),
+    #             **params["move_to"],
+    #         }
+    #     ]
+    #     self.assertEqual(1, len(body))
+    #     self._assert_dict_contains_subset(expected[0], body[0])
+
+    # def test_move_wine__from_rack_to_filled_rack(self):
+    #     """
+    #     Put /ai/wines/{wine_id}/space
+    #     Change wine's place with another wine in the cellar.
+    #     """
+    #     # Arrange
+    #     cellar = CellarFactory()
+    #     wine = PlacedWineFactory(user=cellar.user, row=1, column=1, cellar=cellar)
+    #     another_wine = PlacedWineFactory(user=cellar.user, row=2, column=3, cellar=cellar)
+    #     params = {
+    #         "move_to": {
+    #             "cellar_id": str(cellar.id),
+    #             "row": 2,
+    #             "column": 3,
+    #         },
+    #     }
+
+    #     # Act
+    #     status_code, body = self._make_request("put", f"{self.base_path}{str(wine.id)}/space", self.user, params=params)
+
+    #     # Assert
+    #     self.assertEqual(status.HTTP_200_OK, status_code)
+
+    #     wine = Wine.objects.select_cellarspace().get_by_id(wine.id)
+    #     self.assertEqual(cellar.id, wine.cellar_id)
+    #     self.assertEqual(params["move_to"]["row"], wine.row)
+    #     self.assertEqual(params["move_to"]["column"], wine.column)
+
+    #     another_wine = Wine.objects.select_cellarspace().get_by_id(another_wine.id)
+    #     self.assertEqual(cellar.id, another_wine.cellar_id)
+    #     self.assertEqual(1, another_wine.row)
+    #     self.assertEqual(1, another_wine.column)
+
+    #     expected = [
+    #         {
+    #             "id": str(wine.id),
+    #             **params["move_to"],
+    #         },
+    #         {
+    #             "id": str(another_wine.id),
+    #             "cellar_id": str(cellar.id),
+    #             "row": 1,
+    #             "column": 1,
+    #         },
+    #     ]
+    #     self.assertEqual(2, len(body))
+    #     self._assert_dict_contains_subset(expected[0], body[0])
+    #     self._assert_dict_contains_subset(expected[1], body[1])
+
+    # def test_move_wine__from_rack_to_basket(self):
+    #     """
+    #     Put /ai/wines/{wine_id}/space
+    #     Move a wine to a basket.
+    #     """
+    #     # Arrange
+    #     cellar = CellarFactory()
+    #     wine = PlacedWineFactory(user=cellar.user, row=1, column=1, cellar=cellar)
+    #     params = {
+    #         "move_to": {
+    #             "cellar_id": str(cellar.id),
+    #             "row": None,
+    #             "column": None,
+    #         },
+    #     }
+
+    #     # Act
+    #     status_code, body = self._make_request("put", f"{self.base_path}{str(wine.id)}/space", self.user, params=params)
+
+    #     # Assert
+    #     self.assertEqual(status.HTTP_200_OK, status_code)
+
+    #     wine = Wine.objects.select_cellarspace().get_by_id(wine.id)
+    #     self.assertEqual(cellar.id, wine.cellar_id)
+    #     self.assertEqual(params["move_to"]["row"], wine.row)
+    #     self.assertEqual(params["move_to"]["column"], wine.column)
+
+    #     expected = [
+    #         {
+    #             "id": str(wine.id),
+    #             **params["move_to"],
+    #         }
+    #     ]
+    #     self.assertEqual(1, len(body))
+    #     self._assert_dict_contains_subset(expected[0], body[0])
+
     """
     Utility functions
     """

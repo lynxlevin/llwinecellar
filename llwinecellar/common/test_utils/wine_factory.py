@@ -45,8 +45,6 @@ class DrunkWineFactory(WineFactory):
 
 
 class PlacedWineFactory:
-    # def __init__(cls, row, column, cellar, **kwargs):
-
     def __new__(cls, row, column, cellar, user, **kwargs):
         wine = WineFactory(user=user, **kwargs)
 
