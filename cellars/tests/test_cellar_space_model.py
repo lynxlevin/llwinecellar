@@ -26,6 +26,16 @@ class TestCellarSpaceModel(TestCase):
         cellar = CellarFactory()
         _another_cellar = CellarFactory(user=cellar.user)
 
+    def test_create_basket(self):
+        cellar = CellarFactory()
+        created = CellarSpace.objects.create_basket(cellar_id=cellar.id)
+
+        self.assertEqual(cellar.id, created.cellar_id)
+        self.assertEqual(CellarSpaceType.BASKET, created.type)
+        self.assertIsNone(created.wine)
+        self.assertIsNone(created.row)
+        self.assertIsNone(created.column)
+
     def test_get_by_cellar_row_column(self):
         cellar = CellarFactory()
         cellar_space = CellarSpace.objects.get_by_cellar_row_column(cellar.id, 2, 3)

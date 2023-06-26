@@ -17,6 +17,9 @@ class CellarSpaceQuerySet(models.QuerySet):
         except CellarSpace.DoesNotExist:
             return None
 
+    def create_basket(self, cellar_id) -> "CellarSpace":
+        return self.create(cellar_id=cellar_id, type=CellarSpaceType.BASKET)
+
 
 class CellarSpace(models.Model):
     """

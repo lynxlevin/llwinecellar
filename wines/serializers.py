@@ -43,8 +43,8 @@ class ListWineQuerySerializer(serializers.Serializer):
 class MoveWineSerializer(serializers.Serializer):
     id = serializers.UUIDField(read_only=True)
     cellar_id = serializers.UUIDField()
-    row = serializers.IntegerField()
-    column = serializers.IntegerField()
+    row = serializers.IntegerField(allow_null=True)
+    column = serializers.IntegerField(allow_null=True)
 
 
 class MoveWineResponseSerializer(serializers.Serializer):

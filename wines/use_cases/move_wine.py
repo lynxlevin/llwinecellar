@@ -19,29 +19,38 @@ class MoveWine:
     def execute(self, user: User, wine_id: str, data: dict):
         """
         Valid cases:
-            Case_1: to empty rack or basket => Just move the wine.
+            Case_1: to empty rack => Just move the wine.
                 a: from outside to an empty rack
-                b: from outside to a basket
                 c: from a rack to an empty rack
-                d: from a rack to a basket
                 e: from a basket to an empty rack
             Case_2: to filled rack => Change spaces.
                 a: from outside to a filled rack
                 b: from a rack to a filled rack
                 c: from a basket to a filled rack
-            Case_3 : from basket to basket => Do nothing.
+            Case_3: to basket => Create a basket CellarSpace and move the wine
+                a: from outside to a basket
+                b: from a rack to a basket
+            Case_4 : from basket to basket => Do nothing.
         """
         logger.info(self.__class__.__name__, extra={"user": user, "wine_id": wine_id, "data": data})
         # MYMEMO: add wine or cellar not user's
 
         wine = Wine.objects.select_cellarspace().get_by_id(wine_id)
         from_space: Optional[CellarSpace] = wine.cellarspace if hasattr(wine, "cellarspace") else None
-        to_space: Optional[CellarSpace] = CellarSpace.objects.get_by_cellar_row_column(**data)
+
+        is_to_basket = data["row"] is None and data["column"] is None
+        to_space: Optional[CellarSpace] = (
+            CellarSpace.objects.create_basket(data["cellar_id"])
+            if is_to_basket
+            else CellarSpace.objects.get_by_cellar_row_column(**data)
+        )
+        # if to_space is None:
+        # raise 404
         another_wine_id: Optional["UUID"] = to_space.wine_id
 
-        response_list = []
+        moved_wines = []
 
-        # is_from_basket_to_basket = from_space.type == CellarSpaceType.BASKET and to_space.type == CellarSpaceType.BASKET
+        # is_from_basket_to_basket = from_space.type == CellarSpaceType.BASKET and is_to_basket
         # if is_from_basket_to_basket:
         #     return {"wines": []}
 
@@ -49,18 +58,18 @@ class MoveWine:
         if is_to_filled_rack:
             self._take_wine_out(from_space)
             self._place_wine(wine.id, to_space)
-            response_list.append(self._get_response_dict(wine.id, to_space))
+            moved_wines.append(self._get_response_dict(wine.id, to_space))
 
             if from_space is not None:
                 self._place_wine(another_wine_id, from_space)
 
-            response_list.append(self._get_response_dict(another_wine_id, from_space))
+            moved_wines.append(self._get_response_dict(another_wine_id, from_space))
         else:
             self._take_wine_out(from_space)
             self._place_wine(wine.id, to_space)
-            response_list.append(self._get_response_dict(wine.id, to_space))
+            moved_wines.append(self._get_response_dict(wine.id, to_space))
 
-        return {"wines": response_list}
+        return {"wines": moved_wines}
 
     def _take_wine_out(self, space: Optional[CellarSpace]):
         if space is not None:
