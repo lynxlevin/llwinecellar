@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from llwinecellar.common.test_utils import CellarFactory, DrunkWineFactory, PlacedWineFactory, UserFactory, WineFactory
+from llwinecellar.common.test_utils import CellarFactory, DrunkWineFactory, UserFactory, WineFactory, WineInRackFactory
 from wines.models import Wine
 
 
@@ -13,10 +13,10 @@ class TestWineModel(TestCase):
             CellarFactory(user=cls.user),
         ]
         cls.wines_in_cellar1 = [
-            PlacedWineFactory(row=1, column=1, cellar=cls.cellars[0], user=cls.user),
+            WineInRackFactory(row=1, column=1, cellar=cls.cellars[0], user=cls.user),
         ]
         cls.wines_in_cellar2 = [
-            PlacedWineFactory(row=1, column=1, cellar=cls.cellars[1], user=cls.user),
+            WineInRackFactory(row=1, column=1, cellar=cls.cellars[1], user=cls.user),
         ]
         cls.wines_not_in_cellar = [WineFactory(user=cls.user)]
         cls.wines_drunk = [DrunkWineFactory(user=cls.user)]

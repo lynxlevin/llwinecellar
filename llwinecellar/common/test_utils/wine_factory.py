@@ -44,7 +44,7 @@ class DrunkWineFactory(WineFactory):
     drunk_at = factory.LazyAttribute(lambda wine: wine.bought_at + timedelta(days=randint(0, 365)))
 
 
-class PlacedWineFactory:
+class WineInRackFactory:
     def __new__(cls, row, column, cellar, user, **kwargs):
         wine = WineFactory(user=user, **kwargs)
 
@@ -52,6 +52,16 @@ class PlacedWineFactory:
         cellar_space = CellarSpace.objects.get_by_cellar_row_column(
             cellar_id=cellar.id, row=row, column=column
         )  # MYMEMO: cellar.get_space_by_row_and_column のほうが良さそう
+        cellar_space.wine = wine
+        cellar_space.save()
+        return wine
+
+
+class WineInBasketFactory:
+    def __new__(cls, cellar, user, **kwargs):
+        wine = WineFactory(user=user, **kwargs)
+
+        cellar_space = CellarSpace.objects.create_basket(cellar.id)
         cellar_space.wine = wine
         cellar_space.save()
         return wine

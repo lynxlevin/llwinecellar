@@ -3,7 +3,14 @@ import logging
 from django.test import Client, TestCase
 from rest_framework import status
 
-from llwinecellar.common.test_utils import CellarFactory, DrunkWineFactory, PlacedWineFactory, UserFactory, WineFactory
+from llwinecellar.common.test_utils import (
+    CellarFactory,
+    DrunkWineFactory,
+    UserFactory,
+    WineFactory,
+    WineInBasketFactory,
+    WineInRackFactory,
+)
 
 from ..enums import Country
 from ..models import Wine
@@ -26,7 +33,7 @@ class TestWineViews(TestCase):
         Get /api/wines/
         """
         # Arrange
-        wines_in_cellar = [PlacedWineFactory(row=1, column=1, cellar=self.cellar, user=self.user)]
+        wines_in_cellar = [WineInRackFactory(row=1, column=1, cellar=self.cellar, user=self.user)]
         wines_not_in_cellar = [WineFactory(user=self.user)]
         wines_drunk = [DrunkWineFactory(user=self.user)]
         _wines_different_user = [WineFactory()]
@@ -45,7 +52,7 @@ class TestWineViews(TestCase):
         Get /api/wines/?cellar_id={cellar_id}
         """
         # Arrange
-        wines_in_cellar = [PlacedWineFactory(row=1, column=1, cellar=self.cellar, user=self.user)]
+        wines_in_cellar = [WineInRackFactory(row=1, column=1, cellar=self.cellar, user=self.user)]
         _wines_not_in_cellar = [WineFactory(user=self.user)]
         _wines_drunk = [DrunkWineFactory(user=self.user)]
         _wines_different_user = [WineFactory()]
@@ -64,7 +71,7 @@ class TestWineViews(TestCase):
         Get /api/wines/?is_drunk=true
         """
         # Arrange
-        _wines_in_cellar = [PlacedWineFactory(row=1, column=1, cellar=self.cellar, user=self.user)]
+        _wines_in_cellar = [WineInRackFactory(row=1, column=1, cellar=self.cellar, user=self.user)]
         _wines_not_in_cellar = [WineFactory(user=self.user)]
         wines_drunk = [DrunkWineFactory(user=self.user)]
         _wines_different_user = [WineFactory()]
@@ -83,7 +90,7 @@ class TestWineViews(TestCase):
         Get /api/wines/?in_cellars=false
         """
         # Arrange
-        _wines_in_cellar = [PlacedWineFactory(row=1, column=1, cellar=self.cellar, user=self.user)]
+        _wines_in_cellar = [WineInRackFactory(row=1, column=1, cellar=self.cellar, user=self.user)]
         wines_not_in_cellar = [WineFactory(user=self.user)]
         wines_drunk = [DrunkWineFactory(user=self.user)]
         _wines_different_user = [WineFactory()]
@@ -252,7 +259,7 @@ class TestWineViews(TestCase):
         """
         # Arrange
         cellar = CellarFactory()
-        wine = PlacedWineFactory(user=cellar.user, row=1, column=1, cellar=cellar)
+        wine = WineInRackFactory(user=cellar.user, row=1, column=1, cellar=cellar)
         params = {
             "cellar_id": str(cellar.id),
             "row": 2,
@@ -290,8 +297,8 @@ class TestWineViews(TestCase):
         """
         # Arrange
         cellar = CellarFactory()
-        wine = PlacedWineFactory(user=cellar.user, row=1, column=1, cellar=cellar)
-        another_wine = PlacedWineFactory(user=cellar.user, row=2, column=3, cellar=cellar)
+        wine = WineInRackFactory(user=cellar.user, row=1, column=1, cellar=cellar)
+        another_wine = WineInRackFactory(user=cellar.user, row=2, column=3, cellar=cellar)
         params = {
             "cellar_id": str(cellar.id),
             "row": 2,
@@ -341,7 +348,7 @@ class TestWineViews(TestCase):
         """
         # Arrange
         cellar = CellarFactory()
-        wine = PlacedWineFactory(user=cellar.user, row=1, column=1, cellar=cellar)
+        wine = WineInRackFactory(user=cellar.user, row=1, column=1, cellar=cellar)
         params = {
             "cellar_id": str(cellar.id),
             "row": None,
@@ -379,7 +386,7 @@ class TestWineViews(TestCase):
         """
         # Arrange
         cellar = CellarFactory()
-        wine = PlacedWineFactory(user=cellar.user, row=1, column=1, cellar=cellar)
+        wine = WineInRackFactory(user=cellar.user, row=1, column=1, cellar=cellar)
         params = {
             "cellar_id": None,
             "row": None,
@@ -418,7 +425,7 @@ class TestWineViews(TestCase):
         # Arrange
         cellar = CellarFactory()
         wine = WineFactory(user=cellar.user)
-        another_wine = PlacedWineFactory(user=cellar.user, row=2, column=3, cellar=cellar)
+        another_wine = WineInRackFactory(user=cellar.user, row=2, column=3, cellar=cellar)
         params = {
             "cellar_id": str(cellar.id),
             "row": 2,
@@ -460,6 +467,42 @@ class TestWineViews(TestCase):
         self.assertEqual(2, len(body["wines"]))
         self._assert_dict_contains_subset(expected["wines"][0], body["wines"][0])
         self._assert_dict_contains_subset(expected["wines"][1], body["wines"][1])
+
+    def test_move_wine__from_basket_to_basket(self):
+        """
+        Put /api/wines/{wine_id}/space
+        Place a wine into a filled rack and take out the one already in the rack.
+        """
+        # Arrange
+        cellar = CellarFactory()
+        wine = WineInBasketFactory(user=cellar.user, cellar=cellar)
+        another_wine = WineInBasketFactory(user=cellar.user, cellar=cellar)
+        params = {
+            "cellar_id": str(cellar.id),
+            "row": None,
+            "column": None,
+        }
+
+        # Act
+        status_code, body = self._make_request(
+            "put", f"{self.base_path}{str(wine.id)}/space/", self.user, params=params
+        )
+
+        # Assert
+        self.assertEqual(status.HTTP_200_OK, status_code)
+
+        wine = Wine.objects.select_cellarspace().get_by_id(wine.id)
+        self.assertEqual(cellar.id, wine.cellar_id)
+        self.assertIsNone(wine.row)
+        self.assertIsNone(wine.column)
+
+        another_wine = Wine.objects.select_cellarspace().get_by_id(another_wine.id)
+        self.assertEqual(cellar.id, another_wine.cellar_id)
+        self.assertIsNone(another_wine.row)
+        self.assertIsNone(another_wine.column)
+
+        _expected = {"wines": []}
+        self.assertEqual(0, len(body["wines"]))
 
     # def test_move_wine__from_rack_to_basket__error_no_basket_cellar(self):
 
