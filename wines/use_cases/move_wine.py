@@ -38,6 +38,7 @@ class MoveWine:
         logger.info(self.__class__.__name__, extra={"user": user, "wine_id": wine_id, "data": data})
         # MYMEMO: add wine or cellar not user's
         # MYMEMO: if to_space is None: raise 404
+        # MYMEMO: delete old basket space if is_from_basket
 
         wine = Wine.objects.select_cellarspace().get_by_id(wine_id)
         from_space: Optional[CellarSpace] = wine.cellarspace if hasattr(wine, "cellarspace") else None
