@@ -3,7 +3,7 @@ from django.test import TestCase
 
 from cellars.enums import CellarSpaceType
 from cellars.models import CellarSpace
-from llwinecellar.common.test_utils import CellarFactory
+from llwinecellar.common.test_utils import CellarFactory, WineInBasketFactory
 
 
 class TestCellarSpaceModel(TestCase):
@@ -28,6 +28,7 @@ class TestCellarSpaceModel(TestCase):
 
     def test_create_basket(self):
         cellar = CellarFactory()
+
         created = CellarSpace.objects.create_basket(cellar_id=cellar.id)
 
         self.assertEqual(cellar.id, created.cellar_id)
@@ -38,8 +39,17 @@ class TestCellarSpaceModel(TestCase):
 
     def test_get_by_cellar_row_column(self):
         cellar = CellarFactory()
+
         cellar_space = CellarSpace.objects.get_by_cellar_row_column(cellar.id, 2, 3)
 
         self.assertEqual(cellar.id, cellar_space.cellar_id)
         self.assertEqual(2, cellar_space.row)
         self.assertEqual(3, cellar_space.column)
+
+    def test_get_by_wine_id(self):
+        cellar = CellarFactory()
+        wine = WineInBasketFactory(cellar=cellar, user=cellar.user)
+
+        cellar_space = CellarSpace.objects.get_by_wine_id(wine.id)
+
+        self.assertEqual(wine.id, cellar_space.wine_id)

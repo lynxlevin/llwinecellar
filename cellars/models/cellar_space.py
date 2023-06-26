@@ -17,6 +17,12 @@ class CellarSpaceQuerySet(models.QuerySet):
         except CellarSpace.DoesNotExist:
             return None
 
+    def get_by_wine_id(self, wine_id) -> Optional["CellarSpace"]:
+        try:
+            return self.get(wine_id=wine_id)
+        except CellarSpace.DoesNotExist:
+            return None
+
     def create_basket(self, cellar_id) -> "CellarSpace":
         return self.create(cellar_id=cellar_id, type=CellarSpaceType.BASKET)
 
