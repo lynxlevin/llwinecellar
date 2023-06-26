@@ -3,6 +3,7 @@ import logging
 from django.test import Client, TestCase
 from rest_framework import status
 
+from cellars.models import CellarSpace
 from llwinecellar.common.test_utils import (
     CellarFactory,
     DrunkWineFactory,
@@ -459,6 +460,7 @@ class TestWineViews(TestCase):
         # Arrange
         cellar = CellarFactory()
         wine = WineInBasketFactory(user=cellar.user, cellar=cellar)
+        from_basket = CellarSpace.objects.get_by_wine_id(wine.id)
         params = {
             "cellar_id": str(cellar.id),
             "row": 2,
@@ -475,6 +477,9 @@ class TestWineViews(TestCase):
 
         wine = Wine.objects.select_cellarspace().get_by_id(wine.id)
         self._assert_wine_in_rack(wine, cellar, params["row"], params["column"])
+
+        with self.assertRaises(CellarSpace.DoesNotExist):
+            CellarSpace.objects.get(id=from_basket.id)
 
         expected = {
             "wines": [
@@ -568,6 +573,7 @@ class TestWineViews(TestCase):
         # Arrange
         cellar = CellarFactory()
         wine = WineInBasketFactory(user=cellar.user, cellar=cellar)
+        from_basket = CellarSpace.objects.get_by_wine_id(wine.id)
         params = {
             "cellar_id": None,
             "row": None,
@@ -584,6 +590,9 @@ class TestWineViews(TestCase):
 
         wine = Wine.objects.select_cellarspace().get_by_id(wine.id)
         self._assert_not_wine_in_cellar(wine)
+
+        with self.assertRaises(CellarSpace.DoesNotExist):
+            CellarSpace.objects.get(id=from_basket.id)
 
         expected = {
             "wines": [

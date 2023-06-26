@@ -38,7 +38,6 @@ class MoveWine:
         logger.info(self.__class__.__name__, extra={"user": user, "wine_id": wine_id, "data": data})
         # MYMEMO: add wine or cellar not user's
         # MYMEMO: if to_space is None: raise 404
-        # MYMEMO: delete old basket space if is_from_basket
 
         wine = Wine.objects.select_cellarspace().get_by_id(wine_id)
         from_space: Optional[CellarSpace] = wine.cellarspace if hasattr(wine, "cellarspace") else None
@@ -62,7 +61,7 @@ class MoveWine:
         to_space = CellarSpace.objects.get_by_cellar_row_column(**data)
         # To filled rack
         if (other_wine_id := to_space.wine_id) is not None:
-            self._take_wine_out(from_space)
+            self._take_wine_out(from_space, delete_basket=False)
             self._place_wine(wine.id, to_space)
 
             if from_space is not None:
@@ -78,10 +77,12 @@ class MoveWine:
             self._place_wine(wine.id, to_space)
             return [self._get_response_dict(wine.id, to_space)]
 
-    def _take_wine_out(self, space: Optional[CellarSpace]):
+    def _take_wine_out(self, space: Optional[CellarSpace], delete_basket=True):
         if space is not None:
             space.wine_id = None
             space.save(update_fields=["wine_id", "updated_at"])
+            if space.type == CellarSpaceType.BASKET and delete_basket:
+                space.delete()
 
     def _place_wine(self, wine_id: "UUID", to_space: CellarSpace):
         to_space.wine_id = wine_id
