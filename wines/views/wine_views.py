@@ -77,9 +77,9 @@ class WineViewSet(viewsets.GenericViewSet):
             serializer.is_valid(raise_exception=True)
 
             data = serializer.validated_data
-            wines = use_case.execute(user=request.user, wine_id=pk, data=data)
+            moved_wines = use_case.execute(user=request.user, wine_id=pk, data=data)
 
-            serializer = MoveWineResponseSerializer(wines)
+            serializer = MoveWineResponseSerializer({"wines": moved_wines})
             return Response(serializer.data)
 
         except Exception as exc:

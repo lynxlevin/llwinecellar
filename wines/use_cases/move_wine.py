@@ -42,42 +42,40 @@ class MoveWine:
         wine = Wine.objects.select_cellarspace().get_by_id(wine_id)
         from_space: Optional[CellarSpace] = wine.cellarspace if hasattr(wine, "cellarspace") else None
 
-        if _is_to_outside := data["row"] is None and data["column"] is None and data["cellar_id"] is None:
-            self._take_wine_out(from_space)
-            return {"wines": [self._get_response_dict(wine.id, space=None)]}
-
+        is_from_basket = from_space is not None and from_space.type == CellarSpaceType.BASKET
         is_to_basket = data["row"] is None and data["column"] is None and data["cellar_id"] is not None
-        to_space: Optional[CellarSpace] = (
-            CellarSpace.objects.create_basket(data["cellar_id"])
-            if is_to_basket
-            else CellarSpace.objects.get_by_cellar_row_column(**data)
-        )
-        another_wine_id: Optional["UUID"] = to_space.wine_id
+        is_to_outside = data["row"] is None and data["column"] is None and data["cellar_id"] is None
 
-        if (
-            _is_from_basket_to_basket := from_space is not None
-            and from_space.type == CellarSpaceType.BASKET
-            and is_to_basket
-        ):
-            return {"wines": []}
+        if is_from_basket and is_to_basket:
+            return []
+        elif is_to_basket:
+            to_basket = CellarSpace.objects.create_basket(data["cellar_id"])
+            self._take_wine_out(from_space)
+            self._place_wine(wine.id, to_basket)
+            return [self._get_response_dict(wine.id, to_basket)]
 
-        moved_wines = []
+        if is_to_outside:
+            self._take_wine_out(from_space)
+            return [self._get_response_dict(wine.id, space=None)]
 
-        if _is_to_filled_rack := another_wine_id is not None:
+        to_space = CellarSpace.objects.get_by_cellar_row_column(**data)
+        # To filled rack
+        if (other_wine_id := to_space.wine_id) is not None:
             self._take_wine_out(from_space)
             self._place_wine(wine.id, to_space)
-            moved_wines.append(self._get_response_dict(wine.id, to_space))
 
             if from_space is not None:
-                self._place_wine(another_wine_id, from_space)
+                self._place_wine(other_wine_id, from_space)
 
-            moved_wines.append(self._get_response_dict(another_wine_id, from_space))
+            return [
+                self._get_response_dict(wine.id, to_space),
+                self._get_response_dict(other_wine_id, from_space),
+            ]
+        # To empty rack
         else:
             self._take_wine_out(from_space)
             self._place_wine(wine.id, to_space)
-            moved_wines.append(self._get_response_dict(wine.id, to_space))
-
-        return {"wines": moved_wines}
+            return [self._get_response_dict(wine.id, to_space)]
 
     def _take_wine_out(self, space: Optional[CellarSpace]):
         if space is not None:
