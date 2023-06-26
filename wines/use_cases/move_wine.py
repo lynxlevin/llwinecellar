@@ -42,13 +42,10 @@ class MoveWine:
         wine = Wine.objects.select_cellarspace().get_by_id(wine_id)
         from_space: Optional[CellarSpace] = wine.cellarspace if hasattr(wine, "cellarspace") else None
 
-        is_from_basket = from_space is not None and from_space.type == CellarSpaceType.BASKET
         is_to_basket = data["row"] is None and data["column"] is None and data["cellar_id"] is not None
         is_to_outside = data["row"] is None and data["column"] is None and data["cellar_id"] is None
 
-        if is_from_basket and is_to_basket:
-            return []
-        elif is_to_basket:
+        if is_to_basket:
             to_basket = CellarSpace.objects.create_basket(data["cellar_id"])
             self._take_wine_out(from_space)
             self._place_wine(wine.id, to_basket)
@@ -64,7 +61,7 @@ class MoveWine:
             self._take_wine_out(from_space, delete_basket=False)
             self._place_wine(wine.id, to_space)
 
-            if from_space is not None:
+            if from_space is not None:  # MYMEMO: want to remove this line
                 self._place_wine(other_wine_id, from_space)
 
             return [
@@ -78,7 +75,7 @@ class MoveWine:
             return [self._get_response_dict(wine.id, to_space)]
 
     def _take_wine_out(self, space: Optional[CellarSpace], delete_basket=True):
-        if space is not None:
+        if space is not None:  # MYMEMO: want to remove this line
             space.wine_id = None
             space.save(update_fields=["wine_id", "updated_at"])
             if space.type == CellarSpaceType.BASKET and delete_basket:

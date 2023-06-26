@@ -546,6 +546,7 @@ class TestWineViews(TestCase):
         # Arrange
         cellar = CellarFactory()
         wine = WineInBasketFactory(user=cellar.user, cellar=cellar)
+        from_basket = CellarSpace.objects.get_by_wine_id(wine.id)
         params = {
             "cellar_id": str(cellar.id),
             "row": None,
@@ -563,8 +564,19 @@ class TestWineViews(TestCase):
         wine = Wine.objects.select_cellarspace().get_by_id(wine.id)
         self._assert_wine_in_basket(wine, cellar)
 
-        _expected = {"wines": []}
-        self.assertEqual(0, len(body["wines"]))
+        with self.assertRaises(CellarSpace.DoesNotExist):
+            CellarSpace.objects.get(id=from_basket.id)
+
+        expected = {
+            "wines": [
+                {
+                    "id": str(wine.id),
+                    **params,
+                },
+            ]
+        }
+        self.assertEqual(1, len(body["wines"]))
+        self._assert_dict_contains_subset(expected["wines"][0], body["wines"][0])
 
     def test_move_wine__from_basket_to_outside(self):
         """
