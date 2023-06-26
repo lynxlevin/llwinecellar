@@ -31,6 +31,9 @@ class MoveWine:
                 a: from outside to a basket
                 b: from a rack to a basket
             Case_4 : from basket to basket => Do nothing.
+            Case_5: to outside => Just take the wine out.
+                a: from a rack to outside
+                b: from basket to outside
         """
         logger.info(self.__class__.__name__, extra={"user": user, "wine_id": wine_id, "data": data})
         # MYMEMO: add wine or cellar not user's
@@ -38,7 +41,14 @@ class MoveWine:
         wine = Wine.objects.select_cellarspace().get_by_id(wine_id)
         from_space: Optional[CellarSpace] = wine.cellarspace if hasattr(wine, "cellarspace") else None
 
-        is_to_basket = data["row"] is None and data["column"] is None
+        moved_wines = []
+
+        if _is_to_outside := data["row"] is None and data["column"] is None and data["cellar_id"] is None:
+            self._take_wine_out(from_space)
+            moved_wines.append(self._get_response_dict(wine.id, space=None))
+            return {"wines": moved_wines}
+
+        is_to_basket = data["row"] is None and data["column"] is None and data["cellar_id"] is not None
         to_space: Optional[CellarSpace] = (
             CellarSpace.objects.create_basket(data["cellar_id"])
             if is_to_basket
@@ -47,8 +57,6 @@ class MoveWine:
         # if to_space is None:
         # raise 404
         another_wine_id: Optional["UUID"] = to_space.wine_id
-
-        moved_wines = []
 
         # is_from_basket_to_basket = from_space.type == CellarSpaceType.BASKET and is_to_basket
         # if is_from_basket_to_basket:
