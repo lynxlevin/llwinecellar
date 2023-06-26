@@ -12,6 +12,7 @@ from . import Cellar
 class CellarSpaceQuerySet(models.QuerySet):
     def get_by_cellar_row_column(self, cellar_id, row, column) -> Optional["CellarSpace"]:
         try:
+            # MYMEMO: restrict to racks.
             return self.get(cellar_id=cellar_id, row=row, column=column)
         except CellarSpace.DoesNotExist:
             return None
@@ -30,6 +31,7 @@ class CellarSpace(models.Model):
     type = models.IntegerField(choices=CellarSpaceType.choices, default=CellarSpaceType.RACK)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    # MYMEMO: might need to worry about order in basket.
 
     class Meta:
         constraints = (
