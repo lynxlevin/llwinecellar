@@ -3,7 +3,6 @@ import logging
 from django.test import Client, TestCase
 from rest_framework import status
 
-from cellars.models import CellarSpace
 from llwinecellar.common.test_utils import (
     CellarFactory,
     DrunkWineFactory,
@@ -175,6 +174,7 @@ class TestWineViews(TestCase):
 
         self._assert_dict_contains_subset(params, body)
 
+    # MYMEMO: add not_my_wine validation
     def test_update(self):
         """
         Put /api/wines/{wine_id}
@@ -231,7 +231,7 @@ class TestWineViews(TestCase):
 
         # Act
         status_code, body = self._make_request(
-            "put", f"{self.base_path}{str(wine.id)}/space/", self.user, params=params
+            "put", f"{self.base_path}{str(wine.id)}/space/", cellar.user, params=params
         )
 
         # Assert
@@ -267,7 +267,7 @@ class TestWineViews(TestCase):
 
         # Act
         status_code, body = self._make_request(
-            "put", f"{self.base_path}{str(wine.id)}/space/", self.user, params=params
+            "put", f"{self.base_path}{str(wine.id)}/space/", cellar.user, params=params
         )
 
         # Assert
@@ -304,7 +304,7 @@ class TestWineViews(TestCase):
 
         # Act
         status_code, body = self._make_request(
-            "put", f"{self.base_path}{str(wine.id)}/space/", self.user, params=params
+            "put", f"{self.base_path}{str(wine.id)}/space/", cellar.user, params=params
         )
 
         # Assert
@@ -350,7 +350,7 @@ class TestWineViews(TestCase):
 
         # Act
         status_code, body = self._make_request(
-            "put", f"{self.base_path}{str(wine.id)}/space/", self.user, params=params
+            "put", f"{self.base_path}{str(wine.id)}/space/", cellar.user, params=params
         )
 
         # Assert
@@ -386,7 +386,7 @@ class TestWineViews(TestCase):
 
         # Act
         status_code, body = self._make_request(
-            "put", f"{self.base_path}{str(wine.id)}/space/", self.user, params=params
+            "put", f"{self.base_path}{str(wine.id)}/space/", cellar.user, params=params
         )
 
         # Assert
@@ -423,7 +423,7 @@ class TestWineViews(TestCase):
 
         # Act
         status_code, body = self._make_request(
-            "put", f"{self.base_path}{str(wine.id)}/space/", self.user, params=params
+            "put", f"{self.base_path}{str(wine.id)}/space/", cellar.user, params=params
         )
 
         # Assert
@@ -468,7 +468,7 @@ class TestWineViews(TestCase):
 
         # Act
         status_code, body = self._make_request(
-            "put", f"{self.base_path}{str(wine.id)}/space/", self.user, params=params
+            "put", f"{self.base_path}{str(wine.id)}/space/", cellar.user, params=params
         )
 
         # Assert
@@ -504,7 +504,7 @@ class TestWineViews(TestCase):
 
         # Act
         status_code, body = self._make_request(
-            "put", f"{self.base_path}{str(wine.id)}/space/", self.user, params=params
+            "put", f"{self.base_path}{str(wine.id)}/space/", cellar.user, params=params
         )
 
         # Assert
@@ -550,7 +550,7 @@ class TestWineViews(TestCase):
 
         # Act
         status_code, body = self._make_request(
-            "put", f"{self.base_path}{str(wine.id)}/space/", self.user, params=params
+            "put", f"{self.base_path}{str(wine.id)}/space/", cellar.user, params=params
         )
 
         # Assert
@@ -577,7 +577,7 @@ class TestWineViews(TestCase):
 
         # Act
         status_code, body = self._make_request(
-            "put", f"{self.base_path}{str(wine.id)}/space/", self.user, params=params
+            "put", f"{self.base_path}{str(wine.id)}/space/", cellar.user, params=params
         )
 
         # Assert
@@ -597,7 +597,94 @@ class TestWineViews(TestCase):
         self.assertEqual(1, len(body["wines"]))
         self._assert_dict_contains_subset(expected["wines"][0], body["wines"][0])
 
-    # def test_move_wine__from_rack_to_basket__error_no_basket_cellar(self):
+    def test_move_wine__not_my_cellar(self):
+        """
+        Put /api/wines/{wine_id}/space
+        404 Not Found
+        """
+        # Arrange
+        cellar = CellarFactory()
+        different_cellar = CellarFactory()
+        wine = WineFactory(user=cellar.user)
+        params = {
+            "cellar_id": str(different_cellar.id),
+            "row": 1,
+            "column": 1,
+        }
+
+        # Act
+        status_code, _body = self._make_request(
+            "put", f"{self.base_path}{str(wine.id)}/space/", cellar.user, params=params
+        )
+
+        # Assert
+        self.assertEqual(status.HTTP_404_NOT_FOUND, status_code)
+
+    def test_move_wine__not_my_wine(self):
+        """
+        Put /api/wines/{wine_id}/space
+        404 Not Found
+        """
+        # Arrange
+        cellar = CellarFactory()
+        wine = WineFactory()
+        params = {
+            "cellar_id": str(cellar.id),
+            "row": 1,
+            "column": 1,
+        }
+
+        # Act
+        status_code, _body = self._make_request(
+            "put", f"{self.base_path}{str(wine.id)}/space/", cellar.user, params=params
+        )
+
+        # Assert
+        self.assertEqual(status.HTTP_404_NOT_FOUND, status_code)
+
+    def test_move_wine__to_rack_not_existent(self):
+        """
+        Put /api/wines/{wine_id}/space
+        404 Not Found
+        """
+        # Arrange
+        cellar = CellarFactory()
+        wine = WineFactory(user=cellar.user)
+        params = {
+            "cellar_id": str(cellar.id),
+            "row": 999,
+            "column": 999,
+        }
+
+        # Act
+        status_code, _body = self._make_request(
+            "put", f"{self.base_path}{str(wine.id)}/space/", cellar.user, params=params
+        )
+
+        # Assert
+        self.assertEqual(status.HTTP_404_NOT_FOUND, status_code)
+
+    def test_move_wine__to_basket_not_existent(self):
+        """
+        Put /api/wines/{wine_id}/space
+        404 Not Found
+        """
+        # Arrange
+        cellar = CellarFactory(has_basket=False)
+        wine = WineFactory(user=cellar.user)
+        params = {
+            "cellar_id": str(cellar.id),
+            "row": None,
+            "column": None,
+        }
+
+        # Act
+        status_code, _body = self._make_request(
+            "put", f"{self.base_path}{str(wine.id)}/space/", cellar.user, params=params
+        )
+
+        # Assert
+        self.assertEqual(status.HTTP_404_NOT_FOUND, status_code)
 
     """
     Utility functions
