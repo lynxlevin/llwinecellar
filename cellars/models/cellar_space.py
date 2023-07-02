@@ -23,8 +23,13 @@ class CellarSpaceQuerySet(models.QuerySet):
         except CellarSpace.DoesNotExist:
             return None
 
-    def create_basket(self, cellar_id) -> "CellarSpace":
-        return self.create(cellar_id=cellar_id, type=CellarSpaceType.BASKET)
+    def get_or_create_basket(self, cellar_id) -> "CellarSpace":
+        basket = self.filter(cellar_id=cellar_id, type=CellarSpaceType.BASKET).first()
+
+        if basket is None:
+            basket = self.create(cellar_id=cellar_id, type=CellarSpaceType.BASKET)
+
+        return basket
 
 
 class CellarSpace(models.Model):

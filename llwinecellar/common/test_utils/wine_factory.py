@@ -61,7 +61,7 @@ class WineInBasketFactory:
     def __new__(cls, cellar, user, **kwargs):
         wine = WineFactory(user=user, **kwargs)
 
-        cellar_space = CellarSpace.objects.create_basket(cellar.id)
+        cellar_space = CellarSpace.objects.get_or_create_basket(cellar.id)
         cellar_space.wine = wine
         cellar_space.save()
         return wine

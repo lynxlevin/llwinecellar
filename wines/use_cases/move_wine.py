@@ -17,24 +17,6 @@ class MoveWine:
         self.exception_log_title = f"{__class__.__name__}_exception"
 
     def execute(self, user: User, wine_id: str, data: dict):
-        """
-        Valid cases:
-            Case_1: to empty rack => Just move the wine.
-                a: from outside to an empty rack
-                c: from a rack to an empty rack
-                e: from a basket to an empty rack
-            Case_2: to filled rack => Change spaces.
-                a: from outside to a filled rack
-                b: from a rack to a filled rack
-                c: from a basket to a filled rack
-            Case_3: to basket => Create a basket CellarSpace and move the wine
-                a: from outside to a basket
-                b: from a rack to a basket
-            Case_4 : from basket to basket => Do nothing.
-            Case_5: to outside => Just take the wine out.
-                a: from a rack to outside
-                b: from basket to outside
-        """
         logger.info(self.__class__.__name__, extra={"user": user, "wine_id": wine_id, "data": data})
         # MYMEMO: add wine or cellar not user's
         # MYMEMO: if to_space is None: raise 404
@@ -42,48 +24,100 @@ class MoveWine:
         wine = Wine.objects.select_cellarspace().get_by_id(wine_id)
         from_space: Optional[CellarSpace] = wine.cellarspace if hasattr(wine, "cellarspace") else None
 
+        is_from_basket = from_space is not None and from_space.type == CellarSpaceType.BASKET
         is_to_basket = data["row"] is None and data["column"] is None and data["cellar_id"] is not None
-        is_to_outside = data["row"] is None and data["column"] is None and data["cellar_id"] is None
+        is_from_outside = from_space is None
+        is_to_outside = data["cellar_id"] is None
 
-        if is_to_basket:
-            to_basket = CellarSpace.objects.create_basket(data["cellar_id"])
+        if (is_from_basket and is_to_basket) or (is_from_outside and is_to_outside):
+            return []
+
+        plans = [
+            {
+                "id": wine.id,
+                "cellar_id": data["cellar_id"],
+                "row": data["row"],
+                "column": data["column"],
+                "to_space": self._get_to_space(data["cellar_id"], data["row"], data["column"])
+                if data["cellar_id"]
+                else None,
+            }
+        ]
+
+        if plans[0]["to_space"] and (other_wine_id := plans[0]["to_space"].wine_id):
+            plans.append(
+                {
+                    "id": other_wine_id,
+                    "cellar_id": from_space.cellar_id if from_space else None,
+                    "row": from_space.row if from_space else None,
+                    "column": from_space.column if from_space else None,
+                    "to_space": from_space,
+                }
+            )
+
+        if from_space:
             self._take_wine_out(from_space)
-            self._place_wine(wine.id, to_basket)
-            return [self._get_response_dict(wine.id, to_basket)]
 
-        if is_to_outside:
-            self._take_wine_out(from_space)
-            return [self._get_response_dict(wine.id, space=None)]
+        for plan in plans:
+            if plan["to_space"]:
+                self._place_wine(plan["id"], plan["to_space"])
 
-        to_space = CellarSpace.objects.get_by_cellar_row_column(**data)
-        # To filled rack
-        if (other_wine_id := to_space.wine_id) is not None:
-            self._take_wine_out(from_space, delete_basket=False)
-            self._place_wine(wine.id, to_space)
+        return plans
 
-            if from_space is not None:  # MYMEMO: want to remove this line
-                self._place_wine(other_wine_id, from_space)
+    # def _execute(self, user: User, wine_id: str, data: dict):
+    #     logger.info(self.__class__.__name__, extra={"user": user, "wine_id": wine_id, "data": data})
+    #     # MYMEMO: add wine or cellar not user's
+    #     # MYMEMO: if to_space is None: raise 404
 
-            return [
-                self._get_response_dict(wine.id, to_space),
-                self._get_response_dict(other_wine_id, from_space),
-            ]
-        # To empty rack
-        else:
-            self._take_wine_out(from_space)
-            self._place_wine(wine.id, to_space)
-            return [self._get_response_dict(wine.id, to_space)]
+    #     wine = Wine.objects.select_cellarspace().get_by_id(wine_id)
+    #     from_space: Optional[CellarSpace] = wine.cellarspace if hasattr(wine, "cellarspace") else None
 
-    def _take_wine_out(self, space: Optional[CellarSpace], delete_basket=True):
-        if space is not None:  # MYMEMO: want to remove this line
-            space.wine_id = None
-            space.save(update_fields=["wine_id", "updated_at"])
-            if space.type == CellarSpaceType.BASKET and delete_basket:
-                space.delete()
+    #     is_from_basket = from_space is not None and from_space.type == CellarSpaceType.BASKET
+    #     is_to_basket = not any([data["row"], data["column"]]) and data["cellar_id"]
+    #     is_from_outside = from_space is None
+    #     is_to_outside = data["cellar_id"] is None
+
+    #     moved_wines: list[dict] = []
+
+    #     if (is_from_basket and is_to_basket) or (is_from_outside and is_to_outside):
+    #         return moved_wines
+
+    #     if not is_from_outside:
+    #         self._take_wine_out(from_space)
+    #         if is_to_outside:
+    #             moved_wines.append(self._get_response_dict(wine.id, space=None))
+    #             return moved_wines
+
+    #     to_space = self._get_to_space(data["cellar_id"], data["row"], data["column"])
+    #     other_wine_id: Optional["UUID"] = to_space.wine_id
+
+    #     self._place_wine(wine.id, to_space)
+    #     moved_wines.append(self._get_response_dict(wine.id, to_space))
+
+    #     if not (_is_to_filled_rack := other_wine_id is not None):
+    #         return moved_wines
+    #     elif is_from_outside:
+    #         moved_wines.append(self._get_response_dict(other_wine_id, space=None))
+    #         return moved_wines
+
+    #     self._place_wine(other_wine_id, from_space)
+    #     moved_wines.append(self._get_response_dict(other_wine_id, from_space))
+    #     return moved_wines
+
+    def _take_wine_out(self, space: Optional[CellarSpace]):
+        space.wine_id = None
+        space.save(update_fields=["wine_id", "updated_at"])
 
     def _place_wine(self, wine_id: "UUID", to_space: CellarSpace):
         to_space.wine_id = wine_id
         to_space.save(update_fields=["wine_id", "updated_at"])
+
+    def _get_to_space(self, cellar_id, row, column):
+        if _is_basket := not any([row, column]):
+            return CellarSpace.objects.get_or_create_basket(cellar_id)
+        else:
+            # MYMEMO: エラーが出てくれるほうが使いやすそう get_by_cellar_row_column_or_raise?
+            return CellarSpace.objects.get_by_cellar_row_column(cellar_id, row, column)
 
     def _get_response_dict(self, wine_id, space):
         return {
