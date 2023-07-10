@@ -6,7 +6,6 @@ from rest_framework import status
 from llwinecellar.common.test_utils import CellarFactory, UserFactory, WineFactory
 
 from ...enums import Country
-from ...models import Wine
 
 logger = logging.getLogger(__name__)
 
@@ -21,10 +20,9 @@ class TestUpdateWine(TestCase):
         cls.preference = cls.user.userpreference
         cls.cellar = CellarFactory(user=cls.user)
 
-    # MYMEMO: add not_my_wine validation
     def test_update(self):
         # Arrange
-        wine = WineFactory()
+        wine = WineFactory(user=self.user)
         params = {
             "drink_when": self.preference.drink_whens[0],
             "name": "Gevrey Chambertin",
@@ -50,7 +48,6 @@ class TestUpdateWine(TestCase):
         # Assert
         self.assertEqual(status.HTTP_200_OK, status_code)
 
-        wine.refresh_from_db()
         self._assert_wine_is_same_as_params(params, wine)
 
         expected = {
@@ -58,6 +55,38 @@ class TestUpdateWine(TestCase):
             **params,
         }
         self._assert_dict_contains_subset(expected, body)
+
+    def test_not_my_wine__404(self):
+        # Arrange
+        wine = WineFactory()
+        params = {
+            "drink_when": self.preference.drink_whens[0],
+            "name": "Gevrey Chambertin",
+            "producer": "Domaine Charlopin Tissier",
+            "country": Country.FRANCE.value,  # MYMEMO: change to "france"
+            "region_1": "Bourgogne",
+            "region_2": "Côtes de Nuits",
+            "region_3": "Gevrey Chambertin",
+            "region_4": "",
+            "region_5": "",
+            "cepage": [{"grape": "Pinot Noir", "percent": 100}],
+            "vintage": 2019,
+            "bought_at": "2023-05-07",
+            "bought_from": "伊勢屋",
+            "price_with_tax": 13000,
+            "drunk_at": None,
+            "note": "テスト用のノート",
+        }
+
+        # Act
+        status_code, _body = self._make_request(f"{self.base_path}{str(wine.id)}/", self.user, params=params)
+
+        # Assert
+        self.assertEqual(status.HTTP_404_NOT_FOUND, status_code)
+
+        original_wine_dict = wine.__dict__
+        wine.refresh_from_db()
+        self.assertDictEqual(original_wine_dict, wine.__dict__)
 
     """
     Utility functions
@@ -72,6 +101,7 @@ class TestUpdateWine(TestCase):
         return (response.status_code, response.json())
 
     def _assert_wine_is_same_as_params(self, params, wine):
+        wine.refresh_from_db()
         dict = {
             **wine.__dict__,
             "bought_at": wine.bought_at.strftime("%Y-%m-%d") if wine.bought_at is not None else None,

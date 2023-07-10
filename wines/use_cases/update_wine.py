@@ -1,5 +1,7 @@
 import logging
 
+from rest_framework import exceptions
+
 from users.models import User
 
 from ..models import Wine
@@ -15,6 +17,9 @@ class UpdateWine:
         logger.info(self.__class__.__name__, extra={"user": user, "wine_id": wine_id, "data": data})
 
         wine = Wine.objects.get_by_id(wine_id)
+
+        if wine.user != user:
+            raise exceptions.NotFound
 
         wine.drink_when = data["drink_when"]
         wine.name = data["name"]
