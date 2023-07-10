@@ -75,53 +75,6 @@ class MoveWine:
 
         return plans
 
-    # def execute(self, user: User, wine_id: str, data: dict):
-    #     logger.info(self.__class__.__name__, extra={"user": user, "wine_id": wine_id, "data": data})
-
-    #     wine = Wine.objects.filter_eq_user_id(user.id).select_cellarspace().get_by_id(wine_id)
-    #     if not wine:
-    #         raise exceptions.NotFound
-
-    #     if data["cellar_id"] and not user.has_cellar(data["cellar_id"]):
-    #         raise exceptions.NotFound
-
-    #     from_space: Optional[CellarSpace] = wine.cellarspace if hasattr(wine, "cellarspace") else None
-
-    #     is_from_basket = from_space is not None and from_space.type == CellarSpaceType.BASKET
-    #     is_to_basket = not any([data["row"], data["column"]]) and data["cellar_id"]
-    #     is_from_outside = from_space is None
-    #     is_to_outside = data["cellar_id"] is None
-
-    #     moved_wines: list[dict] = []
-
-    #     if (is_from_basket and is_to_basket) or (is_from_outside and is_to_outside):
-    #         return moved_wines
-
-    #     if not is_from_outside:
-    #         self._take_wine_out(from_space)
-    #         if is_to_outside:
-    #             moved_wines.append(self._get_response_dict(wine.id, space=None))
-    #             return moved_wines
-
-    #     to_space = self._get_to_space(data["cellar_id"], data["row"], data["column"])
-    #     if to_space is None:
-    #         raise exceptions.NotFound
-
-    #     other_wine_id: Optional["UUID"] = to_space.wine_id
-
-    #     self._place_wine(wine.id, to_space)
-    #     moved_wines.append(self._get_response_dict(wine.id, to_space))
-
-    #     if not (_is_to_filled_rack := other_wine_id is not None):
-    #         return moved_wines
-    #     elif is_from_outside:
-    #         moved_wines.append(self._get_response_dict(other_wine_id, space=None))
-    #         return moved_wines
-
-    #     self._place_wine(other_wine_id, from_space)
-    #     moved_wines.append(self._get_response_dict(other_wine_id, from_space))
-    #     return moved_wines
-
     def _take_wine_out(self, space: Optional[CellarSpace]):
         space.wine_id = None
         space.save(update_fields=["wine_id", "updated_at"])
