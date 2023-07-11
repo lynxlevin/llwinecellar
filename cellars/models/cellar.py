@@ -1,5 +1,5 @@
 import uuid
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
 from django.db import models
 from django.db.models.signals import post_save
@@ -7,6 +7,9 @@ from django.db.models.signals import post_save
 from users.models import User
 
 from ..enums import CellarSpaceType
+
+if TYPE_CHECKING:
+    from ..models import CellarSpace
 
 
 class CellarQuerySet(models.QuerySet):
@@ -53,6 +56,9 @@ class Cellar(models.Model):
                 cellar_spaces.append(cellar_space)
 
         CellarSpace.objects.bulk_create(cellar_spaces)
+
+    def get_rack(self, row: int, column: int) -> Optional["CellarSpace"]:
+        return self.cellarspace_set.get_by_cellar_row_column(self.id, row, column)
 
 
 post_save.connect(Cellar.post_create, sender=Cellar)

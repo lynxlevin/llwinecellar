@@ -45,6 +45,15 @@ class TestCellarModel(TestCase):
         self.assertEqual(cellar_2.id, result[0].id)
         self.assertEqual(cellar_1.id, result[1].id)
 
+    def test_get_rack(self):
+        cellar = CellarFactory()
+
+        result = cellar.get_rack(row=1, column=2)
+
+        self.assertEqual(cellar.id, result.cellar_id)
+        self.assertEqual(1, result.row)
+        self.assertEqual(2, result.column)
+
     """
     Utility Functions
     """

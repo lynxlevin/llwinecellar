@@ -48,12 +48,11 @@ class WineInRackFactory:
     def __new__(cls, row, column, cellar, user, **kwargs):
         wine = WineFactory(user=user, **kwargs)
 
-        # FIXME: handle error on non_existent row and column
-        cellar_space = CellarSpace.objects.get_by_cellar_row_column(
-            cellar_id=cellar.id, row=row, column=column
-        )  # MYMEMO: cellar.get_space_by_row_and_column のほうが良さそう
-        cellar_space.wine = wine
-        cellar_space.save()
+        cellar_space = cellar.get_rack(row, column)
+
+        if cellar_space:
+            cellar_space.wine = wine
+            cellar_space.save()
         return wine
 
 

@@ -12,7 +12,6 @@ from . import Cellar
 class CellarSpaceQuerySet(models.QuerySet):
     def get_by_cellar_row_column(self, cellar_id, row, column) -> Optional["CellarSpace"]:
         try:
-            # MYMEMO: restrict to racks.
             return self.get(cellar_id=cellar_id, row=row, column=column)
         except CellarSpace.DoesNotExist:
             return None
