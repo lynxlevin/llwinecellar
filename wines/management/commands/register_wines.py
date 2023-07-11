@@ -41,7 +41,7 @@ class Command(BaseCommand):
                 drink_when=next(li),
                 name=next(li),
                 producer=next(li),
-                country=Country[next(li).upper()],  # MYMEMO: needs changing
+                country=Country.from_label(next(li)),
                 region_1=next(li),
                 region_2=next(li),
                 region_3=next(li),
