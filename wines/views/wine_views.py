@@ -69,9 +69,8 @@ class WineViewSet(viewsets.GenericViewSet):
         except Exception as exc:
             return exception_handler_with_logging(exc)
 
-    # MYMEMO: change method name to move
-    @action(detail=True, methods=["put"])
-    def space(self, request, use_case=MoveWine(), format=None, pk=None):
+    @action(detail=True, methods=["put"], url_path="space")
+    def move(self, request, use_case=MoveWine(), format=None, pk=None):
         try:
             serializer = MoveWineSerializer(data=request.data)
             serializer.is_valid(raise_exception=True)
