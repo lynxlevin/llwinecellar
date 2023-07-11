@@ -1,5 +1,5 @@
 import uuid
-from typing import Optional
+from typing import Optional, Union
 
 from django.db import models
 
@@ -38,7 +38,8 @@ class Wine(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     name = models.CharField(blank=True, default="", max_length=256)
     producer = models.CharField(blank=True, default="", max_length=128)
-    country = models.IntegerField(choices=Country.choices, blank=True, null=True)  # MYMEMO: make this like in isviz
+    _country = models.IntegerField(db_column="country", choices=Country.choices_for_model(), blank=True, null=True)
+    _country_str = models.CharField(db_column="country_str", max_length=64, blank=True, null=True)
     region_1 = models.CharField(blank=True, default="", max_length=128)
     region_2 = models.CharField(blank=True, default="", max_length=128)
     region_3 = models.CharField(blank=True, default="", max_length=128)
@@ -57,6 +58,25 @@ class Wine(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     objects: WineQuerySet = WineQuerySet.as_manager()
+
+    @property
+    def country(self):
+        if self._country is None:
+            return None
+        return Country(self._country)
+
+    @country.setter
+    def country(self, country: Optional[Union[Country, str]]):
+        if country is None:
+            self._country = None
+            self._country_str = None
+        elif isinstance(country, str):
+            country_ = Country.from_label(country)
+            self._country = country_.value
+            self._country_str = country_.name
+        else:
+            self._country = country.value
+            self._country_str = country.name
 
     @property
     def cellar_id(self):

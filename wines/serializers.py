@@ -9,7 +9,7 @@ class WineSerializer(serializers.Serializer):
     drink_when = serializers.CharField(allow_blank=True)
     name = serializers.CharField(allow_blank=True, max_length=256)
     producer = serializers.CharField(allow_blank=True, max_length=128)
-    country = serializers.ChoiceField(allow_null=True, choices=Country.choices)
+    country = serializers.ChoiceField(allow_null=True, choices=Country.choices_for_serializer())
     region_1 = serializers.CharField(allow_blank=True, max_length=128)
     region_2 = serializers.CharField(allow_blank=True, max_length=128)
     region_3 = serializers.CharField(allow_blank=True, max_length=128)
@@ -22,6 +22,19 @@ class WineSerializer(serializers.Serializer):
     price_with_tax = serializers.IntegerField(allow_null=True, min_value=0, max_value=2_147_483_647)
     drunk_at = serializers.DateField(allow_null=True)
     note = serializers.CharField(allow_blank=True)
+
+    def validate_country(self, value):
+        if value:
+            return Country.from_label(value)
+        else:
+            return None
+
+    def to_representation(self, instance):
+        ret = super().to_representation(instance)
+        if ret["country"] is None:
+            return ret
+        ret["country"] = Country(ret["country"]).label
+        return ret
 
 
 class WineWithCellarSpaceSerializer(WineSerializer):

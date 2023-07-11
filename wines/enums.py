@@ -1,7 +1,7 @@
-from django.db import models
+from enum import IntEnum
 
 
-class Country(models.IntegerChoices):
+class Country(IntEnum):
     # Europe
     FRANCE = 101
     ITALY = 102
@@ -51,3 +51,19 @@ class Country(models.IntegerChoices):
     TURKEY = 604
     NORTH_AFRICA = 605
     SOUTH_AFRICA = 606
+
+    @property
+    def label(cls):
+        return cls.name.replace("_", " ").title()
+
+    @classmethod
+    def from_label(cls, label):
+        return cls[label.replace(" ", "_").upper()]
+
+    @classmethod
+    def choices_for_model(cls):
+        return tuple((c.value, c.label) for c in cls)
+
+    @classmethod
+    def choices_for_serializer(cls):
+        return tuple((c.label, c.label) for c in cls)

@@ -27,7 +27,7 @@ class TestUpdateWine(TestCase):
             "drink_when": self.preference.drink_whens[0],
             "name": "Gevrey Chambertin",
             "producer": "Domaine Charlopin Tissier",
-            "country": Country.FRANCE.value,  # MYMEMO: change to "france"
+            "country": Country.FRANCE.label,
             "region_1": "Bourgogne",
             "region_2": "Côtes de Nuits",
             "region_3": "Gevrey Chambertin",
@@ -63,7 +63,7 @@ class TestUpdateWine(TestCase):
             "drink_when": self.preference.drink_whens[0],
             "name": "Gevrey Chambertin",
             "producer": "Domaine Charlopin Tissier",
-            "country": Country.FRANCE.value,  # MYMEMO: change to "france"
+            "country": Country.FRANCE.label,
             "region_1": "Bourgogne",
             "region_2": "Côtes de Nuits",
             "region_3": "Gevrey Chambertin",
@@ -102,13 +102,27 @@ class TestUpdateWine(TestCase):
 
     def _assert_wine_is_same_as_params(self, params, wine):
         wine.refresh_from_db()
-        dict = {
-            **wine.__dict__,
-            "bought_at": wine.bought_at.strftime("%Y-%m-%d") if wine.bought_at is not None else None,
-            "drunk_at": wine.drunk_at.strftime("%Y-%m-%d") if wine.drunk_at is not None else None,
-        }
 
-        self._assert_dict_contains_subset(params, dict)
+        self.assertEqual(params["drink_when"], wine.drink_when)
+        self.assertEqual(params["name"], wine.name)
+        self.assertEqual(params["producer"], wine.producer)
+        self.assertEqual(params["region_1"], wine.region_1)
+        self.assertEqual(params["region_2"], wine.region_2)
+        self.assertEqual(params["region_3"], wine.region_3)
+        self.assertEqual(params["region_4"], wine.region_4)
+        self.assertEqual(params["region_5"], wine.region_5)
+        self.assertEqual(params["cepage"], wine.cepage)
+        self.assertEqual(params["vintage"], wine.vintage)
+        self.assertEqual(params["bought_from"], wine.bought_from)
+        self.assertEqual(params["price_with_tax"], wine.price_with_tax)
+        self.assertEqual(params["note"], wine.note)
+
+        if params["country"]:
+            self.assertEqual(Country.from_label(params["country"]), wine.country)
+        if params["bought_at"]:
+            self.assertEqual(params["bought_at"], wine.bought_at.strftime("%Y-%m-%d"))
+        if params["drunk_at"]:
+            self.assertEqual(params["drunk_at"], wine.drunk_at.strftime("%Y-%m-%d"))
 
     def _assert_dict_contains_subset(self, expected, actual):
         """

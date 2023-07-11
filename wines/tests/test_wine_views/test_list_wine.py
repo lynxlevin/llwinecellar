@@ -102,7 +102,7 @@ class TestListWine(TestCase):
                 "drink_when": expected.drink_when,
                 "name": expected.name,
                 "producer": expected.producer,
-                "country": expected.country.value,
+                "country": expected.country.label,
                 "region_1": expected.region_1,
                 "region_2": expected.region_2,
                 "region_3": expected.region_3,
