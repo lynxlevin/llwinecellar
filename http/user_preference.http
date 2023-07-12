@@ -15,6 +15,25 @@ X-CSRFToken: {{get_csrf.response.headers.X-CSRFToken}}
   "password": "{{password}}"
 }
 
+###
+# @name create
+POST {{endpoint}}/api/user_preferences/
+Content-Type: application/json
+X-CSRFToken: {{get_csrf.response.headers.X-CSRFToken}}
+
+{
+  "user_preference": {
+    "drink_whens": [
+      "デイリー",
+      "そのうち",
+      "数年寝かす",
+      "10年弱寝かす",
+      "10年強寝かす",
+      "たくさん寝かす"
+    ]
+  }
+}
+
 
 ###
 # @name list
