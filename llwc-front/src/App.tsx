@@ -3,6 +3,7 @@ import logo from './logo.svg';
 import './App.css';
 import TestPage from './testPage';
 import {Routes, Route, Link} from 'react-router-dom';
+import Login from './Login';
 
 function App() {
   return (
@@ -26,11 +27,13 @@ function App() {
               Learn React
             </a>
             <Link to="/test">Click Me!</Link>
+            <Link to="/login">Login</Link>
           </>
         )} />
         <Route path="/test" element={
           <TestPage />
         } />
+        <Route path="/login" element={<Login />} />
       </Routes>
     </div>
   );
