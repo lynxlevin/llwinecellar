@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { Avatar, Button, TextField, Box, Typography, Container, CssBaseline } from '@mui/material';
-import { UserAPI } from './apis/UserAPI';
+import { UserAPI } from '../apis/UserAPI';
 
 const Login = () => {
     const [cSRFToken, setCSRFToken] = useState<string>('')
