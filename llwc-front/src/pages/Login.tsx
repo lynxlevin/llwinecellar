@@ -4,7 +4,7 @@ import { Avatar, Button, TextField, Box, Typography, Container, CssBaseline } fr
 import useLoginPage from '../hooks/useLoginPage';
 
 const Login = () => {
-    const { login, logout } = useLoginPage();
+    const { handleLogin, handleLogout, handleEmailInput, handlePasswordInput } = useLoginPage();
 
     return (
         <Container component="main" maxWidth="xs">
@@ -23,7 +23,7 @@ const Login = () => {
                 <Typography component="h1" variant="h5">
                 Sign in
                 </Typography>
-                <Box component="form" onSubmit={login} noValidate sx={{ mt: 1 }}>
+                <Box sx={{ mt: 1 }}>
                     <TextField
                         margin="normal"
                         required
@@ -33,6 +33,7 @@ const Login = () => {
                         name="email"
                         autoComplete="email"
                         autoFocus
+                        onChange={handleEmailInput}
                     />
                     <TextField
                         margin="normal"
@@ -43,11 +44,12 @@ const Login = () => {
                         type="password"
                         id="password"
                         autoComplete="current-password"
+                        onChange={handlePasswordInput}
                     />
                     <Button
-                        type="submit"
                         fullWidth
                         variant="contained"
+                        onClick={handleLogin}
                         sx={{ mt: 3, mb: 2 }}
                     >
                         Sign In
@@ -66,11 +68,11 @@ const Login = () => {
                         </Grid> */}
                 </Box>
                 {/* MYMEMO: delete later */}
-                <Box component="form" onSubmit={logout} noValidate sx={{ mt: 1 }}>
+                <Box sx={{ mt: 1 }}>
                     <Button
-                        type="submit"
                         fullWidth
                         variant="contained"
+                        onClick={handleLogout}
                         sx={{ mt: 3, mb: 2 }}
                     >
                         Sign out

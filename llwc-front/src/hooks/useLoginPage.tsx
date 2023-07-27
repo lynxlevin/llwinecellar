@@ -1,19 +1,28 @@
-import { useEffect, useCallback } from 'react';
+import { useState } from 'react';
 import { UserAPI } from "../apis/UserAPI";
 
 
 const useLoginPage = () => {
-    const consoleLogSession = useCallback(async () => {
+    const [email, setEmail] = useState<string>('');
+    const [password, setPassword] = useState<string>('');
+
+    const consoleLogSession = async () => {
         const session_res = await UserAPI.session();
         console.log(session_res);
-    }, []);
+    };
 
-    const login = async (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
-        const data = new FormData(event.currentTarget);
+    const handleEmailInput = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>): void => {
+        setEmail(event.target.value);
+    };
+
+    const handlePasswordInput = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        setPassword(event.target.value);
+    };
+
+    const handleLogin = async () => {
         console.log({
-            email: data.get('email'),
-            password: data.get('password'),
+            email,
+            password,
         });
         // MYMEMO: credentials hard coded
         // MYMEMO: handle errors
@@ -22,19 +31,16 @@ const useLoginPage = () => {
         // MYMEMO: add redirect
     };
 
-    const logout = async(event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
+    const handleLogout = async() => {
         await UserAPI.logout();
         consoleLogSession();
     };
 
-    useEffect(() => {
-        void consoleLogSession();
-    }, [consoleLogSession]);
-
     return {
-        login,
-        logout,
+        handleLogin,
+        handleLogout,
+        handleEmailInput,
+        handlePasswordInput,
     }
 }
 
