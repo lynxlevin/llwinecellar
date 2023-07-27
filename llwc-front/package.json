@@ -34,6 +34,14 @@
       "react-app/jest"
     ]
   },
+  "prettier": {
+    "printWidth": 160,
+    "singleQuote": true,
+    "semi": true,
+    "tabWidth": 4,
+    "trailingComma": "all",
+    "arrowParens": "avoid"
+  },
   "browserslist": {
     "production": [
       ">0.2%",
@@ -48,7 +56,15 @@
   },
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
-    "@types/react-router-dom": "^5.3.3"
+    "@types/react-router-dom": "^5.3.3",
+    "eslint-config-prettier": "^8.8.0",
+    "eslint-plugin-prettier": "^5.0.0",
+    "prettier": "^3.0.0"
+  },
+  "jest": {
+    "transformIgnorePatterns": [
+      "node_modules/(?!@axios)/"
+    ]
   },
   "proxy": "http://localhost:8000"
 }

@@ -1,6 +1,5 @@
 import { useState } from 'react';
-import { UserAPI } from "../apis/UserAPI";
-
+import { UserAPI } from '../apis/UserAPI';
 
 const useLoginPage = () => {
     const [email, setEmail] = useState<string>('');
@@ -20,18 +19,13 @@ const useLoginPage = () => {
     };
 
     const handleLogin = async () => {
-        console.log({
-            email,
-            password,
-        });
-        // MYMEMO: credentials hard coded
         // MYMEMO: handle errors
-        await UserAPI.login({email: 'test@test.com', password: 'test'});
+        await UserAPI.login({ email, password });
         consoleLogSession();
         // MYMEMO: add redirect
     };
 
-    const handleLogout = async() => {
+    const handleLogout = async () => {
         await UserAPI.logout();
         consoleLogSession();
     };
@@ -41,7 +35,7 @@ const useLoginPage = () => {
         handleLogout,
         handleEmailInput,
         handlePasswordInput,
-    }
-}
+    };
+};
 
 export default useLoginPage;

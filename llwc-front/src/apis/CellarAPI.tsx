@@ -6,4 +6,4 @@ export const CellarAPI = {
     list: async () => {
         return await client.get(CellarAPI.BASE_URL);
     },
-}
+};

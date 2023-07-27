@@ -11,17 +11,17 @@ const Login = () => {
             <CssBaseline />
             <Box
                 sx={{
-                marginTop: 8,
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
+                    marginTop: 8,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
                 }}
             >
                 <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
                     <LockOutlinedIcon />
                 </Avatar>
                 <Typography component="h1" variant="h5">
-                Sign in
+                    Sign in
                 </Typography>
                 <Box sx={{ mt: 1 }}>
                     <TextField
@@ -46,12 +46,7 @@ const Login = () => {
                         autoComplete="current-password"
                         onChange={handlePasswordInput}
                     />
-                    <Button
-                        fullWidth
-                        variant="contained"
-                        onClick={handleLogin}
-                        sx={{ mt: 3, mb: 2 }}
-                    >
+                    <Button fullWidth variant="contained" onClick={handleLogin} sx={{ mt: 3, mb: 2 }}>
                         Sign In
                     </Button>
                     {/* <Grid container>
@@ -69,12 +64,7 @@ const Login = () => {
                 </Box>
                 {/* MYMEMO: delete later */}
                 <Box sx={{ mt: 1 }}>
-                    <Button
-                        fullWidth
-                        variant="contained"
-                        onClick={handleLogout}
-                        sx={{ mt: 3, mb: 2 }}
-                    >
+                    <Button fullWidth variant="contained" onClick={handleLogout} sx={{ mt: 3, mb: 2 }}>
                         Sign out
                     </Button>
                 </Box>
