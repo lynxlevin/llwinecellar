@@ -1,37 +1,10 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { Avatar, Button, TextField, Box, Typography, Container, CssBaseline } from '@mui/material';
-import { UserAPI } from '../apis/UserAPI';
+import useLoginPage from '../hooks/useLoginPage';
 
 const Login = () => {
-    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
-        const data = new FormData(event.currentTarget);
-        console.log({
-            email: data.get('email'),
-            password: data.get('password'),
-        });
-        // MYMEMO: credentials hard coded
-        // MYMEMO: handle errors
-        await UserAPI.login({email: 'test@test.com', password: 'test'});
-        const session_res = await UserAPI.session();
-        console.log(session_res);
-        // MYMEMO: add redirect
-    };
-
-    const handleLogout = async(event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
-        await UserAPI.logout();
-        const session_res = await UserAPI.session();
-        console.log(session_res);
-    };
-
-    useEffect(() => {
-        void (async () => {
-            const session_res = await UserAPI.session();
-            console.log(session_res);
-        })();
-    }, []);
+    const { login, logout } = useLoginPage();
 
     return (
         <Container component="main" maxWidth="xs">
@@ -50,7 +23,7 @@ const Login = () => {
                 <Typography component="h1" variant="h5">
                 Sign in
                 </Typography>
-                <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+                <Box component="form" onSubmit={login} noValidate sx={{ mt: 1 }}>
                     <TextField
                         margin="normal"
                         required
@@ -93,7 +66,7 @@ const Login = () => {
                         </Grid> */}
                 </Box>
                 {/* MYMEMO: delete later */}
-                <Box component="form" onSubmit={handleLogout} noValidate sx={{ mt: 1 }}>
+                <Box component="form" onSubmit={logout} noValidate sx={{ mt: 1 }}>
                     <Button
                         type="submit"
                         fullWidth
