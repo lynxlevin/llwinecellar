@@ -1,10 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { Avatar, Button, TextField, Box, Typography, Container, CssBaseline } from '@mui/material';
 import { UserAPI } from '../apis/UserAPI';
 
 const Login = () => {
-    const [cSRFToken, setCSRFToken] = useState<string>('')
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
@@ -13,14 +12,24 @@ const Login = () => {
             password: data.get('password'),
         });
         // MYMEMO: credentials hard coded
-        await UserAPI.login({email: 'test@test.com', password: 'test'}, cSRFToken);
+        // MYMEMO: handle errors
+        await UserAPI.login({email: 'test@test.com', password: 'test'});
+        const session_res = await UserAPI.session();
+        console.log(session_res);
         // MYMEMO: add redirect
+    };
+
+    const handleLogout = async(event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        await UserAPI.logout();
+        const session_res = await UserAPI.session();
+        console.log(session_res);
     };
 
     useEffect(() => {
         void (async () => {
-            const res = await UserAPI.getCSRF();
-            setCSRFToken(res.headers['x-csrftoken']);
+            const session_res = await UserAPI.session();
+            console.log(session_res);
         })();
     }, []);
 
@@ -82,6 +91,17 @@ const Login = () => {
                             </Link>
                             </Grid>
                         </Grid> */}
+                </Box>
+                {/* MYMEMO: delete later */}
+                <Box component="form" onSubmit={handleLogout} noValidate sx={{ mt: 1 }}>
+                    <Button
+                        type="submit"
+                        fullWidth
+                        variant="contained"
+                        sx={{ mt: 3, mb: 2 }}
+                    >
+                        Sign out
+                    </Button>
                 </Box>
             </Box>
         </Container>

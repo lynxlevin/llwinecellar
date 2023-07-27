@@ -42,5 +42,4 @@ def session_view(request):
     if not request.user.is_authenticated:
         return JsonResponse({"is_authenticated": False})
 
-    default_page = request.user.usersetting.default_page
-    return JsonResponse({"is_authenticated": True, "default_page": default_page})
+    return JsonResponse({"is_authenticated": True})

@@ -1,4 +1,4 @@
-import axios from 'axios';
+import client from "./axios";
 
 interface LoginProps {
     email: string;
@@ -8,16 +8,16 @@ interface LoginProps {
 export const UserAPI = {
     BASE_URL: '/user',
 
-    getCSRF: async () => {
-        const url = `${UserAPI.BASE_URL}/csrf/`;
-        return await axios.get(url);
-    },
-    login: async (data: LoginProps, cSRFToken: string) => {
+    login: async (data: LoginProps) => {
         const url = `${UserAPI.BASE_URL}/login/`;
-        return await axios.post(url, data, {headers: {'content-type': 'application/json', 'x-csrftoken': cSRFToken}});
+        return await client.post(url, data, {headers: {'content-type': 'application/json'}});
+    },
+    session: async () => {
+        const url =`${UserAPI.BASE_URL}/session/`;
+        return await client.get(url);
     },
     logout: async () => {
         const url = `${UserAPI.BASE_URL}/logout/`;
-        return await axios.get(url);
+        return await client.get(url);
     }
 }

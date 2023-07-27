@@ -1,9 +1,9 @@
-import axios from 'axios';
+import client from './axios';
 
 export const CellarAPI = {
     BASE_URL: '/api/cellars/',
 
     list: async () => {
-        return await axios.get(CellarAPI.BASE_URL);
+        return await client.get(CellarAPI.BASE_URL);
     },
 }
