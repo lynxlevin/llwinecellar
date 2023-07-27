@@ -24,10 +24,10 @@ def login_view(request):
     user = authenticate(email=email, password=password)
 
     if user is None:
-        return JsonResponse({"detail": "Wrong email or password"}, status=400)
+        return JsonResponse({"detail": "Wrong email or password."}, status=400)
 
     login(request, user)
-    return JsonResponse({"status": "login successful"})
+    return JsonResponse({"status": "Login successful."})
 
 
 def logout_view(request):
