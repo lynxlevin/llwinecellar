@@ -2,10 +2,14 @@ import React from 'react';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { Avatar, Button, TextField, Box, Typography, Container, CssBaseline } from '@mui/material';
 import useLoginPage from '../hooks/useLoginPage';
+import { Navigate } from 'react-router-dom';
 
 const Login = () => {
-    const { handleLogin, handleLogout, handleEmailInput, handlePasswordInput } = useLoginPage();
+    const { isLoggedIn, handleLogin, handleEmailInput, handlePasswordInput } = useLoginPage();
 
+    if (isLoggedIn) {
+        return <Navigate to="/" />;
+    }
     return (
         <Container component="main" maxWidth="xs">
             <CssBaseline />
@@ -61,12 +65,6 @@ const Login = () => {
                             </Link>
                             </Grid>
                         </Grid> */}
-                </Box>
-                {/* MYMEMO: delete later */}
-                <Box sx={{ mt: 1 }}>
-                    <Button fullWidth variant="contained" onClick={handleLogout} sx={{ mt: 3, mb: 2 }}>
-                        Sign out
-                    </Button>
                 </Box>
             </Box>
         </Container>

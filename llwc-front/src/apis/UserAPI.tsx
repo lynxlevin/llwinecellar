@@ -1,8 +1,13 @@
 import client from './axios';
+import { AxiosResponse } from 'axios';
 
 interface LoginProps {
     email: string;
     password: string;
+}
+
+interface SessionResponse {
+    is_authenticated: boolean;
 }
 
 export const UserAPI = {
@@ -12,7 +17,7 @@ export const UserAPI = {
         const url = `${UserAPI.BASE_URL}/login/`;
         return await client.post(url, data, { headers: { 'content-type': 'application/json' } });
     },
-    session: async () => {
+    session: async (): Promise<AxiosResponse<SessionResponse>> => {
         const url = `${UserAPI.BASE_URL}/session/`;
         return await client.get(url);
     },

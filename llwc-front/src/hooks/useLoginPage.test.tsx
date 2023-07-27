@@ -4,20 +4,14 @@ import { UserAPI } from '../apis/UserAPI';
 
 jest.mock('../apis/UserAPI');
 describe('useLoginPage', () => {
-    test('handleLogin', () => {
+    test('handleLogin', async () => {
+        (UserAPI.session as jest.Mock).mockResolvedValue({ data: { is_authenticated: true } });
         const { result } = renderHook(() => useLoginPage());
-        act(() => {
+        await act(() => {
             result.current.handleLogin();
         });
         expect(UserAPI.login).toHaveBeenCalledTimes(1);
         expect(UserAPI.login).toHaveBeenCalledWith({ email: '', password: '' });
-    });
-
-    test('handleLogout', () => {
-        const { result } = renderHook(() => useLoginPage());
-        act(() => {
-            result.current.handleLogout();
-        });
-        expect(UserAPI.logout).toHaveBeenCalledTimes(1);
+        expect(UserAPI.session).toHaveBeenCalledTimes(2);
     });
 });

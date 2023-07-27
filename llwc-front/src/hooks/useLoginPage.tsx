@@ -1,14 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { UserAPI } from '../apis/UserAPI';
 
 const useLoginPage = () => {
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
-
-    const consoleLogSession = async () => {
-        const session_res = await UserAPI.session();
-        console.log(session_res);
-    };
+    const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
 
     const handleEmailInput = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>): void => {
         setEmail(event.target.value);
@@ -18,21 +14,24 @@ const useLoginPage = () => {
         setPassword(event.target.value);
     };
 
+    const checkSession = async () => {
+        const session_res = await UserAPI.session();
+        setIsLoggedIn(session_res.data.is_authenticated);
+    };
+
     const handleLogin = async () => {
         // MYMEMO: handle errors
         await UserAPI.login({ email, password });
-        consoleLogSession();
-        // MYMEMO: add redirect
+        checkSession();
     };
 
-    const handleLogout = async () => {
-        await UserAPI.logout();
-        consoleLogSession();
-    };
+    useEffect(() => {
+        void checkSession();
+    }, []);
 
     return {
+        isLoggedIn,
         handleLogin,
-        handleLogout,
         handleEmailInput,
         handlePasswordInput,
     };
