@@ -3,6 +3,7 @@ import './App.css';
 import { Routes, Route, Link } from 'react-router-dom';
 import { Button, Box } from '@mui/material';
 import Login from './pages/Login';
+import WineList from './pages/WineList';
 import { UserAPI } from './apis/UserAPI';
 
 function App() {
@@ -27,10 +28,12 @@ function App() {
                     element={
                         <>
                             <Link to="/login">Login</Link>
+                            <Link to="/wine-list">Wine List</Link>
                         </>
                     }
                 />
                 <Route path="/login" element={<Login />} />
+                <Route path="/wine-list" element={<WineList />} />
             </Routes>
         </div>
     );
