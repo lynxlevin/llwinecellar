@@ -40,7 +40,7 @@ interface WineData {
     price_with_tax: number;
     drunk_at: string;
     note: string;
-    // MYMEMO: add cellar_name
+    cellar_name: string;
     cellar_id: string;
     // MYMEMO: | null をどうするか？
     // row: number | null;
@@ -97,6 +97,8 @@ function getWineHeadCell(id: keyof WineData, numeric: boolean, disablePadding: b
 }
 
 const wineHeadCells: readonly WineHeadCell[] = [
+    getWineHeadCell('cellar_name', false, false),
+    getWineHeadCell('position', false, false),
     getWineHeadCell('name', false, false),
     getWineHeadCell('drink_when', false, false),
     getWineHeadCell('producer', false, false),
@@ -112,8 +114,6 @@ const wineHeadCells: readonly WineHeadCell[] = [
     getWineHeadCell('bought_from', false, false),
     getWineHeadCell('price_with_tax', true, false),
     getWineHeadCell('drunk_at', false, false),
-    getWineHeadCell('cellar_id', false, false),
-    getWineHeadCell('position', false, false),
 ];
 
 interface EnhancedTableHeadProps {
@@ -124,6 +124,9 @@ interface EnhancedTableHeadProps {
 
 function EnhancedTableHead(props: EnhancedTableHeadProps) {
     const { order, orderBy, onRequestSort } = props;
+    // MYMEMO: fix sort on position
+    // MYMEMO: make drink_when sortable
+    // MYMEMO: prevent null being at the top
     const createSortHandler = (property: keyof WineData) => (event: React.MouseEvent<unknown>) => {
         onRequestSort(event, property);
     };
@@ -174,6 +177,7 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
             <Typography sx={{ flex: '1 1 100%' }} variant="h6" id="tableTitle" component="div">
                 {tableTitle}
             </Typography>
+            {/* MYMEMO: cellar は ドロップダウンで選ぶように */}
             <Tooltip title="Filter list">
                 <IconButton>
                     <FilterListIcon />
@@ -212,10 +216,6 @@ export default function WineList() {
         setPage(0);
     };
 
-    useEffect(() => {
-        console.log(cellarContext);
-    }, []);
-
     // Avoid a layout jump when reaching the last page with empty rows.
     const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - wineRows.length) : 0;
 
@@ -238,6 +238,12 @@ export default function WineList() {
             setWineRows(wineData);
         }
     };
+
+    // MYMEMO: fix cellarList being empty on reloadin on this page
+    // App で useEffect して、session & getCellar?
+    // useUserAPI 作って、ログイン後、ログアウト後アクションをまとめる。その関係でリロード直後のアクションも作れそう。 (セッション確認、ログインへのリダイレクトなども一緒に)
+    const cellarList = cellarContext.list.map(cellar => [cellar.id, cellar.name]);
+    const cellarNames = Object.fromEntries(cellarList);
 
     useEffect(() => {
         void initializeData();
@@ -266,6 +272,10 @@ export default function WineList() {
                                         key={row.name}
                                         sx={{ cursor: 'pointer' }}
                                     >
+                                        <TableCell>{cellarNames[row.cellar_id]}</TableCell>
+                                        <TableCell>
+                                            {row.row}-{row.column}
+                                        </TableCell>
                                         <TableCell component="th" id={labelId} scope="row">
                                             {row.name}
                                         </TableCell>
@@ -283,10 +293,6 @@ export default function WineList() {
                                         <TableCell align="right">{row.bought_from}</TableCell>
                                         <TableCell align="right">{row.price_with_tax}</TableCell>
                                         <TableCell align="right">{row.drunk_at}</TableCell>
-                                        <TableCell align="right">{row.cellar_id}</TableCell>
-                                        <TableCell align="right">
-                                            {row.row}-{row.column}
-                                        </TableCell>
                                     </TableRow>
                                 );
                             })}

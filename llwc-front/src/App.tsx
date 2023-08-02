@@ -10,6 +10,8 @@ import { type Cellar, CellarContext } from './contexts/cellar-context';
 function App() {
     const [list, setList] = React.useState<Cellar[]>([]);
 
+    // MYMEMO: redirect to login after logout
+    // MYMEMO: maybe clear cellarContext after logout?
     const handleLogout = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         await UserAPI.logout();
