@@ -16,6 +16,8 @@ import Tooltip from '@mui/material/Tooltip';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import { visuallyHidden } from '@mui/utils';
 import { WineAPI } from '../apis/WineAPI';
+import { Navigate } from 'react-router-dom';
+import { UserAPI } from '../apis/UserAPI';
 
 // Originally copied from https://mui.com/material-ui/react-table/#sorting-amp-selecting
 
@@ -186,6 +188,7 @@ export default function WineList() {
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(100);
     const [wineRows, setWineRows] = React.useState<WineData[]>([]);
+    const [isLoggedIn, setIsLoggedIn] = React.useState<boolean>(true);
 
     const handleRequestSort = (event: React.MouseEvent<unknown>, property: keyof WineData) => {
         const isAsc = orderBy === property && order === 'asc';
@@ -219,16 +222,24 @@ export default function WineList() {
         [order, orderBy, page, rowsPerPage, wineRows],
     );
 
-    const getWineData = async () => {
-        const res = await WineAPI.list();
-        const wineData = res.data.wines;
-        setWineRows(wineData);
+    const initializeData = async () => {
+        const session_res = await UserAPI.session();
+        const isAuthenticated = session_res.data.is_authenticated;
+        setIsLoggedIn(isAuthenticated);
+        if (isAuthenticated) {
+            const res = await WineAPI.list();
+            const wineData = res.data.wines;
+            setWineRows(wineData);
+        }
     };
 
     React.useEffect(() => {
-        getWineData();
+        void initializeData();
     }, []);
 
+    if (!isLoggedIn) {
+        return <Navigate to="/login" />;
+    }
     return (
         <Box sx={{ width: '100%' }}>
             <Paper sx={{ width: '100%', mb: 2 }}>
