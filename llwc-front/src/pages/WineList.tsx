@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useContext } from 'react';
 import Box from '@mui/material/Box';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -18,6 +18,7 @@ import { visuallyHidden } from '@mui/utils';
 import { WineAPI } from '../apis/WineAPI';
 import { Navigate } from 'react-router-dom';
 import { UserAPI } from '../apis/UserAPI';
+import { CellarContext } from '../contexts/cellar-context';
 
 // Originally copied from https://mui.com/material-ui/react-table/#sorting-amp-selecting
 
@@ -183,6 +184,7 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
 }
 
 export default function WineList() {
+    const cellarContext = useContext(CellarContext);
     const [order, setOrder] = useState<Order>('asc');
     const [orderBy, setOrderBy] = useState<keyof WineData>('drink_when');
     const [page, setPage] = useState(0);
@@ -209,6 +211,10 @@ export default function WineList() {
         setRowsPerPage(parseInt(event.target.value, 10));
         setPage(0);
     };
+
+    useEffect(() => {
+        console.log(cellarContext);
+    }, []);
 
     // Avoid a layout jump when reaching the last page with empty rows.
     const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - wineRows.length) : 0;
