@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import Box from '@mui/material/Box';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -183,12 +183,12 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
 }
 
 export default function WineList() {
-    const [order, setOrder] = React.useState<Order>('asc');
-    const [orderBy, setOrderBy] = React.useState<keyof WineData>('drink_when');
-    const [page, setPage] = React.useState(0);
-    const [rowsPerPage, setRowsPerPage] = React.useState(100);
-    const [wineRows, setWineRows] = React.useState<WineData[]>([]);
-    const [isLoggedIn, setIsLoggedIn] = React.useState<boolean>(true);
+    const [order, setOrder] = useState<Order>('asc');
+    const [orderBy, setOrderBy] = useState<keyof WineData>('drink_when');
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(100);
+    const [wineRows, setWineRows] = useState<WineData[]>([]);
+    const [isLoggedIn, setIsLoggedIn] = useState<boolean>(true);
 
     const handleRequestSort = (event: React.MouseEvent<unknown>, property: keyof WineData) => {
         const isAsc = orderBy === property && order === 'asc';
@@ -213,7 +213,7 @@ export default function WineList() {
     // Avoid a layout jump when reaching the last page with empty rows.
     const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - wineRows.length) : 0;
 
-    const visibleRows = React.useMemo(
+    const visibleRows = useMemo(
         () =>
             wineRows
                 .slice()
@@ -233,7 +233,7 @@ export default function WineList() {
         }
     };
 
-    React.useEffect(() => {
+    useEffect(() => {
         void initializeData();
     }, []);
 
