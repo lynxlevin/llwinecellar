@@ -68,9 +68,7 @@ interface EnhancedTableHeadProps {
 
 const EnhancedTableHead = (props: EnhancedTableHeadProps) => {
     const { order, orderBy, onRequestSort } = props;
-    // MYMEMO: fix sort on position
-    // MYMEMO: make drink_when sortable
-    // MYMEMO: prevent null being at the top
+    // MYMEMO: fix sort on position. It happens because there's no position in wine list from api
     const createSortHandler = (property: keyof WineData) => (event: React.MouseEvent<unknown>) => {
         onRequestSort(event, property);
     };
@@ -165,7 +163,7 @@ export const WineList = () => {
                                 return (
                                     <TableRow
                                         hover
-                                        onClick={event => handleClick(event, row.id, row.name)}
+                                        onClick={event => handleClick(event, row)}
                                         role="checkbox"
                                         tabIndex={-1}
                                         key={row.name}

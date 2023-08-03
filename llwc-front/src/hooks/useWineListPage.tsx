@@ -55,9 +55,11 @@ const useWineListPage = () => {
         setOrderBy(property);
     };
 
-    const handleClick = (event: React.MouseEvent<unknown>, id: string, name: string) => {
-        console.log(id);
-        console.log(name);
+    const handleClick = (event: React.MouseEvent<unknown>, row: WineData) => {
+        console.log(row.id);
+        console.log(row.drunk_at);
+        console.log(row.drunk_at === null);
+        console.log(typeof row.drunk_at);
     };
 
     const handleChangePage = (event: unknown, newPage: number) => {
@@ -72,21 +74,41 @@ const useWineListPage = () => {
     // Avoid a layout jump when reaching the last page with empty rows.
     const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - wineRows.length) : 0;
 
-    const descendingComparator = <T,>(a: T, b: T, orderBy: keyof T) => {
+    const compare = <T,>(a: T, b: T, orderBy: keyof T) => {
         if (b[orderBy] < a[orderBy]) {
-            return -1;
+            return 1;
         }
         if (b[orderBy] > a[orderBy]) {
-            return 1;
+            return -1;
         }
         return 0;
     };
 
+    const ascendingComparator = useCallback(<T,>(a: T, b: T, orderBy: keyof T) => {
+        if (!a[orderBy]) {
+            return 1;
+        }
+        if (!b[orderBy]) {
+            return -1;
+        }
+        return compare(a, b, orderBy);
+    }, []);
+
+    const descendingComparator = useCallback(<T,>(a: T, b: T, orderBy: keyof T) => {
+        if (!a[orderBy]) {
+            return 1;
+        }
+        if (!b[orderBy]) {
+            return -1;
+        }
+        return -compare(a, b, orderBy);
+    }, []);
+
     const getComparator = useCallback(
         <Key extends keyof any>(order: Order, orderBy: Key): ((a: { [key in Key]: number | string }, b: { [key in Key]: number | string }) => number) => {
-            return order === 'desc' ? (a, b) => descendingComparator(a, b, orderBy) : (a, b) => -descendingComparator(a, b, orderBy);
+            return order === 'desc' ? (a, b) => descendingComparator(a, b, orderBy) : (a, b) => ascendingComparator(a, b, orderBy);
         },
-        [],
+        [ascendingComparator, descendingComparator],
     );
 
     const visibleRows = useMemo(
@@ -109,7 +131,7 @@ const useWineListPage = () => {
         }
     };
 
-    // MYMEMO: fix cellarList being empty on reloadin on this page
+    // MYMEMO: fix cellarList being empty on reloading on this page
     // App で useEffect して、session & getCellar?
     // useUserAPI 作って、ログイン後、ログアウト後アクションをまとめる。その関係でリロード直後のアクションも作れそう。 (セッション確認、ログインへのリダイレクトなども一緒に)
     const cellarList = cellarContext.list.map(cellar => [cellar.id, cellar.name]);
