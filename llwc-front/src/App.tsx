@@ -3,7 +3,7 @@ import './App.css';
 import { Routes, Route, Link } from 'react-router-dom';
 import { Button, Box } from '@mui/material';
 import Login from './pages/Login';
-import WineList from './pages/WineList';
+import { WineList } from './pages/WineList';
 import { UserAPI } from './apis/UserAPI';
 import { type Cellar, CellarContext } from './contexts/cellar-context';
 
