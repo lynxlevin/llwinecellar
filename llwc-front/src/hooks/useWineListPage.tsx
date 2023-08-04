@@ -125,7 +125,8 @@ const useWineListPage = () => {
         const isAuthenticated = session_res.data.is_authenticated;
         setIsLoggedIn(isAuthenticated);
         if (isAuthenticated) {
-            const res = await WineAPI.list();
+            const query = { is_drunk: false };
+            const res = await WineAPI.list(query);
             const wineData = res.data.wines;
             setWineRows(wineData);
         }

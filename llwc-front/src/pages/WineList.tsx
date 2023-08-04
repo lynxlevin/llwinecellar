@@ -57,7 +57,6 @@ const wineHeadCells: readonly WineHeadCell[] = [
     getWineHeadCell('bought_at', false, false),
     getWineHeadCell('bought_from', false, false),
     getWineHeadCell('price_with_tax', true, false),
-    getWineHeadCell('drunk_at', false, false),
 ];
 
 interface EnhancedTableHeadProps {
