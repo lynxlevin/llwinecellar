@@ -145,6 +145,8 @@ export const WineList = () => {
         handleChangeRowsPerPage,
     } = useWineListPage();
 
+    const tablePaginationHeight = '52px';
+
     if (!isLoggedIn) {
         return <Navigate to="/login" />;
     }
@@ -152,8 +154,8 @@ export const WineList = () => {
         <Box sx={{ width: '100%' }}>
             <Paper sx={{ width: '100%', mb: 2 }}>
                 <EnhancedTableToolbar tableTitle="Wine List" />
-                <TableContainer>
-                    <Table sx={{ minWidth: 750 }} aria-labelledby="tableTitle" size="medium">
+                <TableContainer sx={{ maxHeight: `calc(100vh - ${tablePaginationHeight})` }}>
+                    <Table stickyHeader sx={{ minWidth: 750 }} aria-labelledby="tableTitle" size="medium">
                         <EnhancedTableHead order={order} orderBy={orderBy} onRequestSort={handleRequestSort} />
                         <TableBody>
                             {visibleRows.map((row, index) => {
