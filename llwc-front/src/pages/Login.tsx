@@ -1,13 +1,17 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { Alert, Avatar, Button, TextField, Box, Typography, Container, CssBaseline } from '@mui/material';
 import useLoginPage from '../hooks/useLoginPage';
 import { Navigate } from 'react-router-dom';
+import useUserAPI from '../hooks/useUserAPI';
+import { UserContext } from '../contexts/user-context';
 
 const Login = () => {
-    const { errorMessage, isLoggedIn, handleLogin, handleEmailInput, handlePasswordInput } = useLoginPage();
+    useUserAPI();
+    const userContext = useContext(UserContext);
+    const { errorMessage, handleLogin, handleEmailInput, handlePasswordInput } = useLoginPage();
 
-    if (isLoggedIn) {
+    if (userContext.isLoggedIn === true) {
         return <Navigate to="/" />;
     }
     return (

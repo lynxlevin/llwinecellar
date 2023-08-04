@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import {
     Box,
     Table,
@@ -22,6 +22,8 @@ import FilterListIcon from '@mui/icons-material/FilterList';
 import { visuallyHidden } from '@mui/utils';
 import { Navigate } from 'react-router-dom';
 import useWineListPage, { WineData, WineHeadCell, Order } from '../hooks/useWineListPage';
+import useUserAPI from '../hooks/useUserAPI';
+import { UserContext } from '../contexts/user-context';
 
 // Originally copied from https://mui.com/material-ui/react-table/#sorting-amp-selecting
 
@@ -106,8 +108,10 @@ const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
 };
 
 export const WineList = () => {
+    const userContext = useContext(UserContext);
+    // MYMEMO: 全ページでこれだけするのは違和感
+    useUserAPI();
     const {
-        isLoggedIn,
         selectedCellar,
         handleCellarSelect,
         order,
@@ -124,11 +128,11 @@ export const WineList = () => {
         page,
         handleChangePage,
         handleChangeRowsPerPage,
-    } = useWineListPage();
+    } = useWineListPage(userContext);
 
     const tablePaginationHeight = '52px';
 
-    if (!isLoggedIn) {
+    if (userContext.isLoggedIn === false) {
         return <Navigate to="/login" />;
     }
     return (

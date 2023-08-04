@@ -1,9 +1,8 @@
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { CellarContext } from '../contexts/cellar-context';
-import { UserAPI } from '../apis/UserAPI';
 import { WineAPI } from '../apis/WineAPI';
 import { SelectChangeEvent } from '@mui/material';
-import { CellarAPI } from '../apis/CellarAPI';
+import { UserContextType } from '../contexts/user-context';
 
 export interface WineData {
     id: string;
@@ -42,7 +41,7 @@ export interface WineHeadCell {
     label: string;
 }
 
-const useWineListPage = () => {
+const useWineListPage = (userContext: UserContextType) => {
     const cellarContext = useContext(CellarContext);
     const [selectedCellar, setSelectedCellar] = useState<string>('allCellars');
     const [order, setOrder] = useState<Order>('asc');
@@ -50,7 +49,6 @@ const useWineListPage = () => {
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(100);
     const [wineRows, setWineRows] = useState<WineData[]>([]);
-    const [isLoggedIn, setIsLoggedIn] = useState<boolean>(true);
 
     const handleCellarSelect = (event: SelectChangeEvent) => {
         setSelectedCellar(event.target.value);
@@ -174,11 +172,6 @@ const useWineListPage = () => {
         [getComparator, order, orderBy, page, rowsPerPage, selectedCellar, wineRows],
     );
 
-    const getCellars = async () => {
-        const res = await CellarAPI.list();
-        cellarContext.setList(res.data.cellars);
-    };
-
     const getWines = async () => {
         const query = { is_drunk: false };
         const res = await WineAPI.list(query);
@@ -186,27 +179,16 @@ const useWineListPage = () => {
         setWineRows(wineData);
     };
 
-    const initializeData = async () => {
-        const session_res = await UserAPI.session();
-        const isAuthenticated = session_res.data.is_authenticated;
-        setIsLoggedIn(isAuthenticated);
-        if (isAuthenticated) {
-            if (cellarContext.list.length === 0) {
-                getCellars();
-            }
-            getWines();
-        }
-    };
-
     const cellarList = cellarContext.list.map(cellar => [cellar.id, cellar.name]);
     const cellarNames = Object.fromEntries(cellarList);
 
     useEffect(() => {
-        void initializeData();
-    }, []);
+        if (userContext.isLoggedIn === true) {
+            getWines();
+        }
+    }, [userContext.isLoggedIn]);
 
     return {
-        isLoggedIn,
         selectedCellar,
         handleCellarSelect,
         order,
