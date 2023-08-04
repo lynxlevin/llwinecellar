@@ -2,6 +2,7 @@ import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { CellarContext } from '../contexts/cellar-context';
 import { UserAPI } from '../apis/UserAPI';
 import { WineAPI } from '../apis/WineAPI';
+import { SelectChangeEvent } from '@mui/material';
 
 export interface WineData {
     id: string;
@@ -42,12 +43,17 @@ export interface WineHeadCell {
 
 const useWineListPage = () => {
     const cellarContext = useContext(CellarContext);
+    const [selectedCellar, setSelectedCellar] = useState<string>('allCellars');
     const [order, setOrder] = useState<Order>('asc');
     const [orderBy, setOrderBy] = useState<keyof WineData>('drink_when');
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(100);
     const [wineRows, setWineRows] = useState<WineData[]>([]);
     const [isLoggedIn, setIsLoggedIn] = useState<boolean>(true);
+
+    const handleCellarSelect = (event: SelectChangeEvent) => {
+        setSelectedCellar(event.target.value);
+    };
 
     const handleRequestSort = (event: React.MouseEvent<unknown>, property: keyof WineData) => {
         const isAsc = orderBy === property && order === 'asc';
@@ -70,6 +76,47 @@ const useWineListPage = () => {
         setRowsPerPage(parseInt(event.target.value, 10));
         setPage(0);
     };
+
+    const toTitleCase = (text: string): string => {
+        return text
+            .toLowerCase()
+            .split('_')
+            .map(function (word: string) {
+                return word.replace(word[0], word[0].toUpperCase());
+            })
+            .join(' ');
+    };
+
+    const getWineHeadCell = useCallback((id: keyof WineData, numeric: boolean, disablePadding: boolean): WineHeadCell => {
+        const label = toTitleCase(id);
+        return {
+            id,
+            numeric,
+            disablePadding,
+            label,
+        };
+    }, []);
+
+    const wineHeadCells: WineHeadCell[] = useMemo(() => {
+        return [
+            getWineHeadCell('drink_when', false, false),
+            ...(selectedCellar === 'allCellars' ? [getWineHeadCell('cellar_name', false, false)] : []),
+            getWineHeadCell('position', false, false),
+            getWineHeadCell('name', false, false),
+            getWineHeadCell('producer', false, false),
+            getWineHeadCell('country', false, false),
+            getWineHeadCell('region_1', false, false),
+            getWineHeadCell('region_2', false, false),
+            getWineHeadCell('region_3', false, false),
+            getWineHeadCell('region_4', false, false),
+            getWineHeadCell('region_5', false, false),
+            getWineHeadCell('cepage', false, false),
+            getWineHeadCell('vintage', true, false),
+            getWineHeadCell('bought_at', false, false),
+            getWineHeadCell('bought_from', false, false),
+            getWineHeadCell('price_with_tax', true, false),
+        ];
+    }, [getWineHeadCell, selectedCellar]);
 
     // Avoid a layout jump when reaching the last page with empty rows.
     const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - wineRows.length) : 0;
@@ -114,10 +161,16 @@ const useWineListPage = () => {
     const visibleRows = useMemo(
         () =>
             wineRows
-                .slice()
+                .filter(wine => {
+                    if (selectedCellar === 'allCellars') {
+                        return true;
+                    } else {
+                        return wine.cellar_id === selectedCellar;
+                    }
+                })
                 .sort(getComparator(order, orderBy))
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage),
-        [getComparator, order, orderBy, page, rowsPerPage, wineRows],
+        [getComparator, order, orderBy, page, rowsPerPage, selectedCellar, wineRows],
     );
 
     const initializeData = async () => {
@@ -144,12 +197,16 @@ const useWineListPage = () => {
 
     return {
         isLoggedIn,
+        selectedCellar,
+        handleCellarSelect,
         order,
         orderBy,
         handleRequestSort,
         visibleRows,
         handleClick,
+        cellarList,
         cellarNames,
+        wineHeadCells,
         emptyRows,
         wineRows,
         rowsPerPage,
