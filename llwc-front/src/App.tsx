@@ -8,6 +8,7 @@ import { UserAPI } from './apis/UserAPI';
 import { type Cellar, CellarContext } from './contexts/cellar-context';
 
 function App() {
+    // MYMEMO: CellarContext を準備するのはまだ早いかも
     const [list, setList] = React.useState<Cellar[]>([]);
 
     // MYMEMO: redirect to login after logout

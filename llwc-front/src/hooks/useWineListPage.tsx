@@ -3,6 +3,7 @@ import { CellarContext } from '../contexts/cellar-context';
 import { UserAPI } from '../apis/UserAPI';
 import { WineAPI } from '../apis/WineAPI';
 import { SelectChangeEvent } from '@mui/material';
+import { CellarAPI } from '../apis/CellarAPI';
 
 export interface WineData {
     id: string;
@@ -173,21 +174,30 @@ const useWineListPage = () => {
         [getComparator, order, orderBy, page, rowsPerPage, selectedCellar, wineRows],
     );
 
+    const getCellars = async () => {
+        const res = await CellarAPI.list();
+        cellarContext.setList(res.data.cellars);
+    };
+
+    const getWines = async () => {
+        const query = { is_drunk: false };
+        const res = await WineAPI.list(query);
+        const wineData = res.data.wines;
+        setWineRows(wineData);
+    };
+
     const initializeData = async () => {
         const session_res = await UserAPI.session();
         const isAuthenticated = session_res.data.is_authenticated;
         setIsLoggedIn(isAuthenticated);
         if (isAuthenticated) {
-            const query = { is_drunk: false };
-            const res = await WineAPI.list(query);
-            const wineData = res.data.wines;
-            setWineRows(wineData);
+            if (cellarContext.list.length === 0) {
+                getCellars();
+            }
+            getWines();
         }
     };
 
-    // MYMEMO: fix cellarList being empty on reloading on this page
-    // App で useEffect して、session & getCellar?
-    // useUserAPI 作って、ログイン後、ログアウト後アクションをまとめる。その関係でリロード直後のアクションも作れそう。 (セッション確認、ログインへのリダイレクトなども一緒に)
     const cellarList = cellarContext.list.map(cellar => [cellar.id, cellar.name]);
     const cellarNames = Object.fromEntries(cellarList);
 
