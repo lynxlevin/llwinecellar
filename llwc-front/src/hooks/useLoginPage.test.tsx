@@ -17,7 +17,7 @@ describe('useLoginPage.handleLogin', () => {
         });
         expect(UserAPI.login).toHaveBeenCalledTimes(1);
         expect(UserAPI.login).toHaveBeenCalledWith({ email: 'test@test.com', password: 'password' });
-        expect(UserAPI.session).toHaveBeenCalledTimes(2);
+        expect(UserAPI.session).toHaveBeenCalledTimes(1);
     });
     test('handleLogin without email fails on validation', async () => {
         (UserAPI.session as jest.Mock).mockResolvedValue({ data: { is_authenticated: true } });
@@ -29,7 +29,7 @@ describe('useLoginPage.handleLogin', () => {
             result.current.handleLogin();
         });
         expect(UserAPI.login).toHaveBeenCalledTimes(0);
-        expect(UserAPI.session).toHaveBeenCalledTimes(1);
+        expect(UserAPI.session).toHaveBeenCalledTimes(0);
         expect(result.current.errorMessage).toBe('Please input email.');
     });
     test('handleLogin without password fails on validation', async () => {
@@ -42,7 +42,7 @@ describe('useLoginPage.handleLogin', () => {
             result.current.handleLogin();
         });
         expect(UserAPI.login).toHaveBeenCalledTimes(0);
-        expect(UserAPI.session).toHaveBeenCalledTimes(1);
+        expect(UserAPI.session).toHaveBeenCalledTimes(0);
         expect(result.current.errorMessage).toBe('Please input password.');
     });
 });
