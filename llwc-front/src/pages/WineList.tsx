@@ -128,7 +128,7 @@ export const WineList = () => {
         page,
         handleChangePage,
         handleChangeRowsPerPage,
-    } = useWineListPage(userContext);
+    } = useWineListPage();
 
     const tablePaginationHeight = '52px';
 

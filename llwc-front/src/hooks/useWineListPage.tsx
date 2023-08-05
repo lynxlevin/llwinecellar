@@ -2,7 +2,7 @@ import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { CellarContext } from '../contexts/cellar-context';
 import { WineAPI } from '../apis/WineAPI';
 import { SelectChangeEvent } from '@mui/material';
-import { UserContextType } from '../contexts/user-context';
+import { UserContext } from '../contexts/user-context';
 
 export interface WineData {
     id: string;
@@ -41,7 +41,8 @@ export interface WineHeadCell {
     label: string;
 }
 
-const useWineListPage = (userContext: UserContextType) => {
+const useWineListPage = () => {
+    const userContext = useContext(UserContext);
     const cellarContext = useContext(CellarContext);
     const [selectedCellar, setSelectedCellar] = useState<string>('allCellars');
     const [order, setOrder] = useState<Order>('asc');
