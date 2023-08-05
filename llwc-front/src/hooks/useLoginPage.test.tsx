@@ -15,6 +15,7 @@ describe('useLoginPage.handleLogin', () => {
         await act(() => {
             result.current.handleLogin();
         });
+        // MYMEMO: test context
         expect(UserAPI.login).toHaveBeenCalledTimes(1);
         expect(UserAPI.login).toHaveBeenCalledWith({ email: 'test@test.com', password: 'password' });
         expect(UserAPI.session).toHaveBeenCalledTimes(1);
