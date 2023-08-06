@@ -21,7 +21,7 @@ test('useWineListPage.handleCellarSelect', async () => {
     act(() => {
         result.current.handleCellarSelect({ target: { value: dummyCellarId } } as SelectChangeEvent);
     });
-    expect(result.current.selectedCellar).toBe(dummyCellarId);
+    expect(result.current.selectedCellars).toStrictEqual([dummyCellarId]);
 });
 
 test('useWineListPage.handleRequestSort', async () => {

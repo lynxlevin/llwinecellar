@@ -44,7 +44,7 @@ export interface WineHeadCell {
 const useWineListPage = () => {
     const userContext = useContext(UserContext);
     const cellarContext = useContext(CellarContext);
-    const [selectedCellar, setSelectedCellar] = useState<string>('allCellars');
+    const [selectedCellars, setSelectedCellars] = useState<string[]>([]);
     const [order, setOrder] = useState<Order>('asc');
     const [orderBy, setOrderBy] = useState<keyof WineData>('drink_when');
     const [page, setPage] = useState(0);
@@ -52,7 +52,10 @@ const useWineListPage = () => {
     const [wineRows, setWineRows] = useState<WineData[]>([]);
 
     const handleCellarSelect = (event: SelectChangeEvent) => {
-        setSelectedCellar(event.target.value);
+        const {
+            target: { value },
+        } = event;
+        setSelectedCellars(typeof value === 'string' ? value.split(',') : value);
     };
 
     const handleRequestSort = (event: React.MouseEvent<unknown>, property: keyof WineData) => {
@@ -63,9 +66,7 @@ const useWineListPage = () => {
 
     const handleClick = (event: React.MouseEvent<unknown>, row: WineData) => {
         console.log(row.id);
-        console.log(row.drunk_at);
-        console.log(row.drunk_at === null);
-        console.log(typeof row.drunk_at);
+        console.log(row.cellar_id);
     };
 
     const handleChangePage = (event: unknown, newPage: number) => {
@@ -100,8 +101,8 @@ const useWineListPage = () => {
     const wineHeadCells: WineHeadCell[] = useMemo(() => {
         return [
             getWineHeadCell('drink_when', false, false),
-            ...(selectedCellar === 'allCellars' ? [getWineHeadCell('cellar_name', false, false)] : []),
-            getWineHeadCell('position', false, false),
+            ...(selectedCellars.length !== 1 ? [getWineHeadCell('cellar_name', false, false)] : []),
+            ...(selectedCellars.toString() !== 'null' ? [getWineHeadCell('position', false, false)] : []),
             getWineHeadCell('name', false, false),
             getWineHeadCell('producer', false, false),
             getWineHeadCell('country', false, false),
@@ -116,7 +117,7 @@ const useWineListPage = () => {
             getWineHeadCell('bought_from', false, false),
             getWineHeadCell('price_with_tax', true, false),
         ];
-    }, [getWineHeadCell, selectedCellar]);
+    }, [getWineHeadCell, selectedCellars]);
 
     // Avoid a layout jump when reaching the last page with empty rows.
     const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - wineRows.length) : 0;
@@ -158,20 +159,18 @@ const useWineListPage = () => {
         [ascendingComparator, descendingComparator],
     );
 
-    const visibleRows = useMemo(
-        () =>
-            wineRows
-                .filter(wine => {
-                    if (selectedCellar === 'allCellars') {
-                        return true;
-                    } else {
-                        return wine.cellar_id === selectedCellar;
-                    }
-                })
-                .sort(getComparator(order, orderBy))
-                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage),
-        [getComparator, order, orderBy, page, rowsPerPage, selectedCellar, wineRows],
-    );
+    const visibleRows = useMemo(() => {
+        const cellars: (string | null)[] = selectedCellars.slice();
+        if (cellars.includes('null')) {
+            const index = cellars.indexOf('null');
+            cellars.splice(index, 1);
+            cellars.push(null);
+        }
+        return wineRows
+            .filter(wine => cellars.includes(wine.cellar_id))
+            .sort(getComparator(order, orderBy))
+            .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+    }, [getComparator, order, orderBy, page, rowsPerPage, selectedCellars, wineRows]);
 
     const getWines = async () => {
         const query = { is_drunk: false };
@@ -186,11 +185,13 @@ const useWineListPage = () => {
     useEffect(() => {
         if (userContext.isLoggedIn === true) {
             getWines();
+            const cellars = cellarContext.list.map(cellar => cellar.id);
+            setSelectedCellars([...cellars, 'null']);
         }
-    }, [userContext.isLoggedIn]);
+    }, [cellarContext.list, userContext.isLoggedIn]);
 
     return {
-        selectedCellar,
+        selectedCellars,
         handleCellarSelect,
         order,
         orderBy,

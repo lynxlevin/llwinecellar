@@ -73,12 +73,12 @@ const EnhancedTableHead = (props: EnhancedTableHeadProps) => {
 interface EnhancedTableToolbarProps {
     tableTitle: string;
     handleCellarSelect: (event: SelectChangeEvent) => void;
-    selectedCellar: string;
+    selectedCellars: string[];
     cellarList: string[][];
 }
 
 const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
-    const { tableTitle, handleCellarSelect, selectedCellar, cellarList } = props;
+    const { tableTitle, handleCellarSelect, selectedCellars, cellarList } = props;
 
     return (
         <Toolbar
@@ -90,13 +90,13 @@ const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
             <Typography sx={{ flex: '1 1 100%' }} variant="h6" id="tableTitle" component="div">
                 {tableTitle}
             </Typography>
-            <Select labelId="cellar-select-label" id="cellar-select" value={selectedCellar} label="Cellar" onChange={handleCellarSelect}>
-                <MenuItem value="allCellars">All cellars</MenuItem>
+            <Select id="cellar-select" multiple value={selectedCellars as unknown as string} onChange={handleCellarSelect}>
                 {cellarList.map(cellar => (
                     <MenuItem key={cellar[0]} value={cellar[0]}>
                         {cellar[1]}
                     </MenuItem>
                 ))}
+                <MenuItem value="null">NOT_IN_CELLAR</MenuItem>
             </Select>
             <Tooltip title="Filter list">
                 <IconButton>
@@ -112,7 +112,7 @@ export const WineList = () => {
     // MYMEMO: 全ページでこれだけするのは違和感
     useUserAPI();
     const {
-        selectedCellar,
+        selectedCellars,
         handleCellarSelect,
         order,
         orderBy,
@@ -138,7 +138,12 @@ export const WineList = () => {
     return (
         <Box sx={{ width: '100%' }}>
             <Paper sx={{ width: '100%', mb: 2 }}>
-                <EnhancedTableToolbar tableTitle="Wine List" handleCellarSelect={handleCellarSelect} selectedCellar={selectedCellar} cellarList={cellarList} />
+                <EnhancedTableToolbar
+                    tableTitle="Wine List"
+                    handleCellarSelect={handleCellarSelect}
+                    selectedCellars={selectedCellars}
+                    cellarList={cellarList}
+                />
                 <TableContainer sx={{ maxHeight: `calc(100vh - ${tablePaginationHeight})` }}>
                     <Table stickyHeader sx={{ minWidth: 750 }} aria-labelledby="tableTitle" size="medium">
                         <EnhancedTableHead order={order} orderBy={orderBy} onRequestSort={handleRequestSort} wineHeadCells={wineHeadCells} />
@@ -156,10 +161,12 @@ export const WineList = () => {
                                         sx={{ cursor: 'pointer' }}
                                     >
                                         <TableCell>{row.drink_when}</TableCell>
-                                        {selectedCellar === 'allCellars' && <TableCell>{cellarNames[row.cellar_id]}</TableCell>}
-                                        <TableCell>
-                                            {row.row}-{row.column}
-                                        </TableCell>
+                                        {selectedCellars.length !== 1 && <TableCell>{cellarNames[row.cellar_id]}</TableCell>}
+                                        {selectedCellars.toString() !== 'null' && (
+                                            <TableCell>
+                                                {row.row}-{row.column}
+                                            </TableCell>
+                                        )}
                                         <TableCell component="th" id={labelId} scope="row">
                                             {row.name}
                                         </TableCell>
@@ -193,6 +200,7 @@ export const WineList = () => {
                 </TableContainer>
                 <TablePagination
                     component="div"
+                    // MYMEMO: discount unfiltered count
                     count={wineRows.length}
                     rowsPerPage={rowsPerPage}
                     page={page}
