@@ -161,12 +161,10 @@ export const WineList = () => {
                                         sx={{ cursor: 'pointer' }}
                                     >
                                         <TableCell>{row.drink_when}</TableCell>
-                                        {selectedCellars.length !== 1 && <TableCell>{cellarNames[row.cellar_id]}</TableCell>}
-                                        {selectedCellars.toString() !== 'null' && (
-                                            <TableCell>
-                                                {row.row}-{row.column}
-                                            </TableCell>
+                                        {selectedCellars.length !== 1 && (
+                                            <TableCell>{row.cellar_id ? cellarNames[row.cellar_id] : cellarNames['null']}</TableCell>
                                         )}
+                                        {selectedCellars.toString() !== 'null' && <TableCell>{row.position}</TableCell>}
                                         <TableCell component="th" id={labelId} scope="row">
                                             {row.name}
                                         </TableCell>
@@ -182,7 +180,6 @@ export const WineList = () => {
                                         <TableCell align="right">{row.bought_at}</TableCell>
                                         <TableCell align="right">{row.bought_from}</TableCell>
                                         <TableCell align="right">{row.price_with_tax}</TableCell>
-                                        <TableCell align="right">{row.drunk_at}</TableCell>
                                     </TableRow>
                                 );
                             })}

@@ -3,6 +3,7 @@ from typing import Optional, Union
 
 from django.db import models
 
+from cellars.enums import CellarSpaceType
 from users.models import User
 
 from ..enums import Country
@@ -98,3 +99,11 @@ class Wine(models.Model):
             return self.cellarspace.column
         else:
             return None
+
+    @property
+    def position(self) -> Optional[str]:
+        if not hasattr(self, "cellarspace"):
+            return None
+        if self.cellarspace.type == CellarSpaceType.BASKET:
+            return "basket"
+        return f"{self.row}-{self.column}"

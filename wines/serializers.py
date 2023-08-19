@@ -39,8 +39,7 @@ class WineSerializer(serializers.Serializer):
 
 class WineWithCellarSpaceSerializer(WineSerializer):
     cellar_id = serializers.UUIDField(read_only=True)
-    row = serializers.IntegerField(read_only=True)
-    column = serializers.IntegerField(read_only=True)
+    position = serializers.CharField(read_only=True)
 
 
 class WinesSerializer(serializers.Serializer):

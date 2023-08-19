@@ -3,6 +3,7 @@ import logging
 from django.test import Client, TestCase
 from rest_framework import status
 
+from cellars.enums import CellarSpaceType
 from llwinecellar.common.test_utils import CellarFactory, DrunkWineFactory, UserFactory, WineFactory, WineInRackFactory
 
 logger = logging.getLogger(__name__)
@@ -97,6 +98,11 @@ class TestListWine(TestCase):
         self.assertEqual(len(expected_wines), len(listed_wines))
 
         for expected, listed in zip(expected_wines, listed_wines):
+            position = None
+            if hasattr(expected, "cellarspace") and expected.cellarspace.type == CellarSpaceType.RACK:
+                position = f"{expected.cellarspace.row}-{expected.cellarspace.column}"
+            elif hasattr(expected, "cellarspace") and expected.cellarspace.type == CellarSpaceType.BASKET:
+                position = "basket"
             dict = {
                 "id": str(expected.id),
                 "drink_when": expected.drink_when,
@@ -116,7 +122,6 @@ class TestListWine(TestCase):
                 "drunk_at": expected.drunk_at.strftime("%Y-%m-%d") if expected.drunk_at is not None else None,
                 "note": expected.note,
                 "cellar_id": str(expected.cellarspace.cellar_id) if hasattr(expected, "cellarspace") else None,
-                "row": expected.cellarspace.row if hasattr(expected, "cellarspace") else None,
-                "column": expected.cellarspace.column if hasattr(expected, "cellarspace") else None,
+                "position": position,
             }
             self.assertDictEqual(dict, listed)

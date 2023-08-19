@@ -17,19 +17,14 @@ export interface WineData {
     region_5: string;
     cepage: string;
     vintage: number;
-    bought_at: string;
+    bought_at: string | null;
     bought_from: string;
     price_with_tax: number;
-    drunk_at: string;
+    drunk_at: string | null;
     note: string;
     cellar_name: string;
-    cellar_id: string;
-    // MYMEMO: | null をどうするか？
-    // row: number | null;
-    // column: number | null;
-    row: number;
-    column: number;
-    position: string;
+    cellar_id: string | null;
+    position: string | null;
 }
 
 export type Order = 'asc' | 'desc';
@@ -153,7 +148,10 @@ const useWineListPage = () => {
     }, []);
 
     const getComparator = useCallback(
-        <Key extends keyof any>(order: Order, orderBy: Key): ((a: { [key in Key]: number | string }, b: { [key in Key]: number | string }) => number) => {
+        <Key extends keyof any>(
+            order: Order,
+            orderBy: Key,
+        ): ((a: { [key in Key]: number | string | null }, b: { [key in Key]: number | string | null }) => number) => {
             return order === 'desc' ? (a, b) => descendingComparator(a, b, orderBy) : (a, b) => ascendingComparator(a, b, orderBy);
         },
         [ascendingComparator, descendingComparator],
@@ -174,7 +172,7 @@ const useWineListPage = () => {
 
     const getWines = async () => {
         const query = { is_drunk: false };
-        const res = await WineAPI.list(query);
+        const res = await WineAPI.list();
         const wineData = res.data.wines;
         setWineRows(wineData);
     };
