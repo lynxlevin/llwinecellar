@@ -34,11 +34,11 @@ class Command(BaseCommand):
         wines = []
         cellar_spaces = []
 
+        # MYMEMO: add tags
         for line in csv_lines:
             li = iter(line.strip().split(","))
             _new_record_mark = next(li)
             wine = Wine(
-                drink_when=next(li),
                 name=next(li),
                 producer=next(li),
                 country=Country.from_label(next(li)),

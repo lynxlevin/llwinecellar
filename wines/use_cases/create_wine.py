@@ -15,7 +15,6 @@ class CreateWine:
         logger.info(self.__class__.__name__, extra={"user": user, "data": data})
 
         wine = Wine(
-            drink_when=data["drink_when"],
             name=data["name"],
             producer=data["producer"],
             country=data["country"],

@@ -18,7 +18,6 @@ class TestCreateWine(TestCase):
     def setUpTestData(cls):
         cls.base_path = "/api/wines/"
         cls.user = UserFactory()
-        cls.preference = cls.user.userpreference
 
     def test_create(self):
         """
@@ -26,7 +25,6 @@ class TestCreateWine(TestCase):
         """
         # Arrange
         params = {
-            "drink_when": self.preference.drink_whens[0],
             "name": "Gevrey Chambertin",
             "producer": "Domaine Charlopin Tissier",
             "country": Country.FRANCE.label,
@@ -61,7 +59,6 @@ class TestCreateWine(TestCase):
         """
         # Arrange
         params = {
-            "drink_when": "",
             "name": "",
             "producer": "",
             "country": None,
@@ -105,7 +102,6 @@ class TestCreateWine(TestCase):
     def _assert_wine_is_same_as_params(self, params, wine_id):
         wine = Wine.objects.get_by_id(wine_id)
 
-        self.assertEqual(params["drink_when"], wine.drink_when)
         self.assertEqual(params["name"], wine.name)
         self.assertEqual(params["producer"], wine.producer)
         self.assertEqual(params["region_1"], wine.region_1)

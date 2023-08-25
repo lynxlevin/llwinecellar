@@ -21,7 +21,6 @@ class UpdateWine:
         if wine.user != user:
             raise exceptions.NotFound
 
-        wine.drink_when = data["drink_when"]
         wine.name = data["name"]
         wine.producer = data["producer"]
         wine.country = data["country"]

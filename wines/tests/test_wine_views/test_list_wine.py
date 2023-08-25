@@ -105,7 +105,6 @@ class TestListWine(TestCase):
                 position = "basket"
             dict = {
                 "id": str(expected.id),
-                "drink_when": expected.drink_when,
                 "name": expected.name,
                 "producer": expected.producer,
                 "country": expected.country.label,

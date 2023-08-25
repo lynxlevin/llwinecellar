@@ -37,8 +37,6 @@ class WineQuerySet(models.QuerySet["Wine"]):
 
 class Wine(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    # MYMEMO: enforce choice on validation.
-    drink_when = models.TextField(blank=True, default="")
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     name = models.CharField(blank=True, default="", max_length=256)
     producer = models.CharField(blank=True, default="", max_length=128)

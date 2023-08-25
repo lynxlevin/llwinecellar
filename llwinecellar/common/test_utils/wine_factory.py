@@ -1,5 +1,5 @@
 from datetime import date, timedelta
-from random import choice, randint
+from random import randint
 
 import factory
 import factory.fuzzy
@@ -11,17 +11,10 @@ from wines.models import Wine
 from .user_factory import UserFactory
 
 
-def _select_drink_when(obj):
-    user_preference = obj.user.userpreference
-    drink_whens = user_preference.drink_whens
-    return choice(drink_whens)
-
-
 class WineFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Wine
 
-    drink_when = factory.LazyAttribute(lambda obj: _select_drink_when(obj))
     user = factory.SubFactory(UserFactory)
     name = factory.Sequence(lambda n: f"Gevrey Chambertin_{n}")
     producer = "Domaine Charlopin Tissier"

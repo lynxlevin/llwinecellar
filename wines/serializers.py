@@ -5,8 +5,6 @@ from .enums import Country
 
 class WineSerializer(serializers.Serializer):
     id = serializers.UUIDField(required=False)
-    # MYMEMO: add validation using preference
-    drink_when = serializers.CharField(allow_blank=True)
     name = serializers.CharField(allow_blank=True, max_length=256)
     producer = serializers.CharField(allow_blank=True, max_length=128)
     country = serializers.ChoiceField(allow_null=True, choices=Country.choices_for_serializer())
