@@ -13,7 +13,8 @@ class WineSerializer(serializers.Serializer):
     region_3 = serializers.CharField(allow_blank=True, max_length=128)
     region_4 = serializers.CharField(allow_blank=True, max_length=128)
     region_5 = serializers.CharField(allow_blank=True, max_length=128)
-    cepage = serializers.ListField(child=serializers.DictField(required=False))
+    # MYMEMO: rethink cepage
+    # cepage = serializers.ListField(child=serializers.DictField(required=False))
     vintage = serializers.IntegerField(allow_null=True, min_value=0, max_value=32_767, default=None)
     bought_at = serializers.DateField(allow_null=True)
     bought_from = serializers.CharField(allow_blank=True, max_length=64)

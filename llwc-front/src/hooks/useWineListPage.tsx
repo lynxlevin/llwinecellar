@@ -6,7 +6,6 @@ import { UserContext } from '../contexts/user-context';
 
 export interface WineData {
     id: string;
-    drink_when: string;
     name: string;
     producer: string;
     country: string;
@@ -41,7 +40,8 @@ const useWineListPage = () => {
     const cellarContext = useContext(CellarContext);
     const [selectedCellars, setSelectedCellars] = useState<string[]>([]);
     const [order, setOrder] = useState<Order>('asc');
-    const [orderBy, setOrderBy] = useState<keyof WineData>('drink_when');
+    // MYMEMO: change to tag_texts
+    const [orderBy, setOrderBy] = useState<keyof WineData>('name');
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(100);
     const [wineRows, setWineRows] = useState<WineData[]>([]);
@@ -94,8 +94,8 @@ const useWineListPage = () => {
     }, []);
 
     const wineHeadCells: WineHeadCell[] = useMemo(() => {
+        // MYMEMO: add tag_texts
         return [
-            getWineHeadCell('drink_when', false, false),
             ...(selectedCellars.length !== 1 ? [getWineHeadCell('cellar_name', false, false)] : []),
             ...(selectedCellars.toString() !== 'null' ? [getWineHeadCell('position', false, false)] : []),
             getWineHeadCell('name', false, false),

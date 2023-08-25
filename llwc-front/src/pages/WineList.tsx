@@ -160,7 +160,7 @@ export const WineList = () => {
                                         key={row.name}
                                         sx={{ cursor: 'pointer' }}
                                     >
-                                        <TableCell>{row.drink_when}</TableCell>
+                                        {/* MYMEMO: add tag_texts */}
                                         {selectedCellars.length !== 1 && (
                                             <TableCell>{row.cellar_id ? cellarNames[row.cellar_id] : cellarNames['null']}</TableCell>
                                         )}
