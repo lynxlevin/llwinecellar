@@ -123,5 +123,6 @@ class TestListWine(TestCase):
                 "note": expected.note,
                 "cellar_id": str(expected.cellarspace.cellar_id) if hasattr(expected, "cellarspace") else None,
                 "position": position,
+                "tag_texts": expected.tag_texts,
             }
             self.assertDictEqual(dict, listed)

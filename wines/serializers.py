@@ -22,6 +22,7 @@ class WineSerializer(serializers.Serializer):
     price_with_tax = serializers.IntegerField(allow_null=True, min_value=0, max_value=2_147_483_647)
     drunk_at = serializers.DateField(allow_null=True)
     note = serializers.CharField(allow_blank=True)
+    tag_texts = serializers.ListField(allow_empty=True, child=serializers.CharField(max_length=256))
 
     def validate_country(self, value):
         if value:
@@ -31,9 +32,8 @@ class WineSerializer(serializers.Serializer):
 
     def to_representation(self, instance):
         ret = super().to_representation(instance)
-        if ret["country"] is None:
-            return ret
-        ret["country"] = Country(ret["country"]).label
+        if ret["country"]:
+            ret["country"] = Country(ret["country"]).label
         return ret
 
 

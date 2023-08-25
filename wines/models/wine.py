@@ -9,7 +9,7 @@ from users.models import User
 from ..enums import Country
 
 
-class WineQuerySet(models.QuerySet):
+class WineQuerySet(models.QuerySet["Wine"]):
     def get_by_id(self, id) -> Optional["Wine"]:
         try:
             return self.get(id=id)
@@ -30,6 +30,9 @@ class WineQuerySet(models.QuerySet):
 
     def select_cellarspace(self) -> "WineQuerySet":
         return self.select_related("cellarspace")
+
+    def prefetch_tags(self) -> "WineQuerySet":
+        return self.prefetch_related("tags")
 
 
 class Wine(models.Model):
@@ -54,6 +57,7 @@ class Wine(models.Model):
     price_with_tax = models.PositiveIntegerField(blank=True, null=True)
     drunk_at = models.DateField(blank=True, null=True)
     note = models.TextField(blank=True, default="")
+    tags = models.ManyToManyField("WineTag", through="WineTagRelation")
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -107,3 +111,7 @@ class Wine(models.Model):
         if self.cellarspace.type == CellarSpaceType.BASKET:
             return "basket"
         return f"{self.row}-{self.column}"
+
+    @property
+    def tag_texts(self) -> list[str]:
+        return [tag.text for tag in self.tags.all()]

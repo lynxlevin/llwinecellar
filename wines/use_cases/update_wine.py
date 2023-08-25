@@ -4,7 +4,7 @@ from rest_framework import exceptions
 
 from users.models import User
 
-from ..models import Wine
+from ..models import Wine, WineTag
 
 logger = logging.getLogger(__name__)
 
@@ -39,5 +39,12 @@ class UpdateWine:
         wine.note = data["note"]
 
         wine.save()
+        if len(tag_texts := data["tag_texts"]) > 0:
+            # MYMEMO: resolve N+1
+            # MYMEMO: test creation on new WineTag
+            tags = [WineTag.objects.get_or_create(user_id=user.id, text=text)[0] for text in tag_texts]
+            wine.tags.set(tags)
+
+        wine = Wine.objects.prefetch_tags().get_by_id(wine.id)
 
         return wine

@@ -40,6 +40,7 @@ class TestUpdateWine(TestCase):
             "price_with_tax": 13000,
             "drunk_at": None,
             "note": "テスト用のノート",
+            "tag_texts": ["updated_tag1", "updated_tag2"],
         }
 
         # Act
@@ -76,6 +77,7 @@ class TestUpdateWine(TestCase):
             "price_with_tax": 13000,
             "drunk_at": None,
             "note": "テスト用のノート",
+            "tag_texts": ["updated_tag1", "updated_tag2"],
         }
 
         # Act
@@ -123,6 +125,9 @@ class TestUpdateWine(TestCase):
             self.assertEqual(params["bought_at"], wine.bought_at.strftime("%Y-%m-%d"))
         if params["drunk_at"]:
             self.assertEqual(params["drunk_at"], wine.drunk_at.strftime("%Y-%m-%d"))
+        if len(params["tag_texts"]) > 0:
+            for param_tag, wine_tag in zip(params["tag_texts"], wine.tags.all()):
+                self.assertEqual(param_tag, wine_tag.text)
 
     def _assert_dict_contains_subset(self, expected, actual):
         """
