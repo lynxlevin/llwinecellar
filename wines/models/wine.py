@@ -31,6 +31,10 @@ class WineQuerySet(models.QuerySet["Wine"]):
     def select_cellarspace(self) -> "WineQuerySet":
         return self.select_related("cellarspace")
 
+    # MYMEMO: also prefetch grape
+    def prefetch_cepages(self) -> "WineQuerySet":
+        return self.prefetch_related("cepages")
+
     def prefetch_tags(self) -> "WineQuerySet":
         return self.prefetch_related("tags")
 
@@ -47,8 +51,6 @@ class Wine(models.Model):
     region_3 = models.CharField(blank=True, default="", max_length=128)
     region_4 = models.CharField(blank=True, default="", max_length=128)
     region_5 = models.CharField(blank=True, default="", max_length=128)
-    # "[{'grape': 'pinot_noir', 'percent': 100}] or [{'grape': 'pinot_noir'}]"
-    cepage = models.JSONField(blank=True, default=list)
     vintage = models.PositiveSmallIntegerField(blank=True, null=True)
     bought_at = models.DateField(blank=True, null=True)
     bought_from = models.CharField(blank=True, default="", max_length=64)

@@ -4,7 +4,7 @@ from rest_framework import exceptions
 
 from users.models import User
 
-from ..models import Wine, WineTag
+from ..models import Cepage, GrapeMaster, Wine, WineTag
 
 logger = logging.getLogger(__name__)
 
@@ -29,7 +29,6 @@ class UpdateWine:
         wine.region_3 = data["region_3"]
         wine.region_4 = data["region_4"]
         wine.region_5 = data["region_5"]
-        wine.cepage = data["cepage"]
         wine.vintage = data["vintage"]
         wine.bought_at = data["bought_at"]
         wine.bought_from = data["bought_from"]
@@ -38,6 +37,17 @@ class UpdateWine:
         wine.note = data["note"]
 
         wine.save()
+        if len(data["cepages"]) > 0:
+            wine.cepages.set(list())
+            cepages = []
+            # MYMEMO: resolve N+1
+            # MYMEMO: test creation of new GrapeMaster
+            for cepage in data["cepages"]:
+                grape_master = GrapeMaster.objects.get_or_create(
+                    user_id=user.id, name=cepage["name"], abbreviation=cepage["abbreviation"]
+                )[0]
+                cepages.append(Cepage(wine_id=wine.id, grape_id=grape_master.id, percentage=cepage["percentage"]))
+            Cepage.objects.bulk_create(cepages)
         if len(tag_texts := data["tag_texts"]) > 0:
             # MYMEMO: resolve N+1
             # MYMEMO: test creation on new WineTag

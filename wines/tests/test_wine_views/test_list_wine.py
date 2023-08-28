@@ -17,6 +17,7 @@ class TestListWine(TestCase):
         cls.base_path = "/api/wines/"
         cls.user = UserFactory()
         cls.cellar = CellarFactory(user=cls.user)
+        # MYMEMO: add cepage and tag
 
     def test_all(self):
         # Arrange
@@ -113,7 +114,7 @@ class TestListWine(TestCase):
                 "region_3": expected.region_3,
                 "region_4": expected.region_4,
                 "region_5": expected.region_5,
-                "cepage": expected.cepage,
+                "cepages": list(expected.cepages.all()),
                 "vintage": expected.vintage,
                 "bought_at": expected.bought_at.strftime("%Y-%m-%d") if expected.bought_at is not None else None,
                 "bought_from": expected.bought_from,

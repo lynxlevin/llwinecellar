@@ -24,7 +24,6 @@ class WineFactory(factory.django.DjangoModelFactory):
     region_3 = "Gevrey Chambertin"
     region_4 = ""
     region_5 = ""
-    cepage = factory.List([{"grape": "Pinot Noir", "percent": 100}])
     vintage = 2019
     bought_at = factory.fuzzy.FuzzyDate(date(2022, 1, 1))
     bought_from = "Wine shop"

@@ -6,17 +6,18 @@ from django.db import models
 from users.models import User
 
 
-class WineTagQuerySet(models.QuerySet["WineTag"]):
-    def get_by_id(self, id) -> Optional["WineTag"]:
+class GrapeMasterQuerySet(models.QuerySet["GrapeMaster"]):
+    def get_by_id(self, id) -> Optional["GrapeMaster"]:
         try:
             return self.get(id=id)
-        except WineTag.DoesNotExist:
+        except GrapeMaster.DoesNotExist:
             return None
 
 
-class WineTag(models.Model):
+class GrapeMaster(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    text = models.CharField(max_length=256)
+    name = models.CharField()
+    abbreviation = models.CharField(blank=True, null=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     created_at = models.DateTimeField(auto_now_add=True)
@@ -25,9 +26,9 @@ class WineTag(models.Model):
     class Meta:
         constraints = (
             models.UniqueConstraint(
-                fields=["text", "user"],
-                name="unique_text_user",
+                fields=["name", "user"],
+                name="unique_name_user",
             ),
         )
 
-    objects: WineTagQuerySet = WineTagQuerySet.as_manager()
+    objects: GrapeMasterQuerySet = GrapeMasterQuerySet.as_manager()

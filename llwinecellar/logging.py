@@ -2,6 +2,7 @@ import datetime
 import enum
 import json
 import uuid
+from decimal import Decimal
 from logging import Formatter as BaseFormatter
 from socket import socket
 
@@ -42,18 +43,12 @@ class Formatter(BaseFormatter):
 
         extra = self.get_extra(record)
         if extra:
-            log_text += "\n" + json.dumps(
-                extra, default=self.default, ensure_ascii=False
-            )
+            log_text += "\n" + json.dumps(extra, default=self.default, ensure_ascii=False)
 
         return log_text
 
     def get_extra(self, record):
-        return {
-            attr: record.__dict__[attr]
-            for attr in record.__dict__
-            if attr not in self.ATTRS
-        }
+        return {attr: record.__dict__[attr] for attr in record.__dict__ if attr not in self.ATTRS}
 
     def default(self, o):
         if isinstance(o, uuid.UUID):
@@ -81,5 +76,7 @@ class Formatter(BaseFormatter):
             return str(o)
         if hasattr(o, "to_dict_log"):
             return o.to_dict_log()
+        if isinstance(o, Decimal):
+            return float(o)
 
         raise TypeError(f"{repr(o)} is not JSON serializable")

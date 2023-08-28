@@ -1,4 +1,4 @@
-from enum import IntEnum
+from enum import Enum, IntEnum
 
 
 class Country(IntEnum):
@@ -67,3 +67,22 @@ class Country(IntEnum):
     @classmethod
     def choices_for_serializer(cls):
         return tuple((c.label, c.label) for c in cls)
+
+
+class Grape(Enum):
+    CABERNET_SAUVIGNON = (1, "CS")
+    MERLOT = (2, "Mr")
+    PINOT_NOIR = (3, "PN")
+
+    def __init__(self, id, abrev) -> None:
+        super().__init__()
+        self.id = id
+        self.abrev = abrev
+
+    @classmethod
+    def from_id(cls, id):
+        return next(filter(lambda g: g.id == id, cls))
+
+    @classmethod
+    def choices_for_model(cls):
+        return tuple((c.id, c.abrev) for c in cls)

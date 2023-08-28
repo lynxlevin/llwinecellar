@@ -3,6 +3,12 @@ from rest_framework import serializers
 from .enums import Country
 
 
+class CepageSerializer(serializers.Serializer):
+    name = serializers.CharField()
+    abbreviation = serializers.CharField(allow_blank=True)
+    percentage = serializers.DecimalField(max_digits=4, decimal_places=1, allow_null=True)
+
+
 class WineSerializer(serializers.Serializer):
     id = serializers.UUIDField(required=False)
     name = serializers.CharField(allow_blank=True, max_length=256)
@@ -13,8 +19,7 @@ class WineSerializer(serializers.Serializer):
     region_3 = serializers.CharField(allow_blank=True, max_length=128)
     region_4 = serializers.CharField(allow_blank=True, max_length=128)
     region_5 = serializers.CharField(allow_blank=True, max_length=128)
-    # MYMEMO: rethink cepage
-    # cepage = serializers.ListField(child=serializers.DictField(required=False))
+    cepages = CepageSerializer(many=True)
     vintage = serializers.IntegerField(allow_null=True, min_value=0, max_value=32_767, default=None)
     bought_at = serializers.DateField(allow_null=True)
     bought_from = serializers.CharField(allow_blank=True, max_length=64)

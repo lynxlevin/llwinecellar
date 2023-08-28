@@ -47,7 +47,8 @@ class Command(BaseCommand):
                 region_3=next(li),
                 region_4=next(li),
                 region_5=next(li),
-                cepage=next(li),
+                # MYMEMO: modify cepage
+                # cepage=next(li),
                 vintage=int(next(li)),
                 bought_at=next(li),
                 bought_from=next(li),

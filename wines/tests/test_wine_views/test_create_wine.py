@@ -1,4 +1,5 @@
 import logging
+from decimal import Decimal
 
 from django.test import Client, TestCase
 from rest_framework import status
@@ -33,7 +34,11 @@ class TestCreateWine(TestCase):
             "region_3": "Gevrey Chambertin",
             "region_4": "",
             "region_5": "",
-            "cepage": [{"grape": "Pinot Noir", "percent": 100}],
+            "cepages": [
+                {"name": "Cabernet Sauvignon", "abbreviation": "CS", "percentage": "60.0"},
+                {"name": "Merlot", "abbreviation": "", "percentage": "35.0"},
+                {"name": "Cabernet Franc", "abbreviation": "CF", "percentage": None},
+            ],
             "vintage": 2019,
             "bought_at": "2023-05-07",
             "bought_from": "伊勢屋",
@@ -67,7 +72,7 @@ class TestCreateWine(TestCase):
             "region_3": "",
             "region_4": "",
             "region_5": "",
-            "cepage": [],
+            "cepages": [],
             "vintage": None,
             "bought_at": None,
             "bought_from": "",
@@ -109,7 +114,6 @@ class TestCreateWine(TestCase):
         self.assertEqual(params["region_3"], wine.region_3)
         self.assertEqual(params["region_4"], wine.region_4)
         self.assertEqual(params["region_5"], wine.region_5)
-        self.assertEqual(params["cepage"], wine.cepage)
         self.assertEqual(params["vintage"], wine.vintage)
         self.assertEqual(params["bought_from"], wine.bought_from)
         self.assertEqual(params["price_with_tax"], wine.price_with_tax)
@@ -121,6 +125,12 @@ class TestCreateWine(TestCase):
             self.assertEqual(params["bought_at"], wine.bought_at.strftime("%Y-%m-%d"))
         if params["drunk_at"]:
             self.assertEqual(params["drunk_at"], wine.drunk_at.strftime("%Y-%m-%d"))
+        if len(params["cepages"]) > 0:
+            for param_cepage, wine_cepage in zip(params["cepages"], wine.cepages.all()):
+                self.assertEqual(param_cepage["name"], wine_cepage.name)
+                self.assertEqual(param_cepage["abbreviation"], wine_cepage.abbreviation)
+                param_percentage = Decimal(param_cepage["percentage"]) if param_cepage["percentage"] else None
+                self.assertEqual(param_percentage, wine_cepage.percentage)
         if len(params["tag_texts"]) > 0:
             for param_tag, wine_tag in zip(params["tag_texts"], wine.tags.all()):
                 self.assertEqual(param_tag, wine_tag.text)
