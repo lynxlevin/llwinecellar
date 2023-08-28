@@ -34,8 +34,6 @@ class CreateWine:
         wine.save()
         if len(data["cepages"]) > 0:
             cepages = []
-            # MYMEMO: resolve N+1
-            # MYMEMO: test creation of new GrapeMaster
             for cepage in data["cepages"]:
                 grape_master = GrapeMaster.objects.get_or_create(
                     user_id=user.id, name=cepage["name"], abbreviation=cepage["abbreviation"]
@@ -44,8 +42,6 @@ class CreateWine:
             Cepage.objects.bulk_create(cepages)
 
         if len(tag_texts := data["tag_texts"]) > 0:
-            # MYMEMO: resolve N+1
-            # MYMEMO: test creation on new WineTag
             tags = [WineTag.objects.get_or_create(user_id=user.id, text=text)[0] for text in tag_texts]
             wine.tags.set(tags)
 

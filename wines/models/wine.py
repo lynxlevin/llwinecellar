@@ -31,9 +31,8 @@ class WineQuerySet(models.QuerySet["Wine"]):
     def select_cellarspace(self) -> "WineQuerySet":
         return self.select_related("cellarspace")
 
-    # MYMEMO: also prefetch grape
     def prefetch_cepages(self) -> "WineQuerySet":
-        return self.prefetch_related("cepages")
+        return self.prefetch_related("cepages").prefetch_related("cepages__grape")
 
     def prefetch_tags(self) -> "WineQuerySet":
         return self.prefetch_related("tags")
