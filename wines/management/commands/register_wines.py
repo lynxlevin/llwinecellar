@@ -4,7 +4,7 @@ from django.core.management.base import BaseCommand, CommandParser
 
 from cellars.models import Cellar, CellarSpace
 from wines.enums import Country
-from wines.models import Wine
+from wines.models import Wine, WineTag
 
 FILE_DIR = "wines/fixtures"
 
@@ -34,7 +34,6 @@ class Command(BaseCommand):
         wines = []
         cellar_spaces = []
 
-        # MYMEMO: add tags
         for line in csv_lines:
             li = iter(line.strip().split(","))
             _new_record_mark = next(li)
@@ -47,8 +46,6 @@ class Command(BaseCommand):
                 region_3=next(li),
                 region_4=next(li),
                 region_5=next(li),
-                # MYMEMO: modify cepage
-                # cepage=next(li),
                 vintage=int(next(li)),
                 bought_at=next(li),
                 bought_from=next(li),
@@ -57,6 +54,11 @@ class Command(BaseCommand):
                 note=next(li),
                 user_id=1,
             )
+            # tag は 1 つのみでstr で指定
+            tag_text = next(li)
+            tags = [WineTag.objects.get_or_create(user_id=1, text=tag_text)[0]]
+            wine.tags.set(tags)
+
             wine.bought_at = datetime.strptime(wine.bought_at, "%Y/%m/%d") if wine.bought_at else None
             wine.drunk_at = datetime.strptime(wine.drunk_at, "%Y/%m/%d") if wine.drunk_at else None
             wines.append(wine)
