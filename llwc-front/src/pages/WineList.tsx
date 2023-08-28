@@ -161,10 +161,10 @@ export const WineList = () => {
                                         key={row.name}
                                         sx={{ cursor: 'pointer' }}
                                     >
-                                        {/* MYMEMO: add tag_texts */}
                                         {selectedCellars.length !== 1 && (
                                             <TableCell>{row.cellar_id ? cellarNames[row.cellar_id] : cellarNames['null']}</TableCell>
                                         )}
+                                        <TableCell>{row.tag_texts.join(', ')}</TableCell>
                                         {selectedCellars.toString() !== 'null' && <TableCell>{row.position}</TableCell>}
                                         <TableCell component="th" id={labelId} scope="row">
                                             {row.name}

@@ -30,6 +30,7 @@ export interface WineData {
     cellar_name: string;
     cellar_id: string | null;
     position: string | null;
+    tag_texts: string[];
 }
 
 export type Order = 'asc' | 'desc';
@@ -46,8 +47,7 @@ const useWineListPage = () => {
     const cellarContext = useContext(CellarContext);
     const [selectedCellars, setSelectedCellars] = useState<string[]>([]);
     const [order, setOrder] = useState<Order>('asc');
-    // MYMEMO: change to tag_texts
-    const [orderBy, setOrderBy] = useState<keyof WineData>('name');
+    const [orderBy, setOrderBy] = useState<keyof WineData>('tag_texts');
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(100);
     const [wineRows, setWineRows] = useState<WineData[]>([]);
@@ -100,9 +100,9 @@ const useWineListPage = () => {
     }, []);
 
     const wineHeadCells: WineHeadCell[] = useMemo(() => {
-        // MYMEMO: add tag_texts
         return [
             ...(selectedCellars.length !== 1 ? [getWineHeadCell('cellar_name', false, false)] : []),
+            getWineHeadCell('tag_texts', false, false),
             ...(selectedCellars.toString() !== 'null' ? [getWineHeadCell('position', false, false)] : []),
             getWineHeadCell('name', false, false),
             getWineHeadCell('producer', false, false),
@@ -124,22 +124,29 @@ const useWineListPage = () => {
     const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - wineRows.length) : 0;
 
     const compare = <T,>(a: T, b: T, orderBy: keyof T) => {
-        if (b[orderBy] < a[orderBy]) {
-            return 1;
+        if (orderBy === 'tag_texts') {
+            if ((b[orderBy] as string[]).join(', ') < (a[orderBy] as string[]).join(', ')) return 1;
+            if ((b[orderBy] as string[]).join(', ') > (a[orderBy] as string[]).join(', ')) return -1;
+            return 0;
         }
-        if (b[orderBy] > a[orderBy]) {
-            return -1;
+        if (orderBy === 'cepages') {
+            if (getCepageAbbreviations(b[orderBy] as Cepage[]) < getCepageAbbreviations(a[orderBy] as Cepage[])) return 1;
+            if (getCepageAbbreviations(b[orderBy] as Cepage[]) > getCepageAbbreviations(a[orderBy] as Cepage[])) return -1;
+            return 0;
         }
+        if (b[orderBy] < a[orderBy]) return 1;
+        if (b[orderBy] > a[orderBy]) return -1;
         return 0;
     };
 
     const ascendingComparator = useCallback(<T,>(a: T, b: T, orderBy: keyof T) => {
-        if (!a[orderBy]) {
-            return 1;
+        if (orderBy === 'tag_texts' || orderBy === 'cepages') {
+            if ((a[orderBy] as string[]).length === 0) return 1;
+            if ((b[orderBy] as string[]).length === 0) return -1;
+            return compare(a, b, orderBy);
         }
-        if (!b[orderBy]) {
-            return -1;
-        }
+        if (!a[orderBy]) return 1;
+        if (!b[orderBy]) return -1;
         return compare(a, b, orderBy);
     }, []);
 
@@ -153,12 +160,14 @@ const useWineListPage = () => {
         return -compare(a, b, orderBy);
     }, []);
 
-    // MYMEMO: typescript を黙らせるためにCepage[]を加えたけど、いい方法を考える。
     const getComparator = useCallback(
         <Key extends keyof any>(
             order: Order,
             orderBy: Key,
-        ): ((a: { [key in Key]: number | string | null | Cepage[] }, b: { [key in Key]: number | string | null | Cepage[] }) => number) => {
+        ): ((
+            a: { [key in Key]: number | string | null | Cepage[] | string[] },
+            b: { [key in Key]: number | string | null | Cepage[] | string[] },
+        ) => number) => {
             return order === 'desc' ? (a, b) => descendingComparator(a, b, orderBy) : (a, b) => ascendingComparator(a, b, orderBy);
         },
         [ascendingComparator, descendingComparator],
