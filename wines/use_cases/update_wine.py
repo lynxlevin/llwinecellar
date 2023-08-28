@@ -38,7 +38,7 @@ class UpdateWine:
 
         wine.save()
         if len(data["cepages"]) > 0:
-            wine.cepages.set(list())
+            wine.cepages.all().delete()
             cepages = []
             for cepage in data["cepages"]:
                 grape_master = GrapeMaster.objects.get_or_create(

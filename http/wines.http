@@ -55,5 +55,33 @@ X-CSRFToken: {{get_csrf.response.headers.X-CSRFToken}}
     "note": "テスト用のノート"
 }
 
+@wine_id=1928f721-3b98-4b5d-ba9a-26b323b558c0
+
+###
+# @name update
+PUT {{endpoint}}/api/wines/{{wine_id}}/
+Content-Type: application/json
+Accept: application/json
+X-CSRFToken: {{get_csrf.response.headers.X-CSRFToken}}
+
+{
+  "name": "Village Pinot Noir",
+  "producer": "Paul Cluver",
+  "country": "South Africa",
+  "region_1": "Elgin",
+  "region_2": "",
+  "region_3": "",
+  "region_4": "",
+  "region_5": "",
+  "cepages": [{"name": "Pinot Noir", "abbreviation": "PN", "percentage": 100.0}],
+  "vintage": 2020,
+  "bought_at": "2023-04-18",
+  "bought_from": "エノテカオンライン",
+  "price_with_tax": 2805,
+  "drunk_at": null,
+  "note": "",
+  "tag_texts": ["数年寝かす"],
+  "cellar_id": "aa38eecc-7e8d-42c0-90a0-ad39ba584734"
+}
 
 
