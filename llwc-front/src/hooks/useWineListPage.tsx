@@ -4,6 +4,12 @@ import { WineAPI } from '../apis/WineAPI';
 import { SelectChangeEvent } from '@mui/material';
 import { UserContext } from '../contexts/user-context';
 
+interface Cepage {
+    name: string;
+    abbreviation: string | null;
+    percentage: number | null;
+}
+
 export interface WineData {
     id: string;
     name: string;
@@ -14,7 +20,7 @@ export interface WineData {
     region_3: string;
     region_4: string;
     region_5: string;
-    cepage: string;
+    cepages: Cepage[];
     vintage: number;
     bought_at: string | null;
     bought_from: string;
@@ -106,7 +112,7 @@ const useWineListPage = () => {
             getWineHeadCell('region_3', false, false),
             getWineHeadCell('region_4', false, false),
             getWineHeadCell('region_5', false, false),
-            getWineHeadCell('cepage', false, false),
+            getWineHeadCell('cepages', false, false),
             getWineHeadCell('vintage', true, false),
             getWineHeadCell('bought_at', false, false),
             getWineHeadCell('bought_from', false, false),
@@ -147,11 +153,12 @@ const useWineListPage = () => {
         return -compare(a, b, orderBy);
     }, []);
 
+    // MYMEMO: typescript を黙らせるためにCepage[]を加えたけど、いい方法を考える。
     const getComparator = useCallback(
         <Key extends keyof any>(
             order: Order,
             orderBy: Key,
-        ): ((a: { [key in Key]: number | string | null }, b: { [key in Key]: number | string | null }) => number) => {
+        ): ((a: { [key in Key]: number | string | null | Cepage[] }, b: { [key in Key]: number | string | null | Cepage[] }) => number) => {
             return order === 'desc' ? (a, b) => descendingComparator(a, b, orderBy) : (a, b) => ascendingComparator(a, b, orderBy);
         },
         [ascendingComparator, descendingComparator],
@@ -172,13 +179,23 @@ const useWineListPage = () => {
 
     const getWines = async () => {
         const query = { is_drunk: false };
-        const res = await WineAPI.list();
+        const res = await WineAPI.list(query);
         const wineData = res.data.wines;
         setWineRows(wineData);
     };
 
     const cellarList = cellarContext.list.map(cellar => [cellar.id, cellar.name]);
     const cellarNames = Object.fromEntries(cellarList);
+
+    const getCepageAbbreviations = (cepages: Cepage[]) => {
+        if (cepages.length === 0) return '';
+        return cepages
+            .map(c => {
+                if (c.abbreviation === null) return c.name;
+                return c.abbreviation;
+            })
+            .join(', ');
+    };
 
     useEffect(() => {
         if (userContext.isLoggedIn === true) {
@@ -205,6 +222,7 @@ const useWineListPage = () => {
         page,
         handleChangePage,
         handleChangeRowsPerPage,
+        getCepageAbbreviations,
     };
 };
 

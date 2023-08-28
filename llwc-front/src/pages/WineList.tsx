@@ -128,6 +128,7 @@ export const WineList = () => {
         page,
         handleChangePage,
         handleChangeRowsPerPage,
+        getCepageAbbreviations,
     } = useWineListPage();
 
     const tablePaginationHeight = '52px';
@@ -175,7 +176,8 @@ export const WineList = () => {
                                         <TableCell align="right">{row.region_3}</TableCell>
                                         <TableCell align="right">{row.region_4}</TableCell>
                                         <TableCell align="right">{row.region_5}</TableCell>
-                                        <TableCell align="right">{row.cepage}</TableCell>
+                                        {/* MYMEMO: make cepages look like tags */}
+                                        <TableCell align="right">{getCepageAbbreviations(row.cepages)}</TableCell>
                                         <TableCell align="right">{row.vintage}</TableCell>
                                         <TableCell align="right">{row.bought_at}</TableCell>
                                         <TableCell align="right">{row.bought_from}</TableCell>
