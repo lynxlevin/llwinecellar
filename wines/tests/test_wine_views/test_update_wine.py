@@ -48,13 +48,35 @@ class TestUpdateWine(TestCase):
         # Assert
         self.assertEqual(status.HTTP_200_OK, status_code)
 
-        self._assert_wine_is_same_as_params(params, wine)
-
         expected = {
             "id": str(wine.id),
             **params,
         }
         self._assert_dict_contains_subset(expected, body)
+
+        # Assert wine
+        wine.refresh_from_db()
+        self.assertEqual(params["name"], wine.name)
+        self.assertEqual(params["producer"], wine.producer)
+        self.assertEqual(params["country"], wine.country.label)
+        self.assertEqual(params["region_1"], wine.region_1)
+        self.assertEqual(params["region_2"], wine.region_2)
+        self.assertEqual(params["region_3"], wine.region_3)
+        self.assertEqual(params["region_4"], wine.region_4)
+        self.assertEqual(params["region_5"], wine.region_5)
+        for param_cepage, wine_cepage in zip(params["cepages"], wine.cepages.all()):
+            self.assertEqual(param_cepage["name"], wine_cepage.name)
+            self.assertEqual(param_cepage["abbreviation"], wine_cepage.abbreviation)
+            param_percentage = Decimal(param_cepage["percentage"]) if param_cepage["percentage"] else None
+            self.assertEqual(param_percentage, wine_cepage.percentage)
+        self.assertEqual(params["vintage"], wine.vintage)
+        self.assertEqual(params["bought_at"], wine.bought_at.strftime("%Y-%m-%d"))
+        self.assertEqual(params["bought_from"], wine.bought_from)
+        self.assertEqual(params["price_with_tax"], wine.price_with_tax)
+        self.assertEqual(params["drunk_at"], wine.drunk_at)
+        self.assertEqual(params["note"], wine.note)
+        for param_tag, wine_tag in zip(params["tag_texts"], wine.tags.all()):
+            self.assertEqual(param_tag, wine_tag.text)
 
     def test_not_my_wine__404(self):
         # Arrange
@@ -84,9 +106,7 @@ class TestUpdateWine(TestCase):
         # Assert
         self.assertEqual(status.HTTP_404_NOT_FOUND, status_code)
 
-        original_wine_dict = wine.__dict__
-        wine.refresh_from_db()
-        self.assertDictEqual(original_wine_dict, wine.__dict__)
+        self._assert_wine_is_not_updated(wine)
 
     """
     Utility functions
@@ -100,40 +120,14 @@ class TestUpdateWine(TestCase):
 
         return (response.status_code, response.json())
 
-    def _assert_wine_is_same_as_params(self, params, wine):
-        wine.refresh_from_db()
-
-        self.assertEqual(params["name"], wine.name)
-        self.assertEqual(params["producer"], wine.producer)
-        self.assertEqual(params["region_1"], wine.region_1)
-        self.assertEqual(params["region_2"], wine.region_2)
-        self.assertEqual(params["region_3"], wine.region_3)
-        self.assertEqual(params["region_4"], wine.region_4)
-        self.assertEqual(params["region_5"], wine.region_5)
-        self.assertEqual(params["vintage"], wine.vintage)
-        self.assertEqual(params["bought_from"], wine.bought_from)
-        self.assertEqual(params["price_with_tax"], wine.price_with_tax)
-        self.assertEqual(params["note"], wine.note)
-
-        if params["country"]:
-            self.assertEqual(Country.from_label(params["country"]), wine.country)
-        if params["bought_at"]:
-            self.assertEqual(params["bought_at"], wine.bought_at.strftime("%Y-%m-%d"))
-        if params["drunk_at"]:
-            self.assertEqual(params["drunk_at"], wine.drunk_at.strftime("%Y-%m-%d"))
-        if len(params["cepages"]) > 0:
-            for param_cepage, wine_cepage in zip(params["cepages"], wine.cepages.all()):
-                self.assertEqual(param_cepage["name"], wine_cepage.name)
-                self.assertEqual(param_cepage["abbreviation"], wine_cepage.abbreviation)
-                param_percentage = Decimal(param_cepage["percentage"]) if param_cepage["percentage"] else None
-                self.assertEqual(param_percentage, wine_cepage.percentage)
-        if len(params["tag_texts"]) > 0:
-            for param_tag, wine_tag in zip(params["tag_texts"], wine.tags.all()):
-                self.assertEqual(param_tag, wine_tag.text)
-
     def _assert_dict_contains_subset(self, expected, actual):
         """
         https://stackoverflow.com/a/47473101
         """
         actual_subset = {k: v for k, v in actual.items() if k in expected}
         self.assertDictEqual(expected, actual_subset)
+
+    def _assert_wine_is_not_updated(self, wine):
+        original_wine_dict = wine.__dict__
+        wine.refresh_from_db()
+        self.assertDictEqual(original_wine_dict, wine.__dict__)

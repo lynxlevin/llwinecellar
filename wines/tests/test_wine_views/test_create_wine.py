@@ -54,9 +54,31 @@ class TestCreateWine(TestCase):
         # Assert
         self.assertEqual(status.HTTP_201_CREATED, status_code)
 
-        self._assert_wine_is_same_as_params(params, wine_id=body["id"])
-
         self._assert_dict_contains_subset(params, body)
+
+        # Assert wine
+        wine = Wine.objects.get_by_id(body["id"])
+        self.assertEqual(params["name"], wine.name)
+        self.assertEqual(params["producer"], wine.producer)
+        self.assertEqual(params["country"], wine.country.label)
+        self.assertEqual(params["region_1"], wine.region_1)
+        self.assertEqual(params["region_2"], wine.region_2)
+        self.assertEqual(params["region_3"], wine.region_3)
+        self.assertEqual(params["region_4"], wine.region_4)
+        self.assertEqual(params["region_5"], wine.region_5)
+        for param_cepage, wine_cepage in zip(params["cepages"], wine.cepages.all()):
+            self.assertEqual(param_cepage["name"], wine_cepage.name)
+            self.assertEqual(param_cepage["abbreviation"], wine_cepage.abbreviation)
+            param_percentage = Decimal(param_cepage["percentage"]) if param_cepage["percentage"] else None
+            self.assertEqual(param_percentage, wine_cepage.percentage)
+        self.assertEqual(params["vintage"], wine.vintage)
+        self.assertEqual(params["bought_at"], wine.bought_at.strftime("%Y-%m-%d"))
+        self.assertEqual(params["bought_from"], wine.bought_from)
+        self.assertEqual(params["price_with_tax"], wine.price_with_tax)
+        self.assertEqual(params["drunk_at"], wine.drunk_at)
+        self.assertEqual(params["note"], wine.note)
+        for param_tag, wine_tag in zip(params["tag_texts"], wine.tags.all()):
+            self.assertEqual(param_tag, wine_tag.text)
 
     def test_empty_params(self):
         """
@@ -88,9 +110,26 @@ class TestCreateWine(TestCase):
         # Assert
         self.assertEqual(status.HTTP_201_CREATED, status_code)
 
-        self._assert_wine_is_same_as_params(params, wine_id=body["id"])
-
         self._assert_dict_contains_subset(params, body)
+
+        # Assert wine
+        wine = Wine.objects.get_by_id(body["id"])
+        self.assertEqual(params["name"], wine.name)
+        self.assertEqual(params["producer"], wine.producer)
+        self.assertEqual(params["country"], wine.country)
+        self.assertEqual(params["region_1"], wine.region_1)
+        self.assertEqual(params["region_2"], wine.region_2)
+        self.assertEqual(params["region_3"], wine.region_3)
+        self.assertEqual(params["region_4"], wine.region_4)
+        self.assertEqual(params["region_5"], wine.region_5)
+        self.assertEqual(params["cepages"], list(wine.tags.all()))
+        self.assertEqual(params["vintage"], wine.vintage)
+        self.assertEqual(params["bought_at"], wine.bought_at)
+        self.assertEqual(params["bought_from"], wine.bought_from)
+        self.assertEqual(params["price_with_tax"], wine.price_with_tax)
+        self.assertEqual(params["drunk_at"], wine.drunk_at)
+        self.assertEqual(params["note"], wine.note)
+        self.assertEqual(params["tag_texts"], list(wine.tags.all()))
 
     """
     Utility functions
@@ -103,37 +142,6 @@ class TestCreateWine(TestCase):
         response = client.post(path, params, content_type="application/json")
 
         return (response.status_code, response.json())
-
-    def _assert_wine_is_same_as_params(self, params, wine_id):
-        wine = Wine.objects.get_by_id(wine_id)
-
-        self.assertEqual(params["name"], wine.name)
-        self.assertEqual(params["producer"], wine.producer)
-        self.assertEqual(params["region_1"], wine.region_1)
-        self.assertEqual(params["region_2"], wine.region_2)
-        self.assertEqual(params["region_3"], wine.region_3)
-        self.assertEqual(params["region_4"], wine.region_4)
-        self.assertEqual(params["region_5"], wine.region_5)
-        self.assertEqual(params["vintage"], wine.vintage)
-        self.assertEqual(params["bought_from"], wine.bought_from)
-        self.assertEqual(params["price_with_tax"], wine.price_with_tax)
-        self.assertEqual(params["note"], wine.note)
-
-        if params["country"]:
-            self.assertEqual(Country.from_label(params["country"]), wine.country)
-        if params["bought_at"]:
-            self.assertEqual(params["bought_at"], wine.bought_at.strftime("%Y-%m-%d"))
-        if params["drunk_at"]:
-            self.assertEqual(params["drunk_at"], wine.drunk_at.strftime("%Y-%m-%d"))
-        if len(params["cepages"]) > 0:
-            for param_cepage, wine_cepage in zip(params["cepages"], wine.cepages.all()):
-                self.assertEqual(param_cepage["name"], wine_cepage.name)
-                self.assertEqual(param_cepage["abbreviation"], wine_cepage.abbreviation)
-                param_percentage = Decimal(param_cepage["percentage"]) if param_cepage["percentage"] else None
-                self.assertEqual(param_percentage, wine_cepage.percentage)
-        if len(params["tag_texts"]) > 0:
-            for param_tag, wine_tag in zip(params["tag_texts"], wine.tags.all()):
-                self.assertEqual(param_tag, wine_tag.text)
 
     def _assert_dict_contains_subset(self, expected, actual):
         """
