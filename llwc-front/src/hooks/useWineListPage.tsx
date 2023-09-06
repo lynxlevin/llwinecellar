@@ -4,7 +4,7 @@ import { WineAPI } from '../apis/WineAPI';
 import { SelectChangeEvent } from '@mui/material';
 import { UserContext } from '../contexts/user-context';
 
-interface Cepage {
+export interface Cepage {
     name: string;
     abbreviation: string | null;
     percentage: number | null;
@@ -51,6 +51,8 @@ const useWineListPage = () => {
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(100);
     const [wineRows, setWineRows] = useState<WineData[]>([]);
+    const [selectedWine, setSelectedWine] = useState<WineData>();
+    const [isEditOpen, setIsEditOpen] = useState(false);
 
     const handleCellarSelect = (event: SelectChangeEvent) => {
         const {
@@ -66,8 +68,15 @@ const useWineListPage = () => {
     };
 
     const handleClick = (event: React.MouseEvent<unknown>, row: WineData) => {
-        console.log(row.id);
-        console.log(row.cellar_id);
+        if (selectedWine?.id === row.id) {
+            setIsEditOpen(true);
+        } else {
+            setSelectedWine(row);
+        }
+    };
+
+    const closeEditWineDialog = () => {
+        setIsEditOpen(false);
     };
 
     const handleChangePage = (event: unknown, newPage: number) => {
@@ -91,6 +100,7 @@ const useWineListPage = () => {
 
     const getWineHeadCell = useCallback((id: keyof WineData, numeric: boolean, disablePadding: boolean): WineHeadCell => {
         const label = toTitleCase(id);
+        // MYMEMO: disablePadding not needed.
         return {
             id,
             numeric,
@@ -102,10 +112,11 @@ const useWineListPage = () => {
     const wineHeadCells: WineHeadCell[] = useMemo(() => {
         return [
             ...(selectedCellars.length !== 1 ? [getWineHeadCell('cellar_name', false, false)] : []),
-            getWineHeadCell('tag_texts', false, false),
             ...(selectedCellars.toString() !== 'null' ? [getWineHeadCell('position', false, false)] : []),
+            getWineHeadCell('tag_texts', false, false),
             getWineHeadCell('name', false, false),
             getWineHeadCell('producer', false, false),
+            getWineHeadCell('vintage', true, false),
             getWineHeadCell('country', false, false),
             getWineHeadCell('region_1', false, false),
             getWineHeadCell('region_2', false, false),
@@ -113,7 +124,6 @@ const useWineListPage = () => {
             getWineHeadCell('region_4', false, false),
             getWineHeadCell('region_5', false, false),
             getWineHeadCell('cepages', false, false),
-            getWineHeadCell('vintage', true, false),
             getWineHeadCell('bought_at', false, false),
             getWineHeadCell('bought_from', false, false),
             getWineHeadCell('price_with_tax', true, false),
@@ -221,7 +231,10 @@ const useWineListPage = () => {
         orderBy,
         handleRequestSort,
         visibleRows,
+        selectedWine,
         handleClick,
+        closeEditWineDialog,
+        isEditOpen,
         cellarList,
         cellarNames,
         wineHeadCells,

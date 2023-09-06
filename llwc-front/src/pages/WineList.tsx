@@ -24,6 +24,7 @@ import { Navigate } from 'react-router-dom';
 import useWineListPage, { WineData, WineHeadCell, Order } from '../hooks/useWineListPage';
 import useUserAPI from '../hooks/useUserAPI';
 import { UserContext } from '../contexts/user-context';
+import EditWineDialog from './EditWineDialog';
 
 // Originally copied from https://mui.com/material-ui/react-table/#sorting-amp-selecting
 
@@ -118,7 +119,10 @@ export const WineList = () => {
         orderBy,
         handleRequestSort,
         visibleRows,
+        selectedWine,
         handleClick,
+        closeEditWineDialog,
+        isEditOpen,
         cellarList,
         cellarNames,
         wineHeadCells,
@@ -136,75 +140,84 @@ export const WineList = () => {
         return <Navigate to="/login" />;
     }
     return (
-        <Box sx={{ width: '100%' }}>
-            <Paper sx={{ width: '100%', mb: 2 }}>
-                <EnhancedTableToolbar
-                    tableTitle="Wine List"
-                    handleCellarSelect={handleCellarSelect}
-                    selectedCellars={selectedCellars}
-                    cellarList={cellarList}
-                />
-                <TableContainer sx={{ maxHeight: `calc(100vh - ${tablePaginationHeight})` }}>
-                    <Table stickyHeader sx={{ minWidth: 750 }} aria-labelledby="tableTitle" size="medium">
-                        <EnhancedTableHead order={order} orderBy={orderBy} onRequestSort={handleRequestSort} wineHeadCells={wineHeadCells} />
-                        <TableBody>
-                            {visibleRows.map((row, index) => {
-                                const labelId = `enhanced-table-checkbox-${index}`;
+        <div>
+            <Box sx={{ width: '100%' }}>
+                <Paper sx={{ width: '100%', mb: 2 }}>
+                    <EnhancedTableToolbar
+                        tableTitle="Wine List"
+                        handleCellarSelect={handleCellarSelect}
+                        selectedCellars={selectedCellars}
+                        cellarList={cellarList}
+                    />
+                    <TableContainer sx={{ maxHeight: `calc(100vh - ${tablePaginationHeight})` }}>
+                        <Table stickyHeader sx={{ minWidth: 750 }} aria-labelledby="tableTitle" size="medium">
+                            <EnhancedTableHead order={order} orderBy={orderBy} onRequestSort={handleRequestSort} wineHeadCells={wineHeadCells} />
+                            <TableBody>
+                                {visibleRows.map((row, index) => {
+                                    const labelId = `enhanced-table-checkbox-${index}`;
 
-                                return (
+                                    return (
+                                        <TableRow
+                                            hover
+                                            onClick={event => handleClick(event, row)}
+                                            role="checkbox"
+                                            selected={selectedWine?.id === row.id}
+                                            tabIndex={-1}
+                                            key={row.name}
+                                            sx={{ cursor: 'pointer' }}
+                                        >
+                                            {selectedCellars.length !== 1 && (
+                                                <TableCell>{row.cellar_id ? cellarNames[row.cellar_id] : cellarNames['null']}</TableCell>
+                                            )}
+                                            {selectedCellars.toString() !== 'null' && <TableCell>{row.position}</TableCell>}
+                                            <TableCell>{row.tag_texts.join(', ')}</TableCell>
+                                            <TableCell component="th" id={labelId} scope="row">
+                                                {row.name}
+                                            </TableCell>
+                                            <TableCell align="right">{row.producer}</TableCell>
+                                            <TableCell align="right">{row.vintage}</TableCell>
+                                            <TableCell align="right">{row.country}</TableCell>
+                                            <TableCell align="right">{row.region_1}</TableCell>
+                                            <TableCell align="right">{row.region_2}</TableCell>
+                                            <TableCell align="right">{row.region_3}</TableCell>
+                                            <TableCell align="right">{row.region_4}</TableCell>
+                                            <TableCell align="right">{row.region_5}</TableCell>
+                                            {/* MYMEMO: make cepages look like tags */}
+                                            <TableCell align="right">{getCepageAbbreviations(row.cepages)}</TableCell>
+                                            <TableCell align="right">{row.bought_at}</TableCell>
+                                            <TableCell align="right">{row.bought_from}</TableCell>
+                                            <TableCell align="right">{row.price_with_tax}</TableCell>
+                                        </TableRow>
+                                    );
+                                })}
+                                {emptyRows > 0 && (
                                     <TableRow
-                                        hover
-                                        onClick={event => handleClick(event, row)}
-                                        role="checkbox"
-                                        tabIndex={-1}
-                                        key={row.name}
-                                        sx={{ cursor: 'pointer' }}
+                                        style={{
+                                            height: 53 * emptyRows,
+                                        }}
                                     >
-                                        {selectedCellars.length !== 1 && (
-                                            <TableCell>{row.cellar_id ? cellarNames[row.cellar_id] : cellarNames['null']}</TableCell>
-                                        )}
-                                        <TableCell>{row.tag_texts.join(', ')}</TableCell>
-                                        {selectedCellars.toString() !== 'null' && <TableCell>{row.position}</TableCell>}
-                                        <TableCell component="th" id={labelId} scope="row">
-                                            {row.name}
-                                        </TableCell>
-                                        <TableCell align="right">{row.producer}</TableCell>
-                                        <TableCell align="right">{row.country}</TableCell>
-                                        <TableCell align="right">{row.region_1}</TableCell>
-                                        <TableCell align="right">{row.region_2}</TableCell>
-                                        <TableCell align="right">{row.region_3}</TableCell>
-                                        <TableCell align="right">{row.region_4}</TableCell>
-                                        <TableCell align="right">{row.region_5}</TableCell>
-                                        {/* MYMEMO: make cepages look like tags */}
-                                        <TableCell align="right">{getCepageAbbreviations(row.cepages)}</TableCell>
-                                        <TableCell align="right">{row.vintage}</TableCell>
-                                        <TableCell align="right">{row.bought_at}</TableCell>
-                                        <TableCell align="right">{row.bought_from}</TableCell>
-                                        <TableCell align="right">{row.price_with_tax}</TableCell>
+                                        <TableCell colSpan={6} />
                                     </TableRow>
-                                );
-                            })}
-                            {emptyRows > 0 && (
-                                <TableRow
-                                    style={{
-                                        height: 53 * emptyRows,
-                                    }}
-                                >
-                                    <TableCell colSpan={6} />
-                                </TableRow>
-                            )}
-                        </TableBody>
-                    </Table>
-                </TableContainer>
-                <TablePagination
-                    component="div"
-                    count={visibleRows.length}
-                    rowsPerPage={rowsPerPage}
-                    page={page}
-                    onPageChange={handleChangePage}
-                    onRowsPerPageChange={handleChangeRowsPerPage}
-                />
-            </Paper>
-        </Box>
+                                )}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
+                    <TablePagination
+                        component="div"
+                        count={visibleRows.length}
+                        rowsPerPage={rowsPerPage}
+                        page={page}
+                        onPageChange={handleChangePage}
+                        onRowsPerPageChange={handleChangeRowsPerPage}
+                    />
+                </Paper>
+            </Box>
+            <EditWineDialog
+                isOpen={isEditOpen}
+                handleClose={closeEditWineDialog}
+                selectedWine={selectedWine}
+                getCepageAbbreviations={getCepageAbbreviations}
+            ></EditWineDialog>
+        </div>
     );
 };
