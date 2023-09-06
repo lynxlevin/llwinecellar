@@ -36,10 +36,10 @@ interface EnhancedTableHeadProps {
 
 const EnhancedTableHead = (props: EnhancedTableHeadProps) => {
     const { order, orderBy, onRequestSort, wineHeadCells } = props;
-    // MYMEMO: fix sort on position. It happens because there's no position in wine list from api
     const createSortHandler = (property: keyof WineData) => (event: React.MouseEvent<unknown>) => {
         onRequestSort(event, property);
     };
+    // MYMEMO: add filter
 
     return (
         <TableHead>
@@ -123,7 +123,6 @@ export const WineList = () => {
         cellarNames,
         wineHeadCells,
         emptyRows,
-        wineRows,
         rowsPerPage,
         page,
         handleChangePage,
@@ -199,8 +198,7 @@ export const WineList = () => {
                 </TableContainer>
                 <TablePagination
                     component="div"
-                    // MYMEMO: discount unfiltered count
-                    count={wineRows.length}
+                    count={visibleRows.length}
                     rowsPerPage={rowsPerPage}
                     page={page}
                     onPageChange={handleChangePage}

@@ -226,7 +226,6 @@ const useWineListPage = () => {
         cellarNames,
         wineHeadCells,
         emptyRows,
-        wineRows,
         rowsPerPage,
         page,
         handleChangePage,
