@@ -21,9 +21,9 @@ import Tooltip from '@mui/material/Tooltip';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import { visuallyHidden } from '@mui/utils';
 import { Navigate } from 'react-router-dom';
-import useWineListPage, { WineData, WineHeadCell, Order } from '../hooks/useWineListPage';
-import useUserAPI from '../hooks/useUserAPI';
-import { UserContext } from '../contexts/user-context';
+import useWineListPage, { WineData, WineHeadCell, Order } from '../../hooks/useWineListPage';
+import useUserAPI from '../../hooks/useUserAPI';
+import { UserContext } from '../../contexts/user-context';
 import EditWineDialog from './EditWineDialog';
 
 // Originally copied from https://mui.com/material-ui/react-table/#sorting-amp-selecting
