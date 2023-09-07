@@ -212,12 +212,7 @@ export const WineList = () => {
                     />
                 </Paper>
             </Box>
-            <EditWineDialog
-                isOpen={isEditOpen}
-                handleClose={closeEditWineDialog}
-                selectedWine={selectedWine}
-                getCepageAbbreviations={getCepageAbbreviations}
-            ></EditWineDialog>
+            {selectedWine && <EditWineDialog isOpen={isEditOpen} handleClose={closeEditWineDialog} selectedWine={selectedWine}></EditWineDialog>}
         </div>
     );
 };

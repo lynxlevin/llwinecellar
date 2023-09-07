@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { AppBar, Button, Container, Dialog, Grid, IconButton, Slide, TextField, Toolbar, Typography } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { TransitionProps } from '@mui/material/transitions';
@@ -16,15 +16,59 @@ const Transition = React.forwardRef(function Transition(
 interface EditWineDialogProps {
     isOpen: boolean;
     handleClose: () => void;
-    selectedWine: WineData | undefined;
-    getCepageAbbreviations: (cepages: Cepage[]) => string;
+    selectedWine: WineData;
+}
+
+interface ValidationErrorsType {
+    cepages?: string;
 }
 
 // MYMEMO: Grid sample https://github.com/mui/material-ui/blob/v5.14.8/docs/data/material/getting-started/templates/checkout/AddressForm.tsx
 export default function EditWineDialog(props: EditWineDialogProps) {
-    const { isOpen, handleClose, selectedWine, getCepageAbbreviations } = props;
+    const { isOpen, handleClose, selectedWine } = props;
 
-    if (selectedWine === undefined) return <></>;
+    // MYMEMO: selectedWine が変わっても内容が更新されない
+    const [tagTexts, setTagTexts] = useState<string[]>(selectedWine.tag_texts);
+    const [name, setName] = useState<string>(selectedWine.name);
+    const [producer, setProducer] = useState<string>(selectedWine.producer);
+    const [vintage, setVintage] = useState<number>(selectedWine.vintage);
+    const [country, setCountry] = useState<string>(selectedWine.country);
+    const [region1, setRegion1] = useState<string>(selectedWine.region_1);
+    const [region2, setRegion2] = useState<string>(selectedWine.region_2);
+    const [region3, setRegion3] = useState<string>(selectedWine.region_3);
+    const [region4, setRegion4] = useState<string>(selectedWine.region_4);
+    const [region5, setRegion5] = useState<string>(selectedWine.region_5);
+    const [cepages, setCepages] = useState<Cepage[]>(selectedWine.cepages);
+    const [boughtAt, setBoughtAt] = useState<string | null>(selectedWine.bought_at);
+    const [boughtFrom, setBoughtFrom] = useState<string>(selectedWine.bought_from);
+    const [priceWithTax, setPriceWithTax] = useState<number>(selectedWine.price_with_tax);
+    const [drunkAt, setDrunkAt] = useState<string | null>(selectedWine.drunk_at);
+    const [note, setNote] = useState<string>(selectedWine.note);
+
+    const [validationErrors, setValidationErrors] = useState<ValidationErrorsType>({});
+
+    const handleSave = () => {
+        console.log(validationErrors);
+
+        console.log(tagTexts);
+        console.log(name);
+        console.log(producer);
+        console.log(vintage);
+        console.log(country);
+        console.log(region1);
+        console.log(region2);
+        console.log(region3);
+        console.log(region4);
+        console.log(region5);
+        console.log(cepages);
+        console.log(boughtAt);
+        console.log(boughtFrom);
+        console.log(priceWithTax);
+        console.log(drunkAt);
+        console.log(note);
+        // handleClose();
+    };
+
     return (
         <Dialog fullScreen open={isOpen} onClose={handleClose} TransitionComponent={Transition}>
             <AppBar position="sticky">
@@ -35,7 +79,7 @@ export default function EditWineDialog(props: EditWineDialogProps) {
                     <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
                         Sound
                     </Typography>
-                    <Button autoFocus color="inherit" onClick={handleClose}>
+                    <Button autoFocus color="inherit" onClick={handleSave}>
                         save
                     </Button>
                 </Toolbar>
@@ -43,52 +87,196 @@ export default function EditWineDialog(props: EditWineDialogProps) {
             <Container maxWidth="md" sx={{ marginTop: 3, marginBottom: 3 }}>
                 <Grid container spacing={2}>
                     <Grid item xs={12}>
-                        <TextField label="tag_texts" defaultValue={selectedWine.tag_texts} variant="standard" fullWidth />
+                        {/* https://mui.com/material-ui/react-select/#chip */}
+                        <TextField
+                            label="tag_texts"
+                            defaultValue={selectedWine.tag_texts}
+                            // onChange={event => {
+                            //     setTagTexts(event.target.value);
+                            // }}
+                            variant="standard"
+                            fullWidth
+                        />
                     </Grid>
                     <Grid item xs={12}>
-                        <TextField label="name" defaultValue={selectedWine.name} variant="standard" fullWidth />
+                        <TextField
+                            label="name"
+                            defaultValue={selectedWine.name}
+                            onChange={event => {
+                                setName(event.target.value);
+                            }}
+                            variant="standard"
+                            fullWidth
+                        />
                     </Grid>
                     <Grid item xs={10}>
-                        <TextField label="producer" defaultValue={selectedWine.producer} variant="standard" fullWidth />
+                        <TextField
+                            label="producer"
+                            defaultValue={selectedWine.producer}
+                            onChange={event => {
+                                setProducer(event.target.value);
+                            }}
+                            variant="standard"
+                            fullWidth
+                        />
                     </Grid>
                     <Grid item xs={2}>
-                        <TextField label="vintage" defaultValue={selectedWine.vintage} variant="standard" fullWidth />
+                        <TextField
+                            label="vintage"
+                            defaultValue={selectedWine.vintage}
+                            onChange={event => {
+                                setVintage(Number(event.target.value));
+                            }}
+                            variant="standard"
+                            fullWidth
+                        />
                     </Grid>
                     <Grid item xs={6}>
-                        <TextField label="country" defaultValue={selectedWine.country} variant="standard" fullWidth />
+                        <TextField
+                            label="country"
+                            defaultValue={selectedWine.country}
+                            onChange={event => {
+                                setCountry(event.target.value);
+                            }}
+                            variant="standard"
+                            fullWidth
+                        />
                     </Grid>
                     <Grid item xs={6}>
-                        <TextField label="region_1" defaultValue={selectedWine.region_1} variant="standard" fullWidth />
+                        <TextField
+                            label="region_1"
+                            defaultValue={selectedWine.region_1}
+                            onChange={event => {
+                                setRegion1(event.target.value);
+                            }}
+                            variant="standard"
+                            fullWidth
+                        />
                     </Grid>
                     <Grid item xs={6}>
-                        <TextField label="region_2" defaultValue={selectedWine.region_2} variant="standard" fullWidth />
+                        <TextField
+                            label="region_2"
+                            defaultValue={selectedWine.region_2}
+                            onChange={event => {
+                                setRegion2(event.target.value);
+                            }}
+                            variant="standard"
+                            fullWidth
+                        />
                     </Grid>
                     <Grid item xs={6}>
-                        <TextField label="region_3" defaultValue={selectedWine.region_3} variant="standard" fullWidth />
+                        <TextField
+                            label="region_3"
+                            defaultValue={selectedWine.region_3}
+                            onChange={event => {
+                                setRegion3(event.target.value);
+                            }}
+                            variant="standard"
+                            fullWidth
+                        />
                     </Grid>
                     <Grid item xs={6}>
-                        <TextField label="region_4" defaultValue={selectedWine.region_4} variant="standard" fullWidth />
+                        <TextField
+                            label="region_4"
+                            defaultValue={selectedWine.region_4}
+                            onChange={event => {
+                                setRegion4(event.target.value);
+                            }}
+                            variant="standard"
+                            fullWidth
+                        />
                     </Grid>
                     <Grid item xs={6}>
-                        <TextField label="region_5" defaultValue={selectedWine.region_5} variant="standard" fullWidth />
+                        <TextField
+                            label="region_5"
+                            defaultValue={selectedWine.region_5}
+                            onChange={event => {
+                                setRegion5(event.target.value);
+                            }}
+                            variant="standard"
+                            fullWidth
+                        />
                     </Grid>
                     <Grid item xs={12}>
-                        <TextField label="cepages" defaultValue={getCepageAbbreviations(selectedWine.cepages)} variant="standard" fullWidth />
+                        <TextField
+                            label="cepages"
+                            error={Boolean(validationErrors.cepages)}
+                            helperText={validationErrors.cepages ? validationErrors.cepages : ''}
+                            defaultValue={JSON.stringify(selectedWine.cepages)}
+                            onChange={event => {
+                                try {
+                                    setCepages(JSON.parse(event.target.value || 'null'));
+                                    setValidationErrors(current => {
+                                        const { cepages, ...rest } = current;
+                                        return rest;
+                                    });
+                                } catch (error) {
+                                    if (error instanceof SyntaxError) {
+                                        setValidationErrors(current => {
+                                            return { ...current, cepages: (error as SyntaxError).message };
+                                        });
+                                    }
+                                }
+                            }}
+                            variant="standard"
+                            fullWidth
+                        />
                     </Grid>
                     <Grid item xs={6}>
-                        <TextField label="bought_at" defaultValue={selectedWine.bought_at} variant="standard" fullWidth />
+                        <TextField
+                            label="bought_at"
+                            defaultValue={selectedWine.bought_at}
+                            onChange={event => {
+                                setBoughtAt(event.target.value);
+                            }}
+                            variant="standard"
+                            fullWidth
+                        />
                     </Grid>
                     <Grid item xs={6}>
-                        <TextField label="bought_from" defaultValue={selectedWine.bought_from} variant="standard" fullWidth />
+                        <TextField
+                            label="bought_from"
+                            defaultValue={selectedWine.bought_from}
+                            onChange={event => {
+                                setBoughtFrom(event.target.value);
+                            }}
+                            variant="standard"
+                            fullWidth
+                        />
                     </Grid>
                     <Grid item xs={12}>
-                        <TextField label="price_with_tax" defaultValue={selectedWine.price_with_tax} variant="standard" fullWidth />
+                        <TextField
+                            label="price_with_tax"
+                            defaultValue={selectedWine.price_with_tax}
+                            onChange={event => {
+                                setPriceWithTax(Number(event.target.value));
+                            }}
+                            variant="standard"
+                            fullWidth
+                        />
                     </Grid>
                     <Grid item xs={12}>
-                        <TextField label="drunk_at" defaultValue={selectedWine.drunk_at} variant="standard" fullWidth />
+                        <TextField
+                            label="drunk_at"
+                            defaultValue={selectedWine.drunk_at}
+                            onChange={event => {
+                                setDrunkAt(event.target.value);
+                            }}
+                            variant="standard"
+                            fullWidth
+                        />
                     </Grid>
                     <Grid item xs={12}>
-                        <TextField label="note" defaultValue={selectedWine.note} variant="standard" fullWidth multiline />
+                        <TextField
+                            label="note"
+                            defaultValue={selectedWine.note}
+                            onChange={event => {
+                                setNote(event.target.value);
+                            }}
+                            variant="standard"
+                            fullWidth
+                            multiline
+                        />
                     </Grid>
                 </Grid>
             </Container>
