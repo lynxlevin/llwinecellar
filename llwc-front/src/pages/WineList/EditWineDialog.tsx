@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { AppBar, Button, Container, Dialog, Grid, IconButton, Slide, TextField, Toolbar, Typography } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { TransitionProps } from '@mui/material/transitions';
-import { Cepage, WineData } from '../../hooks/useWineListPage';
+import { Cepage, WineData, WineContext } from '../../contexts/wine-context';
 import { WineAPI } from '../../apis/WineAPI';
+import useWineAPI from '../../hooks/useWineAPI';
 
 const Transition = React.forwardRef(function Transition(
     props: TransitionProps & {
@@ -17,7 +18,7 @@ const Transition = React.forwardRef(function Transition(
 interface EditWineDialogProps {
     isOpen: boolean;
     handleClose: () => void;
-    selectedWine: WineData;
+    selectedWineId: string;
 }
 
 interface ValidationErrorsType {
@@ -25,7 +26,12 @@ interface ValidationErrorsType {
 }
 
 const EditWineDialog = (props: EditWineDialogProps) => {
-    const { isOpen, handleClose, selectedWine } = props;
+    const { isOpen, handleClose, selectedWineId } = props;
+
+    const wineContext = useContext(WineContext);
+    const selectedWine = wineContext.wineList.find(wine => wine.id === selectedWineId) as WineData;
+
+    const { getWineList } = useWineAPI();
 
     const [tagTexts, setTagTexts] = useState<string[]>(selectedWine.tag_texts);
     const [name, setName] = useState<string>(selectedWine.name);
@@ -90,7 +96,7 @@ const EditWineDialog = (props: EditWineDialogProps) => {
             tag_texts: tagTexts,
         };
         await WineAPI.update(selectedWine.id, data);
-        // MYMEMO: update wineRows
+        await getWineList();
         handleClose();
     };
 

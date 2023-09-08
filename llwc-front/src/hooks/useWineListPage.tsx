@@ -1,37 +1,9 @@
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { CellarContext } from '../contexts/cellar-context';
-import { WineAPI } from '../apis/WineAPI';
 import { SelectChangeEvent } from '@mui/material';
 import { UserContext } from '../contexts/user-context';
-
-export interface Cepage {
-    name: string;
-    abbreviation: string | null;
-    percentage: number | null;
-}
-
-export interface WineData {
-    id: string;
-    name: string;
-    producer: string;
-    country: string;
-    region_1: string;
-    region_2: string;
-    region_3: string;
-    region_4: string;
-    region_5: string;
-    cepages: Cepage[];
-    vintage: number;
-    bought_at: string | null;
-    bought_from: string;
-    price_with_tax: number;
-    drunk_at: string | null;
-    note: string;
-    cellar_name: string;
-    cellar_id: string | null;
-    position: string | null;
-    tag_texts: string[];
-}
+import { Cepage, WineContext, WineData } from '../contexts/wine-context';
+import useWineAPI from './useWineAPI';
 
 export type Order = 'asc' | 'desc';
 
@@ -45,12 +17,15 @@ export interface WineHeadCell {
 const useWineListPage = () => {
     const userContext = useContext(UserContext);
     const cellarContext = useContext(CellarContext);
+    const wineContext = useContext(WineContext);
+
+    const { getWineList } = useWineAPI();
+
     const [selectedCellars, setSelectedCellars] = useState<string[]>([]);
     const [order, setOrder] = useState<Order>('asc');
     const [orderBy, setOrderBy] = useState<keyof WineData>('tag_texts');
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(100);
-    const [wineRows, setWineRows] = useState<WineData[]>([]);
     const [selectedWine, setSelectedWine] = useState<WineData>();
     const [isEditOpen, setIsEditOpen] = useState(false);
 
@@ -131,7 +106,7 @@ const useWineListPage = () => {
     }, [getWineHeadCell, selectedCellars]);
 
     // Avoid a layout jump when reaching the last page with empty rows.
-    const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - wineRows.length) : 0;
+    const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - wineContext.wineList.length) : 0;
 
     const compare = <T,>(a: T, b: T, orderBy: keyof T) => {
         if (orderBy === 'tag_texts') {
@@ -190,18 +165,11 @@ const useWineListPage = () => {
             cellars.splice(index, 1);
             cellars.push(null);
         }
-        return wineRows
+        return wineContext.wineList
             .filter(wine => cellars.includes(wine.cellar_id))
             .sort(getComparator(order, orderBy))
             .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
-    }, [getComparator, order, orderBy, page, rowsPerPage, selectedCellars, wineRows]);
-
-    const getWines = async () => {
-        const query = { is_drunk: false };
-        const res = await WineAPI.list(query);
-        const wineData = res.data.wines;
-        setWineRows(wineData);
-    };
+    }, [getComparator, order, orderBy, page, rowsPerPage, selectedCellars, wineContext.wineList]);
 
     const cellarList = cellarContext.list.map(cellar => [cellar.id, cellar.name]);
     const cellarNames = Object.fromEntries(cellarList);
@@ -218,11 +186,17 @@ const useWineListPage = () => {
 
     useEffect(() => {
         if (userContext.isLoggedIn === true) {
-            getWines();
             const cellars = cellarContext.list.map(cellar => cellar.id);
             setSelectedCellars([...cellars, 'null']);
         }
     }, [cellarContext.list, userContext.isLoggedIn]);
+
+    useEffect(() => {
+        if (userContext.isLoggedIn === true) {
+            getWineList();
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [userContext.isLoggedIn]);
 
     return {
         selectedCellars,

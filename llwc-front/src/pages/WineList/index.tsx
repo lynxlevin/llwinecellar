@@ -21,7 +21,8 @@ import Tooltip from '@mui/material/Tooltip';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import { visuallyHidden } from '@mui/utils';
 import { Navigate } from 'react-router-dom';
-import useWineListPage, { WineData, WineHeadCell, Order } from '../../hooks/useWineListPage';
+import useWineListPage, { WineHeadCell, Order } from '../../hooks/useWineListPage';
+import { WineData } from '../../contexts/wine-context';
 import useUserAPI from '../../hooks/useUserAPI';
 import { UserContext } from '../../contexts/user-context';
 import EditWineDialog from './EditWineDialog';
@@ -212,7 +213,7 @@ export const WineList = () => {
                     />
                 </Paper>
             </Box>
-            {selectedWine && <EditWineDialog isOpen={isEditOpen} handleClose={closeEditWineDialog} selectedWine={selectedWine}></EditWineDialog>}
+            {selectedWine && <EditWineDialog isOpen={isEditOpen} handleClose={closeEditWineDialog} selectedWineId={selectedWine.id}></EditWineDialog>}
         </div>
     );
 };

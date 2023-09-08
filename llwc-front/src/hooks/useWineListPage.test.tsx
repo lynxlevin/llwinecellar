@@ -1,5 +1,6 @@
 import { act, renderHook } from '@testing-library/react';
-import useWineListPage, { WineData } from './useWineListPage';
+import useWineListPage from './useWineListPage';
+import { WineData } from '../contexts/wine-context';
 import { WineAPI } from '../apis/WineAPI';
 import { SelectChangeEvent } from '@mui/material';
 import React from 'react';

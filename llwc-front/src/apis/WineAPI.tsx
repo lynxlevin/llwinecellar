@@ -1,4 +1,4 @@
-import { WineData } from '../hooks/useWineListPage';
+import { WineData } from '../contexts/wine-context';
 import client from './axios';
 import { AxiosResponse } from 'axios';
 
