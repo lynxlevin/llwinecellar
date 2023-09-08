@@ -16,4 +16,8 @@ export const WineAPI = {
         }
         return await client.get(url);
     },
+    update: async (id: string, data: Object): Promise<AxiosResponse<WineData>> => {
+        const url = `${WineAPI.BASE_URL}${id}/`;
+        return await client.put(url, data, { headers: { 'content-type': 'application/json' } });
+    },
 };

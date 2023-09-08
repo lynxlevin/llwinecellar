@@ -3,6 +3,7 @@ import { AppBar, Button, Container, Dialog, Grid, IconButton, Slide, TextField, 
 import CloseIcon from '@mui/icons-material/Close';
 import { TransitionProps } from '@mui/material/transitions';
 import { Cepage, WineData } from '../../hooks/useWineListPage';
+import { WineAPI } from '../../apis/WineAPI';
 
 const Transition = React.forwardRef(function Transition(
     props: TransitionProps & {
@@ -67,26 +68,30 @@ const EditWineDialog = (props: EditWineDialogProps) => {
         }
     }, [isOpen, selectedWine]);
 
-    const handleSave = () => {
-        console.log(validationErrors);
+    const handleSave = async () => {
+        if (Object.keys(validationErrors).length > 0) return;
 
-        console.log(tagTexts);
-        console.log(name);
-        console.log(producer);
-        console.log(vintage);
-        console.log(country);
-        console.log(region1);
-        console.log(region2);
-        console.log(region3);
-        console.log(region4);
-        console.log(region5);
-        console.log(cepages);
-        console.log(boughtAt);
-        console.log(boughtFrom);
-        console.log(priceWithTax);
-        console.log(drunkAt);
-        console.log(note);
-        // handleClose();
+        const data = {
+            name: name,
+            producer: producer,
+            country: country,
+            region_1: region1,
+            region_2: region2,
+            region_3: region3,
+            region_4: region4,
+            region_5: region5,
+            cepages: cepages,
+            vintage: vintage,
+            bought_at: boughtAt,
+            bought_from: boughtFrom,
+            price_with_tax: priceWithTax,
+            drunk_at: drunkAt,
+            note: note,
+            tag_texts: tagTexts,
+        };
+        await WineAPI.update(selectedWine.id, data);
+        // MYMEMO: update wineRows
+        handleClose();
     };
 
     return (
@@ -107,16 +112,15 @@ const EditWineDialog = (props: EditWineDialogProps) => {
             <Container maxWidth="md" sx={{ marginTop: 3, marginBottom: 3 }}>
                 <Grid container spacing={2}>
                     <Grid item xs={12}>
-                        {/* https://mui.com/material-ui/react-select/#chip */}
-                        {/* Send as an array ["tag1", "tag2"] */}
+                        {/* MYMEMO: use multiselect with chip https://mui.com/material-ui/react-select/#chip */}
                         {/* MYMEMO: consider using _.throttle or _.debounce on all onChanges */}
+                        {/* MYMEMO: show tag_master somewhere */}
                         <TextField
                             label="tag_texts"
                             defaultValue={selectedWine.tag_texts}
-                            // MYMEMO: not implemented yet
-                            // onChange={event => {
-                            //     setTagTexts(event.target.value);
-                            // }}
+                            onChange={event => {
+                                setTagTexts(event.target.value === '' ? [] : event.target.value.split(','));
+                            }}
                             variant="standard"
                             fullWidth
                         />
@@ -225,10 +229,13 @@ const EditWineDialog = (props: EditWineDialogProps) => {
                             label="cepages"
                             error={Boolean(validationErrors.cepages)}
                             helperText={validationErrors.cepages ? validationErrors.cepages : ''}
-                            defaultValue={JSON.stringify(selectedWine.cepages)}
+                            defaultValue={
+                                selectedWine.cepages.length > 0 ? JSON.stringify(selectedWine.cepages) : '[{"name":"","abbreviation":"","percentage":"100.0"}]'
+                            }
+                            // MYMEMO: show grape_master somewhere
                             onChange={event => {
                                 try {
-                                    setCepages(JSON.parse(event.target.value || 'null'));
+                                    setCepages(JSON.parse(event.target.value || '[]'));
                                     setValidationErrors(current => {
                                         const { cepages, ...rest } = current;
                                         return rest;
@@ -250,7 +257,7 @@ const EditWineDialog = (props: EditWineDialogProps) => {
                             label="bought_at"
                             defaultValue={selectedWine.bought_at}
                             onChange={event => {
-                                setBoughtAt(event.target.value);
+                                setBoughtAt(event.target.value || null);
                             }}
                             variant="standard"
                             fullWidth
@@ -283,7 +290,7 @@ const EditWineDialog = (props: EditWineDialogProps) => {
                             label="drunk_at"
                             defaultValue={selectedWine.drunk_at}
                             onChange={event => {
-                                setDrunkAt(event.target.value);
+                                setDrunkAt(event.target.value || null);
                             }}
                             variant="standard"
                             fullWidth

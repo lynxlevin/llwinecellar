@@ -5,7 +5,7 @@ const client = axios.create({
 });
 
 client.interceptors.request.use(async config => {
-    if (config.method !== undefined && ['post'].includes(config.method)) {
+    if (config.method !== undefined && ['post', 'put'].includes(config.method)) {
         const res = await client.get('/user/csrf/');
         config.headers['x-csrftoken'] = res.headers['x-csrftoken'];
     }
