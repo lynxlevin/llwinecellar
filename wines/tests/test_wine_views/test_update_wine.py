@@ -4,7 +4,14 @@ from decimal import Decimal
 from django.test import Client, TestCase
 from rest_framework import status
 
-from llwinecellar.common.test_utils import CellarFactory, UserFactory, WineFactory
+from llwinecellar.common.test_utils import (
+    CellarFactory,
+    CepageFactory,
+    GrapeMasterFactory,
+    UserFactory,
+    WineFactory,
+    WineTagFactory,
+)
 
 from ...enums import Country
 
@@ -20,10 +27,7 @@ class TestUpdateWine(TestCase):
         cls.user = UserFactory()
         cls.cellar = CellarFactory(user=cls.user)
 
-    def test_update(self):
-        # Arrange
-        wine = WineFactory(user=self.user)
-        params = {
+        cls.default_params = {
             "name": "Gevrey Chambertin",
             "producer": "Domaine Charlopin Tissier",
             "country": Country.FRANCE.label,
@@ -41,6 +45,11 @@ class TestUpdateWine(TestCase):
             "note": "テスト用のノート",
             "tag_texts": ["updated_tag1", "updated_tag2"],
         }
+
+    def test_update(self):
+        # Arrange
+        wine = WineFactory(user=self.user)
+        params = self.default_params
 
         # Act
         status_code, body = self._make_request(f"{self.base_path}{str(wine.id)}/", self.user, params=params)
@@ -81,24 +90,7 @@ class TestUpdateWine(TestCase):
     def test_update__same_result_on_multiple_requests(self):
         # Arrange
         wine = WineFactory(user=self.user)
-        params = {
-            "name": "Gevrey Chambertin",
-            "producer": "Domaine Charlopin Tissier",
-            "country": Country.FRANCE.label,
-            "region_1": "Bourgogne",
-            "region_2": "Côtes de Nuits",
-            "region_3": "Gevrey Chambertin",
-            "region_4": "",
-            "region_5": "",
-            "cepages": [{"name": "Pinot Noir", "abbreviation": "PN", "percentage": "100.0"}],
-            "vintage": 2019,
-            "bought_at": "2023-05-07",
-            "bought_from": "伊勢屋",
-            "price_with_tax": 13000,
-            "drunk_at": None,
-            "note": "テスト用のノート",
-            "tag_texts": ["updated_tag1", "updated_tag2"],
-        }
+        params = self.default_params
 
         # Act twice
         self._make_request(f"{self.base_path}{str(wine.id)}/", self.user, params=params)
@@ -137,27 +129,64 @@ class TestUpdateWine(TestCase):
         for param_tag, wine_tag in zip(params["tag_texts"], wine.tags.all()):
             self.assertEqual(param_tag, wine_tag.text)
 
+    def test_update__empty_cepages(self):
+        # Arrange
+        wine = WineFactory(user=self.user)
+        grape_master = GrapeMasterFactory(user=self.user)
+        CepageFactory(wine=wine, grape=grape_master, percentage=100.0)
+
+        params = {
+            **self.default_params,
+            "cepages": [],
+        }
+
+        # Act
+        status_code, body = self._make_request(f"{self.base_path}{str(wine.id)}/", self.user, params=params)
+
+        # Assert
+        self.assertEqual(status.HTTP_200_OK, status_code)
+
+        expected = {
+            "id": str(wine.id),
+            **params,
+        }
+        self._assert_dict_contains_subset(expected, body)
+
+        # Assert wine.cepages
+        wine.refresh_from_db()
+        self.assertEqual(0, wine.cepages.count())
+
+    def test_update__empty_tag_texts(self):
+        # Arrange
+        wine = WineFactory(user=self.user)
+        tags = WineTagFactory.create_batch(2, user=self.user)
+        wine.tags.set(tags)
+
+        params = {
+            **self.default_params,
+            "tag_texts": [],
+        }
+
+        # Act
+        status_code, body = self._make_request(f"{self.base_path}{str(wine.id)}/", self.user, params=params)
+
+        # Assert
+        self.assertEqual(status.HTTP_200_OK, status_code)
+
+        expected = {
+            "id": str(wine.id),
+            **params,
+        }
+        self._assert_dict_contains_subset(expected, body)
+
+        # Assert wine.cepages
+        wine.refresh_from_db()
+        self.assertEqual(0, wine.tags.count())
+
     def test_not_my_wine__404(self):
         # Arrange
         wine = WineFactory()
-        params = {
-            "name": "Gevrey Chambertin",
-            "producer": "Domaine Charlopin Tissier",
-            "country": Country.FRANCE.label,
-            "region_1": "Bourgogne",
-            "region_2": "Côtes de Nuits",
-            "region_3": "Gevrey Chambertin",
-            "region_4": "",
-            "region_5": "",
-            "cepages": [{"name": "Pinot Noir", "abbreviation": "PN", "percentage": "100.0"}],
-            "vintage": 2019,
-            "bought_at": "2023-05-07",
-            "bought_from": "伊勢屋",
-            "price_with_tax": 13000,
-            "drunk_at": None,
-            "note": "テスト用のノート",
-            "tag_texts": ["updated_tag1", "updated_tag2"],
-        }
+        params = self.default_params
 
         # Act
         status_code, _body = self._make_request(f"{self.base_path}{str(wine.id)}/", self.user, params=params)

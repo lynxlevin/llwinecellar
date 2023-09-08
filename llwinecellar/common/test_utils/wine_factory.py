@@ -6,7 +6,7 @@ import factory.fuzzy
 
 from cellars.models import CellarSpace
 from wines.enums import Country
-from wines.models import Wine
+from wines.models import Cepage, GrapeMaster, Wine, WineTag
 
 from .user_factory import UserFactory
 
@@ -56,3 +56,25 @@ class WineInBasketFactory:
         cellar_space.wine = wine
         cellar_space.save()
         return wine
+
+
+class GrapeMasterFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = GrapeMaster
+
+    name = "Pinot Noir"
+    abbreviation = "PN"
+    user = factory.SubFactory(UserFactory)
+
+
+class CepageFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = Cepage
+
+
+class WineTagFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = WineTag
+
+    text = factory.fuzzy.FuzzyText()
+    user = factory.SubFactory(UserFactory)
