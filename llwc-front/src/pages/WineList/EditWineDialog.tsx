@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { AppBar, Button, Container, Dialog, Grid, IconButton, Slide, TextField, Toolbar, Typography } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { TransitionProps } from '@mui/material/transitions';
@@ -23,11 +23,9 @@ interface ValidationErrorsType {
     cepages?: string;
 }
 
-// MYMEMO: Grid sample https://github.com/mui/material-ui/blob/v5.14.8/docs/data/material/getting-started/templates/checkout/AddressForm.tsx
-export default function EditWineDialog(props: EditWineDialogProps) {
+const EditWineDialog = (props: EditWineDialogProps) => {
     const { isOpen, handleClose, selectedWine } = props;
 
-    // MYMEMO: selectedWine が変わっても内容が更新されない
     const [tagTexts, setTagTexts] = useState<string[]>(selectedWine.tag_texts);
     const [name, setName] = useState<string>(selectedWine.name);
     const [producer, setProducer] = useState<string>(selectedWine.producer);
@@ -46,6 +44,28 @@ export default function EditWineDialog(props: EditWineDialogProps) {
     const [note, setNote] = useState<string>(selectedWine.note);
 
     const [validationErrors, setValidationErrors] = useState<ValidationErrorsType>({});
+
+    useEffect(() => {
+        if (isOpen) {
+            setTagTexts(selectedWine.tag_texts);
+            setName(selectedWine.name);
+            setProducer(selectedWine.producer);
+            setVintage(selectedWine.vintage);
+            setCountry(selectedWine.country);
+            setRegion1(selectedWine.region_1);
+            setRegion2(selectedWine.region_2);
+            setRegion3(selectedWine.region_3);
+            setRegion4(selectedWine.region_4);
+            setRegion5(selectedWine.region_5);
+            setCepages(selectedWine.cepages);
+            setBoughtAt(selectedWine.bought_at);
+            setBoughtFrom(selectedWine.bought_from);
+            setPriceWithTax(selectedWine.price_with_tax);
+            setDrunkAt(selectedWine.drunk_at);
+            setNote(selectedWine.note);
+            setValidationErrors({});
+        }
+    }, [isOpen, selectedWine]);
 
     const handleSave = () => {
         console.log(validationErrors);
@@ -88,9 +108,12 @@ export default function EditWineDialog(props: EditWineDialogProps) {
                 <Grid container spacing={2}>
                     <Grid item xs={12}>
                         {/* https://mui.com/material-ui/react-select/#chip */}
+                        {/* Send as an array ["tag1", "tag2"] */}
+                        {/* MYMEMO: consider using _.throttle or _.debounce on all onChanges */}
                         <TextField
                             label="tag_texts"
                             defaultValue={selectedWine.tag_texts}
+                            // MYMEMO: not implemented yet
                             // onChange={event => {
                             //     setTagTexts(event.target.value);
                             // }}
@@ -282,4 +305,6 @@ export default function EditWineDialog(props: EditWineDialogProps) {
             </Container>
         </Dialog>
     );
-}
+};
+
+export default EditWineDialog;
