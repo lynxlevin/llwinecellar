@@ -1,9 +1,30 @@
-import { WineData } from '../contexts/wine-context';
+import { Cepage, WineData } from '../contexts/wine-context';
 import client from './axios';
 import { AxiosResponse } from 'axios';
 
 interface WineListResponse {
     wines: WineData[];
+}
+
+export interface UpdateWineRequest {
+    name: string;
+    producer: string;
+    country: string;
+    region_1: string;
+    region_2: string;
+    region_3: string;
+    region_4: string;
+    region_5: string;
+    cepages: Cepage[];
+    vintage: number;
+    bought_at: string | null;
+    bought_from: string;
+    price_with_tax: number;
+    drunk_at: string | null;
+    note: string;
+    tag_texts: string[];
+    cellar_id?: string | null;
+    position?: string | null;
 }
 
 export const WineAPI = {
@@ -16,7 +37,7 @@ export const WineAPI = {
         }
         return await client.get(url);
     },
-    update: async (id: string, data: Object): Promise<AxiosResponse<WineData>> => {
+    update: async (id: string, data: UpdateWineRequest): Promise<AxiosResponse<WineData>> => {
         const url = `${WineAPI.BASE_URL}${id}/`;
         return await client.put(url, data, { headers: { 'content-type': 'application/json' } });
     },

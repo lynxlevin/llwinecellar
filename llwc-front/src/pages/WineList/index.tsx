@@ -252,7 +252,9 @@ export const WineList = () => {
                     />
                 </Paper>
             </Box>
-            {selectedWine && <EditWineDialog isOpen={isEditOpen} handleClose={closeEditWineDialog} selectedWineId={selectedWine.id}></EditWineDialog>}
+            {selectedWine && (
+                <EditWineDialog isOpen={isEditOpen} handleClose={closeEditWineDialog} selectedWineId={selectedWine.id} cellarList={cellarList}></EditWineDialog>
+            )}
         </div>
     );
 };

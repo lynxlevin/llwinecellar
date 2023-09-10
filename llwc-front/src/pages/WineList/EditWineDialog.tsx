@@ -1,9 +1,9 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { AppBar, Button, Container, Dialog, Grid, IconButton, Slide, TextField, Toolbar, Typography } from '@mui/material';
+import { AppBar, Button, Container, Dialog, Grid, IconButton, Slide, TextField, Toolbar, Typography, Select, MenuItem } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { TransitionProps } from '@mui/material/transitions';
 import { Cepage, WineData, WineContext } from '../../contexts/wine-context';
-import { WineAPI } from '../../apis/WineAPI';
+import { UpdateWineRequest, WineAPI } from '../../apis/WineAPI';
 import useWineAPI from '../../hooks/useWineAPI';
 
 const Transition = React.forwardRef(function Transition(
@@ -19,6 +19,7 @@ interface EditWineDialogProps {
     isOpen: boolean;
     handleClose: () => void;
     selectedWineId: string;
+    cellarList: string[][];
 }
 
 interface ValidationErrorsType {
@@ -26,7 +27,7 @@ interface ValidationErrorsType {
 }
 
 const EditWineDialog = (props: EditWineDialogProps) => {
-    const { isOpen, handleClose, selectedWineId } = props;
+    const { isOpen, handleClose, selectedWineId, cellarList } = props;
 
     const wineContext = useContext(WineContext);
     const selectedWine = wineContext.wineList.find(wine => wine.id === selectedWineId) as WineData;
@@ -49,6 +50,8 @@ const EditWineDialog = (props: EditWineDialogProps) => {
     const [priceWithTax, setPriceWithTax] = useState<number>(selectedWine.price_with_tax);
     const [drunkAt, setDrunkAt] = useState<string | null>(selectedWine.drunk_at);
     const [note, setNote] = useState<string>(selectedWine.note);
+    const [cellarId, setCellarId] = useState<string | null>('DO_NOT_CHANGE_PLACE');
+    const [position, setPosition] = useState<string | null>(selectedWine.position);
 
     const [validationErrors, setValidationErrors] = useState<ValidationErrorsType>({});
 
@@ -70,6 +73,8 @@ const EditWineDialog = (props: EditWineDialogProps) => {
             setPriceWithTax(selectedWine.price_with_tax);
             setDrunkAt(selectedWine.drunk_at);
             setNote(selectedWine.note);
+            setCellarId('DO_NOT_CHANGE_PLACE');
+            setPosition(selectedWine.position);
             setValidationErrors({});
         }
     }, [isOpen, selectedWine]);
@@ -77,7 +82,7 @@ const EditWineDialog = (props: EditWineDialogProps) => {
     const handleSave = async () => {
         if (Object.keys(validationErrors).length > 0) return;
 
-        const data = {
+        const data: UpdateWineRequest = {
             name: name,
             producer: producer,
             country: country,
@@ -95,6 +100,13 @@ const EditWineDialog = (props: EditWineDialogProps) => {
             note: note,
             tag_texts: tagTexts,
         };
+        if (cellarId === 'MOVE_OUT_OF_CELLAR') {
+            data.cellar_id = null;
+            data.position = null;
+        } else if (cellarId !== 'DO_NOT_CHANGE_PLACE') {
+            data.cellar_id = cellarId;
+            data.position = position;
+        }
         await WineAPI.update(selectedWine.id, data);
         await getWineList();
         handleClose();
@@ -315,6 +327,38 @@ const EditWineDialog = (props: EditWineDialogProps) => {
                         />
                     </Grid>
                     {/* MYMEMO: add cellar and position with error from backend (to_space occupied) */}
+                    <Grid item xs={12}>
+                        <Select
+                            value={cellarId}
+                            onChange={event => {
+                                console.log(event.target.value);
+                                setCellarId(event.target.value);
+                            }}
+                        >
+                            {/* MYMEMO: チェックにしたほうが良さそう */}
+                            <MenuItem value="DO_NOT_CHANGE_PLACE">DO_NOT_CHANGE_PLACE</MenuItem>
+                            {cellarList.map(cellar => (
+                                <MenuItem key={cellar[0]} value={cellar[0]}>
+                                    {cellar[1]}
+                                </MenuItem>
+                            ))}
+                            <MenuItem value="MOVE_OUT_OF_CELLAR">MOVE_OUT_OF_CELLAR</MenuItem>
+                        </Select>
+                    </Grid>
+                    <Grid item xs={12}>
+                        {/* MYMEMO(後日): make this a select */}
+                        {/* MYMEMO: change to disabled if cellar_id = DO_NOT_CHANGE_PLACE */}
+                        <TextField
+                            label="position"
+                            defaultValue={selectedWine.position}
+                            onChange={event => {
+                                setPosition(event.target.value);
+                            }}
+                            variant="standard"
+                            fullWidth
+                            multiline
+                        />
+                    </Grid>
                 </Grid>
             </Container>
         </Dialog>
