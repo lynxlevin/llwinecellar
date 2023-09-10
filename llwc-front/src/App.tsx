@@ -10,7 +10,7 @@ import { WineContext, WineData } from './contexts/wine-context';
 
 function App() {
     const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
-    // MYMEMO: CellarContext を準備するのはまだ早いかも
+    // MYMEMO(後日): CellarContext を準備するのはまだ早いかも
     const [list, setList] = useState<Cellar[]>([]);
     const [wineList, setWineList] = useState<WineData[]>([]);
 

@@ -77,7 +77,7 @@ const WineListTableHead = (props: WineListTableHeadProps) => {
             { id: 'price_with_tax', numeric: true },
         ] as WineHeadCell[];
     }, [selectedCellars]);
-    // MYMEMO: add filter
+    // MYMEMO(後日): add filter
 
     return (
         <TableHead>
@@ -134,6 +134,7 @@ const WineListToolbar = (props: WineListToolbarProps) => {
             <Typography sx={{ flex: '1 1 100%' }} variant="h6" id="tableTitle" component="div">
                 Wine List
             </Typography>
+            {/* MYMEMO: show open spaces when single cellar is selected */}
             <Select id="cellar-select" multiple value={selectedCellars as unknown as string} onChange={handleCellarSelect}>
                 {cellarList.map(cellar => (
                     <MenuItem key={cellar[0]} value={cellar[0]}>
@@ -142,6 +143,7 @@ const WineListToolbar = (props: WineListToolbarProps) => {
                 ))}
                 <MenuItem value="null">NOT_IN_CELLAR</MenuItem>
             </Select>
+            {/* MYMEMO: add create page */}
             <Tooltip title="Filter list">
                 <IconButton>
                     <FilterListIcon />
@@ -153,7 +155,7 @@ const WineListToolbar = (props: WineListToolbarProps) => {
 
 export const WineList = () => {
     const userContext = useContext(UserContext);
-    // MYMEMO: 全ページでこれだけするのは違和感
+    // MYMEMO(後日): 全ページでこれだけするのは違和感
     useUserAPI();
     const {
         selectedCellars,
@@ -177,18 +179,17 @@ export const WineList = () => {
         getCepageAbbreviations,
     } = useWineListPage();
 
-    const tablePaginationHeight = '52px';
-
     if (userContext.isLoggedIn === false) {
         return <Navigate to="/login" />;
     }
+    // MYMEMO: create DrunkWineList
     return (
         <div>
             <Box sx={{ width: '100%' }}>
                 <Paper sx={{ width: '100%', mb: 2 }}>
                     <WineListToolbar setSelectedCellars={setSelectedCellars} selectedCellars={selectedCellars} cellarList={cellarList} />
-                    <TableContainer sx={{ maxHeight: `calc(100vh - ${tablePaginationHeight})` }}>
-                        <Table stickyHeader sx={{ minWidth: 750 }} aria-labelledby="tableTitle" size="medium">
+                    <TableContainer>
+                        <Table sx={{ minWidth: 750 }} aria-labelledby="tableTitle" size="medium">
                             <WineListTableHead order={order} orderBy={orderBy} selectedCellars={selectedCellars} onRequestSort={handleRequestSort} />
                             <TableBody>
                                 {visibleRows.map((row, index) => {
@@ -220,11 +221,12 @@ export const WineList = () => {
                                             <TableCell align="right">{row.region_3}</TableCell>
                                             <TableCell align="right">{row.region_4}</TableCell>
                                             <TableCell align="right">{row.region_5}</TableCell>
-                                            {/* MYMEMO: make cepages look like tags */}
+                                            {/* MYMEMO(後日): make cepages look like tags */}
                                             <TableCell align="right">{getCepageAbbreviations(row.cepages)}</TableCell>
                                             <TableCell align="right">{row.bought_at}</TableCell>
                                             <TableCell align="right">{row.bought_from}</TableCell>
                                             <TableCell align="right">{row.price_with_tax}</TableCell>
+                                            {/* MYMEMO: show note */}
                                         </TableRow>
                                     );
                                 })}
@@ -240,7 +242,6 @@ export const WineList = () => {
                             </TableBody>
                         </Table>
                     </TableContainer>
-                    {/* MYMEMO: rowsPerPage を小さくしてページを変えると、要素がヘッダーの上に隠れることがある。 tablecontainer の maxheight が原因 */}
                     <TablePagination
                         component="div"
                         count={winesInSelectedCellars.length}

@@ -47,7 +47,7 @@ class UpdateWine:
                 cepages.append(Cepage(wine_id=wine.id, grape_id=grape_master.id, percentage=cepage["percentage"]))
             Cepage.objects.bulk_create(cepages)
         if len(tag_texts := data["tag_texts"]) > 0:
-            # MYMEMO: 順番を保持するように (後から追加は保持できているけど、最初に複数つけた時、フロントで書いた通りの順番にならない)
+            # MYMEMO(後日): 順番を保持するように (後から追加は保持できているけど、最初に複数つけた時、フロントで書いた通りの順番にならない)
             tags = [WineTag.objects.get_or_create(user_id=user.id, text=text)[0] for text in tag_texts]
             wine.tags.set(tags)
         else:

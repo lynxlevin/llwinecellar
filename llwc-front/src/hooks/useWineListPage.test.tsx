@@ -13,7 +13,7 @@ describe('useWineListPage.useEffect', () => {
         renderHook(() => useWineListPage());
         expect(WineAPI.list).toBeCalledTimes(0);
     });
-    // MYMEMO: test when logged in, trying the sequence in useLoginPage didn't work
+    // MYMEMO(後日): test when logged in, trying the sequence in useLoginPage didn't work
 });
 
 test('useWineListPage.handleRequestSort', async () => {

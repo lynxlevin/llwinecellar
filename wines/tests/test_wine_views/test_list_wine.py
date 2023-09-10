@@ -17,7 +17,7 @@ class TestListWine(TestCase):
         cls.base_path = "/api/wines/"
         cls.user = UserFactory()
         cls.cellar = CellarFactory(user=cls.user)
-        # MYMEMO: add cepage and tag
+        # MYMEMO(後日): add cepage and tag
 
     def test_all(self):
         # Arrange

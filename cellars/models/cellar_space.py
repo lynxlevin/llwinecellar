@@ -47,7 +47,7 @@ class CellarSpace(models.Model):
     type = models.IntegerField(choices=CellarSpaceType.choices, default=CellarSpaceType.RACK)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    # MYMEMO: might need to worry about order in basket.
+    # MYMEMO(後日): might need to worry about order in basket.
 
     class Meta:
         constraints = (

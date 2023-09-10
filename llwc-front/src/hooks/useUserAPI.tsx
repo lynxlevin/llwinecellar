@@ -13,7 +13,7 @@ const useUserAPI = () => {
         userContext.setIsLoggedIn(false);
     };
 
-    // MYMEMO: usexxxPage 以外の hook ではuseEffect しないほうがいいかも？
+    // MYMEMO(後日): usexxxPage 以外の hook ではuseEffect しないほうがいいかも？
     useEffect(() => {
         const checkSession = async () => {
             const session_res = await UserAPI.session();

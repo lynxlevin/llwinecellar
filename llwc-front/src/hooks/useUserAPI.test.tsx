@@ -15,7 +15,7 @@ describe('useUserAPI.useEffect', () => {
         await waitFor(() => {
             expect(CellarAPI.list).toHaveBeenCalledTimes(1);
         });
-        // MYMEMO: test context update: Maybe impossible without rendering UI?
+        // MYMEMO(後日): test context update: Maybe impossible without rendering UI?
     });
     test('is_authenticated: false', async () => {
         (UserAPI.session as jest.Mock).mockResolvedValue({ data: { is_authenticated: false } });
@@ -24,7 +24,7 @@ describe('useUserAPI.useEffect', () => {
         await waitFor(() => {
             expect(CellarAPI.list).toHaveBeenCalledTimes(0);
         });
-        // MYMEMO: test context update: Maybe impossible without rendering UI?
+        // MYMEMO(後日): test context update: Maybe impossible without rendering UI?
     });
 });
 

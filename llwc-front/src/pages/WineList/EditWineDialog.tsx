@@ -118,8 +118,8 @@ const EditWineDialog = (props: EditWineDialogProps) => {
             <Container maxWidth="md" sx={{ marginTop: 3, marginBottom: 3 }}>
                 <Grid container spacing={2}>
                     <Grid item xs={12}>
-                        {/* MYMEMO: use multiselect with chip https://mui.com/material-ui/react-select/#chip */}
-                        {/* MYMEMO: consider using _.throttle or _.debounce on all onChanges */}
+                        {/* MYMEMO(後日): use multiselect with chip https://mui.com/material-ui/react-select/#chip */}
+                        {/* MYMEMO(後日): consider using _.throttle or _.debounce on all onChanges */}
                         {/* MYMEMO: show tag_master somewhere */}
                         <TextField
                             label="tag_texts"
@@ -238,7 +238,7 @@ const EditWineDialog = (props: EditWineDialogProps) => {
                             defaultValue={
                                 selectedWine.cepages.length > 0 ? JSON.stringify(selectedWine.cepages) : '[{"name":"","abbreviation":"","percentage":"100.0"}]'
                             }
-                            // MYMEMO: show grape_master somewhere
+                            // MYMEMO(後日): show grape_master somewhere
                             onChange={event => {
                                 try {
                                     setCepages(JSON.parse(event.target.value || '[]'));
@@ -314,6 +314,7 @@ const EditWineDialog = (props: EditWineDialogProps) => {
                             multiline
                         />
                     </Grid>
+                    {/* MYMEMO: add cellar and position with error from backend (to_space occupied) */}
                 </Grid>
             </Container>
         </Dialog>
