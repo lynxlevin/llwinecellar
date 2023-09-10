@@ -98,6 +98,7 @@ class TestMoveWine(TestCase):
         # Arrange
         cellar = CellarFactory()
         wine = WineInRackFactory(user=cellar.user, row=1, column=1, cellar=cellar)
+        _another_wine = WineInBasketFactory(user=cellar.user, cellar=cellar)
         params = {
             "cellar_id": str(cellar.id),
             "row": None,

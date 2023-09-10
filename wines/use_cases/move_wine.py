@@ -88,7 +88,7 @@ class MoveWine:
         Returns None when the space does not exist
         """
         if _is_basket := not any([row, column]):
-            return CellarSpace.objects.get_or_create_basket(cellar_id)
+            return CellarSpace.objects.get_or_create_empty_basket(cellar_id)
         else:
             return CellarSpace.objects.get_by_cellar_row_column(cellar_id, row, column)
 

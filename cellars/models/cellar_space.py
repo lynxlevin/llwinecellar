@@ -22,12 +22,12 @@ class CellarSpaceQuerySet(models.QuerySet):
         except CellarSpace.DoesNotExist:
             return None
 
-    def get_or_create_basket(self, cellar_id) -> "CellarSpace":
+    def get_or_create_empty_basket(self, cellar_id) -> "CellarSpace":
         cellar = Cellar.objects.get_by_id(cellar_id)
         if not cellar.has_basket:
             return None
 
-        basket = self.filter(cellar_id=cellar_id, type=CellarSpaceType.BASKET).first()
+        basket = self.filter(cellar_id=cellar_id, type=CellarSpaceType.BASKET, wine_id=None).first()
         if basket is None:
             basket = self.create(cellar_id=cellar_id, type=CellarSpaceType.BASKET)
 

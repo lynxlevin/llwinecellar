@@ -10,6 +10,8 @@ from llwinecellar.common.test_utils import (
     GrapeMasterFactory,
     UserFactory,
     WineFactory,
+    WineInBasketFactory,
+    WineInRackFactory,
     WineTagFactory,
 )
 
@@ -25,7 +27,6 @@ class TestUpdateWine(TestCase):
     def setUpTestData(cls):
         cls.base_path = "/api/wines/"
         cls.user = UserFactory()
-        cls.cellar = CellarFactory(user=cls.user)
 
         cls.default_params = {
             "name": "Gevrey Chambertin",
@@ -182,6 +183,185 @@ class TestUpdateWine(TestCase):
         # Assert wine.cepages
         wine.refresh_from_db()
         self.assertEqual(0, wine.tags.count())
+
+    def test_update__move_to_empty_rack(self):
+        # Arrange
+        cellar = CellarFactory(user=self.user)
+        wine = WineInRackFactory(user=self.user, cellar=cellar, row=1, column=1)
+
+        params = {
+            **self.default_params,
+            "cellar_id": str(cellar.id),
+            "position": "1-2",
+        }
+
+        # Act
+        status_code, body = self._make_request(f"{self.base_path}{str(wine.id)}/", self.user, params=params)
+
+        # Assert
+        self.assertEqual(status.HTTP_200_OK, status_code)
+
+        expected = {
+            "id": str(wine.id),
+            **params,
+        }
+        self._assert_dict_contains_subset(expected, body)
+
+        # Assert wine.cepages
+        wine.refresh_from_db()
+        self.assertEqual(cellar.id, wine.cellar_id)
+        self.assertEqual(params["position"], wine.position)
+
+    def test_update__move_to_empty_basket(self):
+        # Arrange
+        wine = WineFactory(user=self.user)
+        cellar = CellarFactory(user=self.user)
+        _another_wine = WineInBasketFactory(user=self.user, cellar=cellar)
+
+        params = {
+            **self.default_params,
+            "cellar_id": str(cellar.id),
+            "position": "basket",
+        }
+
+        # Act
+        status_code, body = self._make_request(f"{self.base_path}{str(wine.id)}/", self.user, params=params)
+
+        # Assert
+        self.assertEqual(status.HTTP_200_OK, status_code)
+
+        expected = {
+            "id": str(wine.id),
+            **params,
+        }
+        self._assert_dict_contains_subset(expected, body)
+
+        # Assert wine.cepages
+        wine.refresh_from_db()
+        self.assertEqual(cellar.id, wine.cellar_id)
+        self.assertEqual(params["position"], wine.position)
+
+    def test_update__move_to_outside_of_cellar(self):
+        # Arrange
+        cellar = CellarFactory(user=self.user)
+        wine = WineInRackFactory(user=self.user, cellar=cellar, row=1, column=1)
+
+        params = {
+            **self.default_params,
+            "cellar_id": None,
+        }
+
+        # Act
+        status_code, body = self._make_request(f"{self.base_path}{str(wine.id)}/", self.user, params=params)
+
+        # Assert
+        self.assertEqual(status.HTTP_200_OK, status_code)
+
+        expected = {
+            "id": str(wine.id),
+            **params,
+        }
+        self._assert_dict_contains_subset(expected, body)
+
+        # Assert wine.cepages
+        wine.refresh_from_db()
+        self.assertEqual(None, wine.cellar_id)
+        self.assertEqual(None, wine.position)
+
+    def test_update__do_not_move_when_cellar_id_is_not_in_params(self):
+        # Arrange
+        cellar = CellarFactory(user=self.user)
+        wine = WineInRackFactory(user=self.user, cellar=cellar, row=1, column=1)
+
+        params = {
+            **self.default_params,
+        }
+
+        # Act
+        status_code, body = self._make_request(f"{self.base_path}{str(wine.id)}/", self.user, params=params)
+
+        # Assert
+        self.assertEqual(status.HTTP_200_OK, status_code)
+
+        expected = {
+            "id": str(wine.id),
+            **params,
+        }
+        self._assert_dict_contains_subset(expected, body)
+
+        # Assert wine.cepages
+        wine.refresh_from_db()
+        self.assertEqual(cellar.id, wine.cellar_id)
+        self.assertEqual("1-1", wine.position)
+
+    def test_update__error_on_move_to_filled_rack__403(self):
+        # Arrange
+        wine = WineFactory(user=self.user)
+        cellar = CellarFactory(user=self.user)
+        _another_wine = WineInRackFactory(user=self.user, cellar=cellar, row=1, column=1)
+
+        params = {
+            **self.default_params,
+            "cellar_id": str(cellar.id),
+            "position": "1-1",
+        }
+
+        # Act
+        status_code, _body = self._make_request(f"{self.base_path}{str(wine.id)}/", self.user, params=params)
+
+        # Assert
+        self.assertEqual(status.HTTP_403_FORBIDDEN, status_code)
+
+    def test_update__error_on_move_to_not_my_cellar__404(self):
+        # Arrange
+        wine = WineFactory(user=self.user)
+        cellar = CellarFactory()
+
+        params = {
+            **self.default_params,
+            "cellar_id": str(cellar.id),
+            "position": "1-1",
+        }
+
+        # Act
+        status_code, _body = self._make_request(f"{self.base_path}{str(wine.id)}/", self.user, params=params)
+
+        # Assert
+        self.assertEqual(status.HTTP_404_NOT_FOUND, status_code)
+
+    def test_update__error_on_move_to_nonexistent_rack__404(self):
+        # Arrange
+        wine = WineFactory(user=self.user)
+        cellar = CellarFactory(user=self.user)
+
+        params = {
+            **self.default_params,
+            "cellar_id": str(cellar.id),
+            "position": "999-999",
+        }
+
+        # Act
+        status_code, _body = self._make_request(f"{self.base_path}{str(wine.id)}/", self.user, params=params)
+
+        # Assert
+        self.assertEqual(status.HTTP_404_NOT_FOUND, status_code)
+
+    def test_update__error_on_move_to_nonexistent_basket__404(self):
+        # Arrange
+        wine = WineFactory(user=self.user)
+        cellar = CellarFactory(user=self.user, has_basket=False)
+
+        params = {
+            **self.default_params,
+            "cellar_id": str(cellar.id),
+            "position": "basket",
+        }
+
+        # Act
+        status_code, _body = self._make_request(f"{self.base_path}{str(wine.id)}/", self.user, params=params)
+
+        # Assert
+        self.assertEqual(status.HTTP_404_NOT_FOUND, status_code)
 
     def test_not_my_wine__404(self):
         # Arrange

@@ -92,3 +92,39 @@ X-CSRFToken: {{get_csrf.response.headers.X-CSRFToken}}
     "デイリー"
   ]
 }
+
+###
+# @name update_with_move
+PUT {{endpoint}}/api/wines/{{wine_id}}/
+Content-Type: application/json
+Accept: application/json
+X-CSRFToken: {{get_csrf.response.headers.X-CSRFToken}}
+
+{
+  "name": "Le Prince",
+  "producer": "Domaine de Roche Ville",
+  "country": "France",
+  "region_1": "Loire",
+  "region_2": "Saumur Champigny",
+  "region_3": "",
+  "region_4": "",
+  "region_5": "",
+  "cepages": [
+    {
+      "name": "Cabernet Franc",
+      "abbreviation": "CF",
+      "percentage": "100.0"
+    }
+  ],
+  "vintage": 2017,
+  "bought_at": "2023-04-18",
+  "bought_from": "エノテカオンライン",
+  "price_with_tax": 3080,
+  "drunk_at": null,
+  "note": "",
+  "tag_texts": [
+    "デイリー"
+  ],
+  "cellar_id": "aa38eecc-7e8d-42c0-90a0-ad39ba584734",
+  "position": "basket"
+}

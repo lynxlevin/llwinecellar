@@ -43,19 +43,21 @@ class TestCellarSpaceModel(TestCase):
 
         self.assertEqual(wine.id, cellar_space.wine_id)
 
-    def test_get_or_create_basket__case_get(self):
+    def test_get_or_create_empty_basket__case_get(self):
         cellar = CellarFactory()
+        _wine_in_another_basket = WineInBasketFactory(cellar=cellar, user=cellar.user)
         basket = CellarSpace.objects.create(cellar=cellar, type=CellarSpaceType.BASKET)
 
-        result = CellarSpace.objects.get_or_create_basket(cellar.id)
+        result = CellarSpace.objects.get_or_create_empty_basket(cellar.id)
 
         self.assertEqual(basket.id, result.id)
 
-    def test_get_or_create_basket__case_create(self):
+    def test_get_or_create_empty_basket__case_create(self):
         cellar = CellarFactory()
+        _wine_in_another_basket = WineInBasketFactory(cellar=cellar, user=cellar.user)
         original_space_count = cellar.cellarspace_set.count()
 
-        result = CellarSpace.objects.get_or_create_basket(cellar.id)
+        result = CellarSpace.objects.get_or_create_empty_basket(cellar.id)
 
         self.assertEqual(CellarSpaceType.BASKET, result.type)
         self.assertEqual(cellar.cellarspace_set.count(), original_space_count + 1)

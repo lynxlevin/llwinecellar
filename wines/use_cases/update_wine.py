@@ -1,7 +1,9 @@
 import logging
+from typing import Optional
 
 from rest_framework import exceptions
 
+from cellars.models import CellarSpace
 from users.models import User
 
 from ..models import Cepage, GrapeMaster, Wine, WineTag
@@ -16,7 +18,7 @@ class UpdateWine:
     def execute(self, user: User, wine_id: str, data: dict):
         logger.info(self.__class__.__name__, extra={"user": user, "wine_id": wine_id, "data": data})
 
-        wine = Wine.objects.get_by_id(wine_id)
+        wine = Wine.objects.select_cellarspace().get_by_id(wine_id)
 
         if wine.user != user:
             raise exceptions.NotFound
@@ -53,6 +55,26 @@ class UpdateWine:
         else:
             wine.tags.clear()
 
+        if "cellar_id" in data.keys():
+            if from_space := wine.cellarspace if hasattr(wine, "cellarspace") else None:
+                from_space.wine = None
+                from_space.save(update_fields=["wine_id", "updated_at"])
+        if (cellar_id := data.get("cellar_id")) and (position := data.get("position")):
+            if not user.has_cellar(cellar_id):
+                raise exceptions.NotFound()
+            if position == "basket":
+                to_space = CellarSpace.objects.get_or_create_empty_basket(cellar_id)
+            else:
+                row, _, column = position.partition("-")
+                to_space = CellarSpace.objects.get_by_cellar_row_column(cellar_id, row, column)
+            if to_space is None:
+                raise exceptions.NotFound()
+            if to_space.wine_id is not None:
+                raise exceptions.PermissionDenied()
+            to_space.wine = wine
+            to_space.save(update_fields=["wine_id", "updated_at"])
+
+        # MYMEMO: resolve N+1
         wine = Wine.objects.prefetch_tags().get_by_id(wine.id)
 
         return wine
