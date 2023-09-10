@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useMemo, useCallback } from 'react';
 import {
     Box,
     Table,
@@ -21,7 +21,7 @@ import Tooltip from '@mui/material/Tooltip';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import { visuallyHidden } from '@mui/utils';
 import { Navigate } from 'react-router-dom';
-import useWineListPage, { WineHeadCell, Order } from '../../hooks/useWineListPage';
+import useWineListPage, { Order } from '../../hooks/useWineListPage';
 import { WineData } from '../../contexts/wine-context';
 import useUserAPI from '../../hooks/useUserAPI';
 import { UserContext } from '../../contexts/user-context';
@@ -29,18 +29,54 @@ import EditWineDialog from './EditWineDialog';
 
 // Originally copied from https://mui.com/material-ui/react-table/#sorting-amp-selecting
 
-interface EnhancedTableHeadProps {
+interface WineHeadCell {
+    id: keyof WineData;
+    numeric: boolean;
+}
+
+interface WineListTableHeadProps {
     onRequestSort: (event: React.MouseEvent<unknown>, property: keyof WineData) => void;
     order: Order;
     orderBy: string;
-    wineHeadCells: WineHeadCell[];
+    selectedCellars: string[];
 }
 
-const EnhancedTableHead = (props: EnhancedTableHeadProps) => {
-    const { order, orderBy, onRequestSort, wineHeadCells } = props;
+const WineListTableHead = (props: WineListTableHeadProps) => {
+    const { order, orderBy, selectedCellars, onRequestSort } = props;
     const createSortHandler = (property: keyof WineData) => (event: React.MouseEvent<unknown>) => {
         onRequestSort(event, property);
     };
+
+    const toTitleCase = (text: string): string => {
+        return text
+            .toLowerCase()
+            .split('_')
+            .map(function (word: string) {
+                return word.replace(word[0], word[0].toUpperCase());
+            })
+            .join(' ');
+    };
+
+    const wineHeadCells: WineHeadCell[] = useMemo(() => {
+        return [
+            ...(selectedCellars.length !== 1 ? [{ id: 'cellar_name', numeric: false }] : []),
+            ...(selectedCellars.toString() !== 'null' ? [{ id: 'position', numeric: false }] : []),
+            { id: 'tag_texts', numeric: false },
+            { id: 'name', numeric: false },
+            { id: 'producer', numeric: false },
+            { id: 'vintage', numeric: true },
+            { id: 'country', numeric: false },
+            { id: 'region_1', numeric: false },
+            { id: 'region_2', numeric: false },
+            { id: 'region_3', numeric: false },
+            { id: 'region_4', numeric: false },
+            { id: 'region_5', numeric: false },
+            { id: 'cepages', numeric: false },
+            { id: 'bought_at', numeric: false },
+            { id: 'bought_from', numeric: false },
+            { id: 'price_with_tax', numeric: true },
+        ] as WineHeadCell[];
+    }, [selectedCellars]);
     // MYMEMO: add filter
 
     return (
@@ -50,7 +86,7 @@ const EnhancedTableHead = (props: EnhancedTableHeadProps) => {
                     <TableCell
                         key={headCell.id}
                         align={headCell.numeric ? 'right' : 'left'}
-                        padding={headCell.disablePadding ? 'none' : 'normal'}
+                        padding="normal"
                         sortDirection={orderBy === headCell.id ? order : false}
                     >
                         <TableSortLabel
@@ -58,7 +94,7 @@ const EnhancedTableHead = (props: EnhancedTableHeadProps) => {
                             direction={orderBy === headCell.id ? order : 'asc'}
                             onClick={createSortHandler(headCell.id)}
                         >
-                            {headCell.label}
+                            {toTitleCase(headCell.id)}
                             {orderBy === headCell.id ? (
                                 <Box component="span" sx={visuallyHidden}>
                                     {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
@@ -72,15 +108,21 @@ const EnhancedTableHead = (props: EnhancedTableHeadProps) => {
     );
 };
 
-interface EnhancedTableToolbarProps {
-    tableTitle: string;
-    handleCellarSelect: (event: SelectChangeEvent) => void;
+interface WineListToolbarProps {
     selectedCellars: string[];
+    setSelectedCellars: React.Dispatch<React.SetStateAction<string[]>>;
     cellarList: string[][];
 }
 
-const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
-    const { tableTitle, handleCellarSelect, selectedCellars, cellarList } = props;
+const WineListToolbar = (props: WineListToolbarProps) => {
+    const { selectedCellars, setSelectedCellars, cellarList } = props;
+
+    const handleCellarSelect = (event: SelectChangeEvent) => {
+        const {
+            target: { value },
+        } = event;
+        setSelectedCellars(typeof value === 'string' ? value.split(',') : value);
+    };
 
     return (
         <Toolbar
@@ -90,7 +132,7 @@ const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
             }}
         >
             <Typography sx={{ flex: '1 1 100%' }} variant="h6" id="tableTitle" component="div">
-                {tableTitle}
+                Wine List
             </Typography>
             <Select id="cellar-select" multiple value={selectedCellars as unknown as string} onChange={handleCellarSelect}>
                 {cellarList.map(cellar => (
@@ -115,18 +157,18 @@ export const WineList = () => {
     useUserAPI();
     const {
         selectedCellars,
-        handleCellarSelect,
+        setSelectedCellars,
         order,
         orderBy,
         handleRequestSort,
+        winesInSelectedCellars,
         visibleRows,
         selectedWine,
-        handleClick,
+        handleClickRow,
         closeEditWineDialog,
         isEditOpen,
         cellarList,
         cellarNames,
-        wineHeadCells,
         emptyRows,
         rowsPerPage,
         page,
@@ -144,15 +186,10 @@ export const WineList = () => {
         <div>
             <Box sx={{ width: '100%' }}>
                 <Paper sx={{ width: '100%', mb: 2 }}>
-                    <EnhancedTableToolbar
-                        tableTitle="Wine List"
-                        handleCellarSelect={handleCellarSelect}
-                        selectedCellars={selectedCellars}
-                        cellarList={cellarList}
-                    />
+                    <WineListToolbar setSelectedCellars={setSelectedCellars} selectedCellars={selectedCellars} cellarList={cellarList} />
                     <TableContainer sx={{ maxHeight: `calc(100vh - ${tablePaginationHeight})` }}>
                         <Table stickyHeader sx={{ minWidth: 750 }} aria-labelledby="tableTitle" size="medium">
-                            <EnhancedTableHead order={order} orderBy={orderBy} onRequestSort={handleRequestSort} wineHeadCells={wineHeadCells} />
+                            <WineListTableHead order={order} orderBy={orderBy} selectedCellars={selectedCellars} onRequestSort={handleRequestSort} />
                             <TableBody>
                                 {visibleRows.map((row, index) => {
                                     const labelId = `enhanced-table-checkbox-${index}`;
@@ -160,11 +197,11 @@ export const WineList = () => {
                                     return (
                                         <TableRow
                                             hover
-                                            onClick={event => handleClick(event, row)}
+                                            onClick={event => handleClickRow(event, row)}
                                             role="checkbox"
                                             selected={selectedWine?.id === row.id}
                                             tabIndex={-1}
-                                            key={row.name}
+                                            key={row.id}
                                             sx={{ cursor: 'pointer' }}
                                         >
                                             {selectedCellars.length !== 1 && (
@@ -203,9 +240,10 @@ export const WineList = () => {
                             </TableBody>
                         </Table>
                     </TableContainer>
+                    {/* MYMEMO: rowsPerPage を小さくしてページを変えると、要素がヘッダーの上に隠れることがある。 tablecontainer の maxheight が原因 */}
                     <TablePagination
                         component="div"
-                        count={visibleRows.length}
+                        count={winesInSelectedCellars.length}
                         rowsPerPage={rowsPerPage}
                         page={page}
                         onPageChange={handleChangePage}

@@ -40,21 +40,23 @@ X-CSRFToken: {{get_csrf.response.headers.X-CSRFToken}}
 {
     "name": "Gevrey Chambertin",
     "producer": "Domaine Charlopin Tissier",
-    "country": 101,
+    "country": "France",
     "region_1": "Bourgogne",
     "region_2": "Côtes de Nuits",
     "region_3": "Gevrey Chambertin",
     "region_4": "",
     "region_5": "",
-    "cepage": [{"grape": "Pinot Noir", "percent": 100}],
+    "cepages": [{"name": "Pinot Noir", "abbreviation": "PN", "percentage": 100.0}],
     "vintage": 2019,
     "bought_at": "2023-05-07",
     "bought_from": "伊勢屋",
     "price_with_tax": 13000,
     "drunk_at": null,
-    "note": "テスト用のノート"
+    "note": "テスト用のノート",
+    "tag_texts": []
 }
 
+###
 @wine_id=cf7718e9-b7d3-404d-bd3c-ca28d1ade76a
 
 ###

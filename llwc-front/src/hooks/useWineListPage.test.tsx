@@ -16,15 +16,6 @@ describe('useWineListPage.useEffect', () => {
     // MYMEMO: test when logged in, trying the sequence in useLoginPage didn't work
 });
 
-test('useWineListPage.handleCellarSelect', async () => {
-    const dummyCellarId = 'dummyCellarId';
-    const { result } = renderHook(() => useWineListPage());
-    act(() => {
-        result.current.handleCellarSelect({ target: { value: dummyCellarId } } as SelectChangeEvent);
-    });
-    expect(result.current.selectedCellars).toStrictEqual([dummyCellarId]);
-});
-
 test('useWineListPage.handleRequestSort', async () => {
     const dummyProperty = 'dummyProperty';
     const { result } = renderHook(() => useWineListPage());
