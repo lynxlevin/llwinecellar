@@ -5,6 +5,7 @@ import { TransitionProps } from '@mui/material/transitions';
 import { Cepage, WineData, WineContext } from '../../contexts/wine-context';
 import { UpdateWineRequest, WineAPI } from '../../apis/WineAPI';
 import useWineAPI from '../../hooks/useWineAPI';
+import { AxiosError } from 'axios';
 
 const Transition = React.forwardRef(function Transition(
     props: TransitionProps & {
@@ -24,6 +25,11 @@ interface EditWineDialogProps {
 
 interface ValidationErrorsType {
     cepages?: string;
+}
+
+interface apiErrorsType {
+    cellar_id?: string;
+    position?: string;
 }
 
 const EditWineDialog = (props: EditWineDialogProps) => {
@@ -54,6 +60,7 @@ const EditWineDialog = (props: EditWineDialogProps) => {
     const [position, setPosition] = useState<string | null>(selectedWine.position);
 
     const [validationErrors, setValidationErrors] = useState<ValidationErrorsType>({});
+    const [apiErrors, setApiErrors] = useState<apiErrorsType>({});
 
     useEffect(() => {
         if (isOpen) {
@@ -76,11 +83,13 @@ const EditWineDialog = (props: EditWineDialogProps) => {
             setCellarId('DO_NOT_CHANGE_PLACE');
             setPosition(selectedWine.position);
             setValidationErrors({});
+            setApiErrors({});
         }
     }, [isOpen, selectedWine]);
 
     const handleSave = async () => {
         if (Object.keys(validationErrors).length > 0) return;
+        setApiErrors({});
 
         const data: UpdateWineRequest = {
             name: name,
@@ -107,9 +116,16 @@ const EditWineDialog = (props: EditWineDialogProps) => {
             data.cellar_id = cellarId;
             data.position = position;
         }
-        await WineAPI.update(selectedWine.id, data);
-        await getWineList();
-        handleClose();
+        await WineAPI.update(selectedWine.id, data)
+            .then(async _ => {
+                await getWineList();
+                handleClose();
+            })
+            .catch((err: AxiosError<{ key: string; message: string }>) => {
+                const key = err.response!.data.key;
+                const message = err.response!.data.message;
+                setApiErrors({ [key]: message });
+            });
     };
 
     return (
@@ -326,12 +342,10 @@ const EditWineDialog = (props: EditWineDialogProps) => {
                             multiline
                         />
                     </Grid>
-                    {/* MYMEMO: add cellar and position with error from backend (to_space occupied) */}
                     <Grid item xs={12}>
                         <Select
                             value={cellarId}
                             onChange={event => {
-                                console.log(event.target.value);
                                 setCellarId(event.target.value);
                             }}
                         >
@@ -354,6 +368,8 @@ const EditWineDialog = (props: EditWineDialogProps) => {
                             onChange={event => {
                                 setPosition(event.target.value);
                             }}
+                            error={Boolean(apiErrors.position)}
+                            helperText={apiErrors.position}
                             variant="standard"
                             fullWidth
                             multiline
