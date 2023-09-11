@@ -77,7 +77,6 @@ class UpdateWine:
             to_space.wine = wine
             to_space.save(update_fields=["wine_id", "updated_at"])
 
-        # MYMEMO: resolve N+1
-        wine = Wine.objects.prefetch_tags().get_by_id(wine.id)
+        wine = Wine.objects.prefetch_tags().select_cellarspace().get_by_id(wine.id)
 
         return wine
