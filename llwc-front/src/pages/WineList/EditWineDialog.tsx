@@ -349,7 +349,7 @@ const EditWineDialog = (props: EditWineDialogProps) => {
                                 setCellarId(event.target.value);
                             }}
                         >
-                            {/* MYMEMO: チェックにしたほうが良さそう */}
+                            {/* MYMEMO(後日): チェックにしたほうが良さそう */}
                             <MenuItem value="DO_NOT_CHANGE_PLACE">DO_NOT_CHANGE_PLACE</MenuItem>
                             {cellarList.map(cellar => (
                                 <MenuItem key={cellar[0]} value={cellar[0]}>
@@ -361,13 +361,13 @@ const EditWineDialog = (props: EditWineDialogProps) => {
                     </Grid>
                     <Grid item xs={12}>
                         {/* MYMEMO(後日): make this a select */}
-                        {/* MYMEMO: change to disabled if cellar_id = DO_NOT_CHANGE_PLACE */}
                         <TextField
                             label="position"
                             defaultValue={selectedWine.position}
                             onChange={event => {
                                 setPosition(event.target.value);
                             }}
+                            disabled={cellarId === 'DO_NOT_CHANGE_PLACE'}
                             error={Boolean(apiErrors.position)}
                             helperText={apiErrors.position}
                             variant="standard"
