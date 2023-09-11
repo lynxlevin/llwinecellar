@@ -74,3 +74,7 @@ class MoveWineResponseSerializer(serializers.Serializer):
 
 class WineTagsSerializer(serializers.Serializer):
     tag_texts = serializers.ListField(allow_empty=True, child=serializers.CharField(max_length=256))
+
+
+class DeleteWineTagQuerySerializer(serializers.Serializer):
+    tag_text = serializers.CharField(max_length=256)

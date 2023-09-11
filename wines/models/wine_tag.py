@@ -13,6 +13,12 @@ class WineTagQuerySet(models.QuerySet["WineTag"]):
         except WineTag.DoesNotExist:
             return None
 
+    def get_by_text_and_user_id(self, text: str, user_id) -> Optional["WineTag"]:
+        try:
+            return self.get(user_id=user_id, text=text)
+        except WineTag.DoesNotExist:
+            return None
+
     def filter_eq_user_id(self, user_id) -> "WineTagQuerySet":
         return self.filter(user_id=user_id)
 

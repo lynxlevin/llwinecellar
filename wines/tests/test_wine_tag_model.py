@@ -11,6 +11,15 @@ class TestWineModel(TestCase):
     def setUpTestData(cls):
         cls.user = UserFactory()
 
+    def test_get_by_text_and_user_id(self):
+        tags = WineTagFactory.create_batch(10, user=self.user)
+
+        expected = tags[0]
+
+        result = WineTag.objects.get_by_text_and_user_id(expected.text, self.user.id)
+
+        self.assertEqual(expected, result)
+
     def test_filter_eq_user_id(self):
         tags = WineTagFactory.create_batch(10, user=self.user)
         _not_my_tags = WineTagFactory.create_batch(10)

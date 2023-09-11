@@ -18,3 +18,16 @@ X-CSRFToken: {{get_csrf.response.headers.X-CSRFToken}}
 ###
 # @name list
 GET {{endpoint}}/api/wine_tags/
+
+###
+@wine_tag_text = "10年寝かす"
+
+###
+# @name delete
+DELETE {{endpoint}}/api/wine_tags/
+Content-Type: application/json
+X-CSRFToken: {{get_csrf.response.headers.X-CSRFToken}}
+
+{
+  "tag_text": {{wine_tag_text}}
+}
