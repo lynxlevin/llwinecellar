@@ -1,6 +1,6 @@
 import logging
-from typing import Optional
 
+from django.db import transaction
 from rest_framework import exceptions
 
 from cellars.models import CellarSpace
@@ -15,13 +15,14 @@ class UpdateWine:
     def __init__(self):
         self.exception_log_title = f"{__class__.__name__}_exception"
 
+    @transaction.atomic
     def execute(self, user: User, wine_id: str, data: dict):
         logger.info(self.__class__.__name__, extra={"user": user, "wine_id": wine_id, "data": data})
 
         wine = Wine.objects.select_cellarspace().get_by_id(wine_id)
 
         if wine.user != user:
-            raise exceptions.NotFound
+            raise exceptions.NotFound()
 
         wine.name = data["name"]
         wine.producer = data["producer"]
@@ -61,16 +62,18 @@ class UpdateWine:
                 from_space.save(update_fields=["wine_id", "updated_at"])
         if (cellar_id := data.get("cellar_id")) and (position := data.get("position")):
             if not user.has_cellar(cellar_id):
-                raise exceptions.NotFound()
+                raise exceptions.NotFound(detail={"key": "cellar_id", "message": "This cellar does not exist."})
             if position == "basket":
                 to_space = CellarSpace.objects.get_or_create_empty_basket(cellar_id)
             else:
                 row, _, column = position.partition("-")
                 to_space = CellarSpace.objects.get_by_cellar_row_column(cellar_id, row, column)
             if to_space is None:
-                raise exceptions.NotFound()
+                raise exceptions.NotFound(detail={"key": "position", "message": "This position does not exist."})
             if to_space.wine_id is not None:
-                raise exceptions.PermissionDenied()
+                raise exceptions.PermissionDenied(
+                    detail={"key": "position", "message": "That position is already occupied."}
+                )
             to_space.wine = wine
             to_space.save(update_fields=["wine_id", "updated_at"])
 

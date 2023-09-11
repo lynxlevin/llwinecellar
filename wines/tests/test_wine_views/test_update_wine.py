@@ -180,7 +180,7 @@ class TestUpdateWine(TestCase):
         }
         self._assert_dict_contains_subset(expected, body)
 
-        # Assert wine.cepages
+        # Assert wine
         wine.refresh_from_db()
         self.assertEqual(0, wine.tags.count())
 
@@ -207,7 +207,7 @@ class TestUpdateWine(TestCase):
         }
         self._assert_dict_contains_subset(expected, body)
 
-        # Assert wine.cepages
+        # Assert wine
         wine.refresh_from_db()
         self.assertEqual(cellar.id, wine.cellar_id)
         self.assertEqual(params["position"], wine.position)
@@ -236,7 +236,7 @@ class TestUpdateWine(TestCase):
         }
         self._assert_dict_contains_subset(expected, body)
 
-        # Assert wine.cepages
+        # Assert wine
         wine.refresh_from_db()
         self.assertEqual(cellar.id, wine.cellar_id)
         self.assertEqual(params["position"], wine.position)
@@ -263,7 +263,7 @@ class TestUpdateWine(TestCase):
         }
         self._assert_dict_contains_subset(expected, body)
 
-        # Assert wine.cepages
+        # Assert wine
         wine.refresh_from_db()
         self.assertEqual(None, wine.cellar_id)
         self.assertEqual(None, wine.position)
@@ -289,21 +289,21 @@ class TestUpdateWine(TestCase):
         }
         self._assert_dict_contains_subset(expected, body)
 
-        # Assert wine.cepages
+        # Assert wine
         wine.refresh_from_db()
         self.assertEqual(cellar.id, wine.cellar_id)
         self.assertEqual("1-1", wine.position)
 
     def test_update__error_on_move_to_filled_rack__403(self):
         # Arrange
-        wine = WineFactory(user=self.user)
         cellar = CellarFactory(user=self.user)
-        _another_wine = WineInRackFactory(user=self.user, cellar=cellar, row=1, column=1)
+        wine = WineInRackFactory(user=self.user, cellar=cellar, row=1, column=1)
+        _another_wine = WineInRackFactory(user=self.user, cellar=cellar, row=1, column=2)
 
         params = {
             **self.default_params,
             "cellar_id": str(cellar.id),
-            "position": "1-1",
+            "position": "1-2",
         }
 
         # Act
@@ -312,14 +312,20 @@ class TestUpdateWine(TestCase):
         # Assert
         self.assertEqual(status.HTTP_403_FORBIDDEN, status_code)
 
+        # Assert wine not moved
+        wine.refresh_from_db()
+        self.assertEqual(cellar.id, wine.cellar_id)
+        self.assertEqual("1-1", wine.position)
+
     def test_update__error_on_move_to_not_my_cellar__404(self):
         # Arrange
-        wine = WineFactory(user=self.user)
-        cellar = CellarFactory()
+        cellar = CellarFactory(user=self.user)
+        wine = WineInRackFactory(user=self.user, cellar=cellar, row=1, column=1)
+        not_my_cellar = CellarFactory()
 
         params = {
             **self.default_params,
-            "cellar_id": str(cellar.id),
+            "cellar_id": str(not_my_cellar.id),
             "position": "1-1",
         }
 
@@ -329,10 +335,15 @@ class TestUpdateWine(TestCase):
         # Assert
         self.assertEqual(status.HTTP_404_NOT_FOUND, status_code)
 
+        # Assert wine not moved
+        wine.refresh_from_db()
+        self.assertEqual(cellar.id, wine.cellar_id)
+        self.assertEqual("1-1", wine.position)
+
     def test_update__error_on_move_to_nonexistent_rack__404(self):
         # Arrange
-        wine = WineFactory(user=self.user)
         cellar = CellarFactory(user=self.user)
+        wine = WineInRackFactory(user=self.user, cellar=cellar, row=1, column=1)
 
         params = {
             **self.default_params,
@@ -346,10 +357,15 @@ class TestUpdateWine(TestCase):
         # Assert
         self.assertEqual(status.HTTP_404_NOT_FOUND, status_code)
 
+        # Assert wine not moved
+        wine.refresh_from_db()
+        self.assertEqual(cellar.id, wine.cellar_id)
+        self.assertEqual("1-1", wine.position)
+
     def test_update__error_on_move_to_nonexistent_basket__404(self):
         # Arrange
-        wine = WineFactory(user=self.user)
         cellar = CellarFactory(user=self.user, has_basket=False)
+        wine = WineInRackFactory(user=self.user, cellar=cellar, row=1, column=1)
 
         params = {
             **self.default_params,
@@ -362,6 +378,11 @@ class TestUpdateWine(TestCase):
 
         # Assert
         self.assertEqual(status.HTTP_404_NOT_FOUND, status_code)
+
+        # Assert wine not moved
+        wine.refresh_from_db()
+        self.assertEqual(cellar.id, wine.cellar_id)
+        self.assertEqual("1-1", wine.position)
 
     def test_not_my_wine__404(self):
         # Arrange
