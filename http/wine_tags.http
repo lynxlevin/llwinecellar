@@ -1,0 +1,20 @@
+# WineTag
+
+###
+# @name get_csrf
+GET {{endpoint}}/user/csrf/
+
+###
+# @name login
+POST {{endpoint}}/user/login/
+Content-Type: application/json
+X-CSRFToken: {{get_csrf.response.headers.X-CSRFToken}}
+
+{
+  "email": "{{email}}",
+  "password": "{{password}}"
+}
+
+###
+# @name list
+GET {{endpoint}}/api/wine_tags/

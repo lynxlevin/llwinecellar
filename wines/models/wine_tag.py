@@ -13,6 +13,9 @@ class WineTagQuerySet(models.QuerySet["WineTag"]):
         except WineTag.DoesNotExist:
             return None
 
+    def filter_eq_user_id(self, user_id) -> "WineTagQuerySet":
+        return self.filter(user_id=user_id)
+
 
 class WineTag(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)

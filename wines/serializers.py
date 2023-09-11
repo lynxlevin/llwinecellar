@@ -70,3 +70,7 @@ class MoveWineSerializer(serializers.Serializer):
 
 class MoveWineResponseSerializer(serializers.Serializer):
     wines = MoveWineSerializer(many=True)
+
+
+class WineTagsSerializer(serializers.Serializer):
+    tag_texts = serializers.ListField(allow_empty=True, child=serializers.CharField(max_length=256))
