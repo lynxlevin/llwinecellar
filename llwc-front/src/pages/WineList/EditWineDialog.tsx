@@ -1,5 +1,20 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { AppBar, Button, Container, Dialog, Grid, IconButton, Slide, TextField, Toolbar, Typography, Select, MenuItem } from '@mui/material';
+import {
+    AppBar,
+    Button,
+    Container,
+    Dialog,
+    Grid,
+    IconButton,
+    Slide,
+    TextField,
+    Toolbar,
+    Typography,
+    Select,
+    MenuItem,
+    Autocomplete,
+    Chip,
+} from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { TransitionProps } from '@mui/material/transitions';
 import { Cepage, WineData, WineContext } from '../../contexts/wine-context';
@@ -152,18 +167,20 @@ const EditWineDialog = (props: EditWineDialogProps) => {
             <Container maxWidth="md" sx={{ marginTop: 3, marginBottom: 3 }}>
                 <Grid container spacing={2}>
                     <Grid item xs={12}>
-                        {/* MYMEMO(後日): use multiselect with chip https://mui.com/material-ui/react-select/#chip */}
-                        {/* MYMEMO(後日): consider using _.throttle or _.debounce on all onChanges */}
-                        {/* MYMEMO: show tag_master somewhere */}
-                        <TextField
-                            label="tag_texts"
-                            defaultValue={selectedWine.tag_texts}
-                            onChange={event => {
-                                setTagTexts(event.target.value === '' ? [] : event.target.value.split(','));
+                        <Autocomplete
+                            multiple
+                            options={wineTagContext.wineTagList}
+                            value={tagTexts}
+                            freeSolo
+                            renderTags={(value: readonly string[], getTagProps) =>
+                                value.map((option: string, index: number) => <Chip variant="outlined" label={option} {...getTagProps({ index })} />)
+                            }
+                            renderInput={params => <TextField {...params} variant="filled" label="tag_texts" />}
+                            onChange={(event: any, newValue: string[]) => {
+                                setTagTexts(newValue);
                             }}
-                            variant="standard"
-                            fullWidth
                         />
+                        {/* MYMEMO(後日): consider using _.throttle or _.debounce on all onChanges */}
                     </Grid>
                     <Grid item xs={12}>
                         <TextField
