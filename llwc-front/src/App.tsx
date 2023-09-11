@@ -7,32 +7,36 @@ import { type Cellar, CellarContext } from './contexts/cellar-context';
 import { UserContext } from './contexts/user-context';
 import Header from './pages/Header';
 import { WineContext, WineData } from './contexts/wine-context';
+import { WineTagContext } from './contexts/wine-tag-context';
 
 function App() {
     const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
     // MYMEMO(後日): CellarContext を準備するのはまだ早いかも
     const [list, setList] = useState<Cellar[]>([]);
     const [wineList, setWineList] = useState<WineData[]>([]);
+    const [wineTagList, setWineTagList] = useState<string[]>([]);
 
     return (
         <div className="App">
             <UserContext.Provider value={{ isLoggedIn, setIsLoggedIn }}>
                 <CellarContext.Provider value={{ list, setList }}>
                     <WineContext.Provider value={{ wineList, setWineList }}>
-                        <Header></Header>
-                        <Routes>
-                            <Route
-                                path="/"
-                                element={
-                                    <>
-                                        <Link to="/login">Login</Link>
-                                        <Link to="/wine-list">Wine List</Link>
-                                    </>
-                                }
-                            />
-                            <Route path="/login" element={<Login />} />
-                            <Route path="/wine-list" element={<WineList />} />
-                        </Routes>
+                        <WineTagContext.Provider value={{ wineTagList, setWineTagList }}>
+                            <Header></Header>
+                            <Routes>
+                                <Route
+                                    path="/"
+                                    element={
+                                        <>
+                                            <Link to="/login">Login</Link>
+                                            <Link to="/wine-list">Wine List</Link>
+                                        </>
+                                    }
+                                />
+                                <Route path="/login" element={<Login />} />
+                                <Route path="/wine-list" element={<WineList />} />
+                            </Routes>
+                        </WineTagContext.Provider>
                     </WineContext.Provider>
                 </CellarContext.Provider>
             </UserContext.Provider>

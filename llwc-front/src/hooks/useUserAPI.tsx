@@ -2,11 +2,16 @@ import { useEffect, useContext } from 'react';
 import { UserAPI } from '../apis/UserAPI';
 import { CellarContext } from '../contexts/cellar-context';
 import { CellarAPI } from '../apis/CellarAPI';
+import useWineTagAPI from '../hooks/useWineTagAPI';
 import { UserContext } from '../contexts/user-context';
+import { WineTagContext } from '../contexts/wine-tag-context';
 
 const useUserAPI = () => {
     const userContext = useContext(UserContext);
     const cellarContext = useContext(CellarContext);
+    const wineTagContext = useContext(WineTagContext);
+
+    const { getWineTagList } = useWineTagAPI();
 
     const handleLogout = async () => {
         await UserAPI.logout();
@@ -20,9 +25,13 @@ const useUserAPI = () => {
             const isAuthenticated = session_res.data.is_authenticated;
             userContext.setIsLoggedIn(isAuthenticated);
             if (isAuthenticated) {
+                // MYMEMO(後日): length ではなく、フラグを立てるべき
                 if (cellarContext.list.length === 0) {
                     const res = await CellarAPI.list();
                     cellarContext.setList(res.data.cellars);
+                }
+                if (wineTagContext.wineTagList.length === 0) {
+                    getWineTagList();
                 }
             }
         };

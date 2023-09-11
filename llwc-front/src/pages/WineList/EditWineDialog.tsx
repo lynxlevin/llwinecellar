@@ -6,6 +6,8 @@ import { Cepage, WineData, WineContext } from '../../contexts/wine-context';
 import { UpdateWineRequest, WineAPI } from '../../apis/WineAPI';
 import useWineAPI from '../../hooks/useWineAPI';
 import { AxiosError } from 'axios';
+import { WineTagContext } from '../../contexts/wine-tag-context';
+import useWineTagAPI from '../../hooks/useWineTagAPI';
 
 const Transition = React.forwardRef(function Transition(
     props: TransitionProps & {
@@ -36,9 +38,11 @@ const EditWineDialog = (props: EditWineDialogProps) => {
     const { isOpen, handleClose, selectedWineId, cellarList } = props;
 
     const wineContext = useContext(WineContext);
+    const wineTagContext = useContext(WineTagContext);
     const selectedWine = wineContext.wineList.find(wine => wine.id === selectedWineId) as WineData;
 
     const { getWineList } = useWineAPI();
+    const { getWineTagList } = useWineTagAPI();
 
     const [tagTexts, setTagTexts] = useState<string[]>(selectedWine.tag_texts);
     const [name, setName] = useState<string>(selectedWine.name);
@@ -109,6 +113,7 @@ const EditWineDialog = (props: EditWineDialogProps) => {
             note: note,
             tag_texts: tagTexts,
         };
+        const newTagCreated = !tagTexts.every(tag => wineTagContext.wineTagList.includes(tag));
         if (cellarId === 'MOVE_OUT_OF_CELLAR') {
             data.cellar_id = null;
             data.position = null;
@@ -119,6 +124,7 @@ const EditWineDialog = (props: EditWineDialogProps) => {
         await WineAPI.update(selectedWine.id, data)
             .then(async _ => {
                 await getWineList();
+                if (newTagCreated) await getWineTagList();
                 handleClose();
             })
             .catch((err: AxiosError<{ key: string; message: string }>) => {

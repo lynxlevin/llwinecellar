@@ -34,4 +34,4 @@ interface WineContextType {
     setWineList: React.Dispatch<React.SetStateAction<WineData[]>>;
 }
 
-export const WineContext = createContext({ list: [], setList: () => {} } as unknown as WineContextType);
+export const WineContext = createContext({ wineList: [], setWineList: () => {} } as unknown as WineContextType);
