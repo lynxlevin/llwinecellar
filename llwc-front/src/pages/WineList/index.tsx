@@ -134,7 +134,6 @@ const WineListToolbar = (props: WineListToolbarProps) => {
             <Typography sx={{ flex: '1 1 100%' }} variant="h6" id="tableTitle" component="div">
                 Wine List
             </Typography>
-            {/* MYMEMO: show open spaces when single cellar is selected */}
             <Select id="cellar-select" multiple value={selectedCellars as unknown as string} onChange={handleCellarSelect}>
                 {cellarList.map(cellar => (
                     <MenuItem key={cellar[0]} value={cellar[0]}>
@@ -163,7 +162,7 @@ export const WineList = () => {
         order,
         orderBy,
         handleRequestSort,
-        winesInSelectedCellars,
+        rowsCount,
         visibleRows,
         selectedWine,
         handleClickRow,
@@ -203,7 +202,11 @@ export const WineList = () => {
                                             selected={selectedWine?.id === row.id}
                                             tabIndex={-1}
                                             key={row.id}
-                                            sx={{ cursor: 'pointer' }}
+                                            sx={
+                                                row.id.startsWith('empty-rack(')
+                                                    ? { cursor: 'pointer', backgroundColor: 'rgba(0, 0, 0, 0.04)' }
+                                                    : { cursor: 'pointer' }
+                                            }
                                         >
                                             {selectedCellars.length !== 1 && (
                                                 <TableCell>{row.cellar_id ? cellarNames[row.cellar_id] : cellarNames['null']}</TableCell>
@@ -226,7 +229,8 @@ export const WineList = () => {
                                             <TableCell align="right">{row.bought_at}</TableCell>
                                             <TableCell align="right">{row.bought_from}</TableCell>
                                             <TableCell align="right">{row.price_with_tax}</TableCell>
-                                            {/* MYMEMO: show note */}
+                                            {/* MYMEMO(後日): show note: TableContainer を width:max-content にしたらできるけど、全列個別指定が必要になる
+                                            https://smartdevpreneur.com/customizing-material-ui-table-cell-width/ */}
                                         </TableRow>
                                     );
                                 })}
@@ -244,7 +248,7 @@ export const WineList = () => {
                     </TableContainer>
                     <TablePagination
                         component="div"
-                        count={winesInSelectedCellars.length}
+                        count={rowsCount}
                         rowsPerPage={rowsPerPage}
                         page={page}
                         onPageChange={handleChangePage}

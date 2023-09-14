@@ -17,9 +17,10 @@ const useWineListPage = () => {
     const [order, setOrder] = useState<Order>('asc');
     const [orderBy, setOrderBy] = useState<keyof WineData>('tag_texts');
     const [page, setPage] = useState(0);
-    const [rowsPerPage, setRowsPerPage] = useState(25);
+    const [rowsPerPage, setRowsPerPage] = useState(50);
     const [selectedWine, setSelectedWine] = useState<WineData>();
     const [isEditOpen, setIsEditOpen] = useState(false);
+    const [showEmptyRacks, setShowEmptyRacks] = useState(false);
 
     // Avoid a layout jump when reaching the last page with empty rows.
     const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - wineContext.wineList.length) : 0;
@@ -43,6 +44,7 @@ const useWineListPage = () => {
     };
 
     const handleClickRow = (event: React.MouseEvent<unknown>, row: WineData) => {
+        if (row.id.startsWith('empty-rack(')) return;
         if (selectedWine?.id === row.id) {
             setIsEditOpen(true);
         } else {
@@ -124,9 +126,52 @@ const useWineListPage = () => {
         return wineContext.wineList.filter(wine => cellars.includes(wine.cellar_id));
     }, [selectedCellars, wineContext.wineList]);
 
+    const emptyRacksForSelectedCellars = useMemo(() => {
+        if (!showEmptyRacks) return [];
+        const layout = cellarContext.list.find(cellar => cellar.id === selectedCellars[0])!.layout;
+        const filledPositions = winesInSelectedCellars.map(wine => wine.position);
+        const emptyRacks = layout.flatMap((rowSize, index) => {
+            const racksForRow = [];
+            for (let step = 1; step <= rowSize; step++) {
+                const position = `${index + 1}-${step}`;
+                if (!filledPositions.includes(position)) {
+                    const rack: WineData = {
+                        id: `empty-rack(${position})`,
+                        name: '',
+                        producer: '',
+                        country: '',
+                        region_1: '',
+                        region_2: '',
+                        region_3: '',
+                        region_4: '',
+                        region_5: '',
+                        cepages: [],
+                        vintage: null,
+                        bought_at: null,
+                        bought_from: '',
+                        price_with_tax: null,
+                        drunk_at: null,
+                        note: '',
+                        cellar_name: '',
+                        cellar_id: null,
+                        position,
+                        tag_texts: [],
+                    };
+                    racksForRow.push(rack);
+                }
+            }
+            return racksForRow;
+        });
+        return emptyRacks;
+    }, [cellarContext.list, selectedCellars, showEmptyRacks, winesInSelectedCellars]);
+
+    const rowsToShow = useMemo(() => {
+        return winesInSelectedCellars.concat(emptyRacksForSelectedCellars);
+    }, [emptyRacksForSelectedCellars, winesInSelectedCellars]);
+
     const visibleRows = useMemo(() => {
-        return winesInSelectedCellars.sort(getComparator(order, orderBy)).slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
-    }, [getComparator, order, orderBy, page, rowsPerPage, winesInSelectedCellars]);
+        return rowsToShow.sort(getComparator(order, orderBy)).slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+    }, [getComparator, order, orderBy, page, rowsPerPage, rowsToShow]);
 
     useEffect(() => {
         if (userContext.isLoggedIn === true) {
@@ -142,13 +187,17 @@ const useWineListPage = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [userContext.isLoggedIn]);
 
+    useEffect(() => {
+        setShowEmptyRacks(selectedCellars.length === 1);
+    }, [selectedCellars.length]);
+
     return {
         selectedCellars,
         setSelectedCellars,
         order,
         orderBy,
         handleRequestSort,
-        winesInSelectedCellars,
+        rowsCount: rowsToShow.length,
         visibleRows,
         selectedWine,
         handleClickRow,

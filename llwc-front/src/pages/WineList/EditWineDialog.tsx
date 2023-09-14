@@ -62,7 +62,7 @@ const EditWineDialog = (props: EditWineDialogProps) => {
     const [tagTexts, setTagTexts] = useState<string[]>(selectedWine.tag_texts);
     const [name, setName] = useState<string>(selectedWine.name);
     const [producer, setProducer] = useState<string>(selectedWine.producer);
-    const [vintage, setVintage] = useState<number>(selectedWine.vintage);
+    const [vintage, setVintage] = useState<number | null>(selectedWine.vintage);
     const [country, setCountry] = useState<string>(selectedWine.country);
     const [region1, setRegion1] = useState<string>(selectedWine.region_1);
     const [region2, setRegion2] = useState<string>(selectedWine.region_2);
@@ -72,7 +72,7 @@ const EditWineDialog = (props: EditWineDialogProps) => {
     const [cepages, setCepages] = useState<Cepage[]>(selectedWine.cepages);
     const [boughtAt, setBoughtAt] = useState<string | null>(selectedWine.bought_at);
     const [boughtFrom, setBoughtFrom] = useState<string>(selectedWine.bought_from);
-    const [priceWithTax, setPriceWithTax] = useState<number>(selectedWine.price_with_tax);
+    const [priceWithTax, setPriceWithTax] = useState<number | null>(selectedWine.price_with_tax);
     const [drunkAt, setDrunkAt] = useState<string | null>(selectedWine.drunk_at);
     const [note, setNote] = useState<string>(selectedWine.note);
     const [cellarId, setCellarId] = useState<string | null>('DO_NOT_CHANGE_PLACE');

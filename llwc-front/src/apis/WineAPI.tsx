@@ -16,10 +16,10 @@ export interface UpdateWineRequest {
     region_4: string;
     region_5: string;
     cepages: Cepage[];
-    vintage: number;
+    vintage: number | null;
     bought_at: string | null;
     bought_from: string;
-    price_with_tax: number;
+    price_with_tax: number | null;
     drunk_at: string | null;
     note: string;
     tag_texts: string[];
