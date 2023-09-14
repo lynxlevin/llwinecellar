@@ -77,8 +77,7 @@ class TestCreateWine(TestCase):
         self.assertEqual(params["price_with_tax"], wine.price_with_tax)
         self.assertEqual(params["drunk_at"], wine.drunk_at)
         self.assertEqual(params["note"], wine.note)
-        for param_tag, wine_tag in zip(params["tag_texts"], wine.tags.all()):
-            self.assertEqual(param_tag, wine_tag.text)
+        self.assertEqual(params["tag_texts"], wine.tag_texts)
 
     def test_empty_params(self):
         """
@@ -122,14 +121,14 @@ class TestCreateWine(TestCase):
         self.assertEqual(params["region_3"], wine.region_3)
         self.assertEqual(params["region_4"], wine.region_4)
         self.assertEqual(params["region_5"], wine.region_5)
-        self.assertEqual(params["cepages"], list(wine.tags.all()))
+        self.assertEqual(params["cepages"], list(wine.cepages.all()))
         self.assertEqual(params["vintage"], wine.vintage)
         self.assertEqual(params["bought_at"], wine.bought_at)
         self.assertEqual(params["bought_from"], wine.bought_from)
         self.assertEqual(params["price_with_tax"], wine.price_with_tax)
         self.assertEqual(params["drunk_at"], wine.drunk_at)
         self.assertEqual(params["note"], wine.note)
-        self.assertEqual(params["tag_texts"], list(wine.tags.all()))
+        self.assertEqual(params["tag_texts"], wine.tag_texts)
 
     """
     Utility functions
