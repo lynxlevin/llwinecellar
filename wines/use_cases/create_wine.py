@@ -1,5 +1,9 @@
 import logging
 
+from django.db import transaction
+from rest_framework import exceptions
+
+from cellars.models import CellarSpace
 from users.models import User
 
 from ..models import Cepage, GrapeMaster, Wine, WineTag
@@ -11,6 +15,7 @@ class CreateWine:
     def __init__(self):
         self.exception_log_title = f"{__class__.__name__}_exception"
 
+    @transaction.atomic
     def execute(self, user: User, data: dict):
         logger.info(self.__class__.__name__, extra={"user": user, "data": data})
 
@@ -44,6 +49,21 @@ class CreateWine:
         if len(tag_texts := data["tag_texts"]) > 0:
             tags = [WineTag.objects.get_or_create(user_id=user.id, text=text)[0] for text in tag_texts]
             wine.tags.set(tags)
+
+        if (cellar_id := data.get("cellar_id")) and (position := data.get("position")):
+            if not user.has_cellar(cellar_id):
+                raise exceptions.NotFound(detail={"cellar_id": "This cellar does not exist."})
+            if position == "basket":
+                to_space = CellarSpace.objects.get_or_create_empty_basket(cellar_id)
+            else:
+                row, _, column = position.partition("-")
+                to_space = CellarSpace.objects.get_by_cellar_row_column(cellar_id, row, column)
+            if to_space is None:
+                raise exceptions.NotFound(detail={"position": "This position does not exist."})
+            if to_space.wine_id is not None:
+                raise exceptions.PermissionDenied(detail={"position": "That position is already occupied."})
+            to_space.wine = wine
+            to_space.save(update_fields=["wine_id", "updated_at"])
 
         wine = Wine.objects.prefetch_cepages().prefetch_tags().get_by_id(wine.id)
 

@@ -4,7 +4,7 @@ from decimal import Decimal
 from django.test import Client, TestCase
 from rest_framework import status
 
-from llwinecellar.common.test_utils import UserFactory
+from llwinecellar.common.test_utils import CellarFactory, UserFactory, WineInRackFactory
 
 from ...enums import Country
 from ...models import Wine
@@ -20,12 +20,7 @@ class TestCreateWine(TestCase):
         cls.base_path = "/api/wines/"
         cls.user = UserFactory()
 
-    def test_create(self):
-        """
-        Post /api/wines/
-        """
-        # Arrange
-        params = {
+        cls.default_params = {
             "name": "Gevrey Chambertin",
             "producer": "Domaine Charlopin Tissier",
             "country": Country.FRANCE.label,
@@ -47,6 +42,13 @@ class TestCreateWine(TestCase):
             "note": "テスト用のノート",
             "tag_texts": ["drink_soon", "birthday_present"],
         }
+
+    def test_create(self):
+        """
+        Post /api/wines/
+        """
+        # Arrange
+        params = self.default_params
 
         # Act
         status_code, body = self._make_request(self.base_path, self.user, params=params)
@@ -129,6 +131,149 @@ class TestCreateWine(TestCase):
         self.assertEqual(params["drunk_at"], wine.drunk_at)
         self.assertEqual(params["note"], wine.note)
         self.assertEqual(params["tag_texts"], wine.tag_texts)
+
+    def test_create__to_empty_rack(self):
+        # Arrange
+        cellar = CellarFactory(user=self.user)
+
+        params = {
+            **self.default_params,
+            "cellar_id": str(cellar.id),
+            "position": "1-1",
+        }
+
+        # Act
+        status_code, body = self._make_request(self.base_path, self.user, params=params)
+
+        # Assert
+        self.assertEqual(status.HTTP_201_CREATED, status_code)
+
+        self._assert_dict_contains_subset(params, body)
+
+        # Assert wine
+        wine = Wine.objects.get_by_id(body["id"])
+        self.assertEqual(cellar.id, wine.cellar_id)
+        self.assertEqual(params["position"], wine.position)
+
+    def test_create__to_empty_basket(self):
+        # Arrange
+        cellar = CellarFactory(user=self.user)
+
+        params = {
+            **self.default_params,
+            "cellar_id": str(cellar.id),
+            "position": "basket",
+        }
+
+        # Act
+        status_code, body = self._make_request(self.base_path, self.user, params=params)
+
+        # Assert
+        self.assertEqual(status.HTTP_201_CREATED, status_code)
+
+        self._assert_dict_contains_subset(params, body)
+
+        # Assert wine
+        wine = Wine.objects.get_by_id(body["id"])
+        self.assertEqual(cellar.id, wine.cellar_id)
+        self.assertEqual(params["position"], wine.position)
+
+    def test_create__not_to_any_cellar(self):
+        # Arrange
+        params = {
+            **self.default_params,
+            "cellar_id": None,
+        }
+
+        # Act
+        status_code, body = self._make_request(self.base_path, self.user, params=params)
+
+        # Assert
+        self.assertEqual(status.HTTP_201_CREATED, status_code)
+
+        self._assert_dict_contains_subset(params, body)
+
+        # Assert wine
+        wine = Wine.objects.get_by_id(body["id"])
+        self.assertEqual(None, wine.cellar_id)
+        self.assertEqual(None, wine.position)
+
+    def test_create__error_on_create_to_filled_rack__403(self):
+        # Arrange
+        cellar = CellarFactory(user=self.user)
+        _another_wine = WineInRackFactory(user=self.user, cellar=cellar, row=1, column=1)
+
+        params = {
+            **self.default_params,
+            "cellar_id": str(cellar.id),
+            "position": "1-1",
+        }
+
+        # Act
+        status_code, _ = self._make_request(self.base_path, self.user, params=params)
+
+        # Assert
+        self.assertEqual(status.HTTP_403_FORBIDDEN, status_code)
+
+        # Assert wine
+        self.assertEqual(1, Wine.objects.count())
+
+    def test_create__error_on_create_to_not_my_cellar__404(self):
+        # Arrange
+        not_my_cellar = CellarFactory()
+
+        params = {
+            **self.default_params,
+            "cellar_id": str(not_my_cellar.id),
+            "position": "1-1",
+        }
+
+        # Act
+        status_code, _ = self._make_request(self.base_path, self.user, params=params)
+
+        # Assert
+        self.assertEqual(status.HTTP_404_NOT_FOUND, status_code)
+
+        # Assert wine
+        self.assertEqual(0, Wine.objects.count())
+
+    def test_create__error_on_create_to_nonexistent_rack__404(self):
+        # Arrange
+        cellar = CellarFactory(user=self.user)
+
+        params = {
+            **self.default_params,
+            "cellar_id": str(cellar.id),
+            "position": "999-999",
+        }
+
+        # Act
+        status_code, _ = self._make_request(self.base_path, self.user, params=params)
+
+        # Assert
+        self.assertEqual(status.HTTP_404_NOT_FOUND, status_code)
+
+        # Assert wine
+        self.assertEqual(0, Wine.objects.count())
+
+    def test_create__error_on_create_to_nonexistent_basket__404(self):
+        # Arrange
+        cellar = CellarFactory(user=self.user, has_basket=False)
+
+        params = {
+            **self.default_params,
+            "cellar_id": str(cellar.id),
+            "position": "basket",
+        }
+
+        # Act
+        status_code, _ = self._make_request(self.base_path, self.user, params=params)
+
+        # Assert
+        self.assertEqual(status.HTTP_404_NOT_FOUND, status_code)
+
+        # Assert wine
+        self.assertEqual(0, Wine.objects.count())
 
     """
     Utility functions

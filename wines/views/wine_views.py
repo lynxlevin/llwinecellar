@@ -44,13 +44,13 @@ class WineViewSet(viewsets.GenericViewSet):
 
     def create(self, request, use_case=CreateWine(), format=None):
         try:
-            serializer = self.get_serializer(data=request.data)
+            serializer = UpdateWineSerializer(data=request.data)
             serializer.is_valid(raise_exception=True)
 
             data = serializer.validated_data
             wine = use_case.execute(user=request.user, data=data)
 
-            serializer = self.get_serializer(wine)
+            serializer = UpdateWineSerializer(wine)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         except Exception as exc:
