@@ -6,10 +6,32 @@ interface WineListResponse {
     wines: WineData[];
 }
 
+// MYMEMO: same as UpdateWineRequest
+export interface CreateWineRequest {
+    name: string;
+    producer: string;
+    country: string | null;
+    region_1: string;
+    region_2: string;
+    region_3: string;
+    region_4: string;
+    region_5: string;
+    cepages: Cepage[];
+    vintage: number | null;
+    bought_at: string | null;
+    bought_from: string;
+    price_with_tax: number | null;
+    drunk_at: string | null;
+    note: string;
+    tag_texts: string[];
+    cellar_id?: string | null;
+    position?: string | null;
+}
+
 export interface UpdateWineRequest {
     name: string;
     producer: string;
-    country: string;
+    country: string | null;
     region_1: string;
     region_2: string;
     region_3: string;
@@ -36,6 +58,10 @@ export const WineAPI = {
             url += `?${new URLSearchParams(Object.entries(query)).toString()}`;
         }
         return await client.get(url);
+    },
+    create: async (data: CreateWineRequest): Promise<AxiosResponse<WineData>> => {
+        const url = WineAPI.BASE_URL;
+        return await client.post(url, data, { headers: { 'content-type': 'application/json' } });
     },
     update: async (id: string, data: UpdateWineRequest): Promise<AxiosResponse<WineData>> => {
         const url = `${WineAPI.BASE_URL}${id}/`;

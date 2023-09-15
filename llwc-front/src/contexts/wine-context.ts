@@ -10,7 +10,7 @@ export interface WineData {
     id: string;
     name: string;
     producer: string;
-    country: string;
+    country: string | null;
     region_1: string;
     region_2: string;
     region_3: string;

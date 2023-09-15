@@ -20,7 +20,7 @@ const useWineListPage = () => {
     const [rowsPerPage, setRowsPerPage] = useState(50);
     const [selectedWine, setSelectedWine] = useState<WineData>();
     const [isEditOpen, setIsEditOpen] = useState(false);
-    const [showEmptyRacks, setShowEmptyRacks] = useState(false);
+    const [isCreateOpen, setIsCreateOpen] = useState(false);
 
     // Avoid a layout jump when reaching the last page with empty rows.
     const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - wineContext.wineList.length) : 0;
@@ -41,6 +41,14 @@ const useWineListPage = () => {
         const isAsc = orderBy === property && order === 'asc';
         setOrder(isAsc ? 'desc' : 'asc');
         setOrderBy(property);
+    };
+
+    const handleClickAdd = (event: React.MouseEvent<unknown>) => {
+        setIsCreateOpen(true);
+    };
+
+    const closeCreateWineDialog = () => {
+        setIsCreateOpen(false);
     };
 
     const handleClickRow = (event: React.MouseEvent<unknown>, row: WineData) => {
@@ -118,16 +126,18 @@ const useWineListPage = () => {
 
     const winesInSelectedCellars = useMemo(() => {
         const cellars: (string | null)[] = selectedCellars.slice();
-        if (cellars.includes('null')) {
-            const index = cellars.indexOf('null');
+        if (cellars.includes('NOT_IN_CELLAR')) {
+            const index = cellars.indexOf('NOT_IN_CELLAR');
             cellars.splice(index, 1);
             cellars.push(null);
         }
         return wineContext.wineList.filter(wine => cellars.includes(wine.cellar_id));
     }, [selectedCellars, wineContext.wineList]);
 
+    // MYMEMO(後日):get this together with wines from list wine API.
     const emptyRacksForSelectedCellars = useMemo(() => {
-        if (!showEmptyRacks) return [];
+        if (selectedCellars.length !== 1) return [];
+        if (selectedCellars[0] === 'NOT_IN_CELLAR') return [];
         const layout = cellarContext.list.find(cellar => cellar.id === selectedCellars[0])!.layout;
         const filledPositions = winesInSelectedCellars.map(wine => wine.position);
         const emptyRacks = layout.flatMap((rowSize, index) => {
@@ -163,7 +173,7 @@ const useWineListPage = () => {
             return racksForRow;
         });
         return emptyRacks;
-    }, [cellarContext.list, selectedCellars, showEmptyRacks, winesInSelectedCellars]);
+    }, [cellarContext.list, selectedCellars, winesInSelectedCellars]);
 
     const rowsToShow = useMemo(() => {
         return winesInSelectedCellars.concat(emptyRacksForSelectedCellars);
@@ -176,7 +186,7 @@ const useWineListPage = () => {
     useEffect(() => {
         if (userContext.isLoggedIn === true) {
             const cellars = cellarContext.list.map(cellar => cellar.id);
-            setSelectedCellars([...cellars, 'null']);
+            setSelectedCellars([...cellars, 'NOT_IN_CELLAR']);
         }
     }, [cellarContext.list, userContext.isLoggedIn]);
 
@@ -187,10 +197,6 @@ const useWineListPage = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [userContext.isLoggedIn]);
 
-    useEffect(() => {
-        setShowEmptyRacks(selectedCellars.length === 1);
-    }, [selectedCellars.length]);
-
     return {
         selectedCellars,
         setSelectedCellars,
@@ -200,6 +206,9 @@ const useWineListPage = () => {
         rowsCount: rowsToShow.length,
         visibleRows,
         selectedWine,
+        handleClickAdd,
+        closeCreateWineDialog,
+        isCreateOpen,
         handleClickRow,
         closeEditWineDialog,
         isEditOpen,

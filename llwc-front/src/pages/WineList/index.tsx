@@ -1,4 +1,4 @@
-import React, { useContext, useMemo, useCallback } from 'react';
+import React, { useContext, useMemo } from 'react';
 import {
     Box,
     Table,
@@ -10,15 +10,16 @@ import {
     TableRow,
     TableSortLabel,
     Toolbar,
+    Tooltip,
     Typography,
     Select,
     MenuItem,
     SelectChangeEvent,
+    IconButton,
+    Paper,
 } from '@mui/material';
-import Paper from '@mui/material/Paper';
-import IconButton from '@mui/material/IconButton';
-import Tooltip from '@mui/material/Tooltip';
 import FilterListIcon from '@mui/icons-material/FilterList';
+import AddIcon from '@mui/icons-material/Add';
 import { visuallyHidden } from '@mui/utils';
 import { Navigate } from 'react-router-dom';
 import useWineListPage, { Order } from '../../hooks/useWineListPage';
@@ -26,6 +27,7 @@ import { WineData } from '../../contexts/wine-context';
 import useUserAPI from '../../hooks/useUserAPI';
 import { UserContext } from '../../contexts/user-context';
 import EditWineDialog from './EditWineDialog';
+import CreateWineDialog from './CreateWineDialog';
 
 // Originally copied from https://mui.com/material-ui/react-table/#sorting-amp-selecting
 
@@ -112,10 +114,11 @@ interface WineListToolbarProps {
     selectedCellars: string[];
     setSelectedCellars: React.Dispatch<React.SetStateAction<string[]>>;
     cellarList: string[][];
+    handleClickAdd: (event: React.MouseEvent<unknown>) => void;
 }
 
 const WineListToolbar = (props: WineListToolbarProps) => {
-    const { selectedCellars, setSelectedCellars, cellarList } = props;
+    const { selectedCellars, setSelectedCellars, cellarList, handleClickAdd } = props;
 
     const handleCellarSelect = (event: SelectChangeEvent) => {
         const {
@@ -134,15 +137,20 @@ const WineListToolbar = (props: WineListToolbarProps) => {
             <Typography sx={{ flex: '1 1 100%' }} variant="h6" id="tableTitle" component="div">
                 Wine List
             </Typography>
+            {/* MYMEMO(後日): change back to single select and get emptyRacksForSelectedCellars from API instead of calculating in front. */}
             <Select id="cellar-select" multiple value={selectedCellars as unknown as string} onChange={handleCellarSelect}>
                 {cellarList.map(cellar => (
                     <MenuItem key={cellar[0]} value={cellar[0]}>
                         {cellar[1]}
                     </MenuItem>
                 ))}
-                <MenuItem value="null">NOT_IN_CELLAR</MenuItem>
+                <MenuItem value="NOT_IN_CELLAR">NOT_IN_CELLAR</MenuItem>
             </Select>
-            {/* MYMEMO: add create page */}
+            <Tooltip title="Add new wine" onClick={handleClickAdd}>
+                <IconButton>
+                    <AddIcon />
+                </IconButton>
+            </Tooltip>
             <Tooltip title="Filter list">
                 <IconButton>
                     <FilterListIcon />
@@ -165,6 +173,9 @@ export const WineList = () => {
         rowsCount,
         visibleRows,
         selectedWine,
+        handleClickAdd,
+        closeCreateWineDialog,
+        isCreateOpen,
         handleClickRow,
         closeEditWineDialog,
         isEditOpen,
@@ -186,7 +197,12 @@ export const WineList = () => {
         <div>
             <Box sx={{ width: '100%' }}>
                 <Paper sx={{ width: '100%', mb: 2 }}>
-                    <WineListToolbar setSelectedCellars={setSelectedCellars} selectedCellars={selectedCellars} cellarList={cellarList} />
+                    <WineListToolbar
+                        setSelectedCellars={setSelectedCellars}
+                        selectedCellars={selectedCellars}
+                        cellarList={cellarList}
+                        handleClickAdd={handleClickAdd}
+                    />
                     <TableContainer>
                         <Table sx={{ minWidth: 750 }} aria-labelledby="tableTitle" size="medium">
                             <WineListTableHead order={order} orderBy={orderBy} selectedCellars={selectedCellars} onRequestSort={handleRequestSort} />
@@ -259,6 +275,7 @@ export const WineList = () => {
             {selectedWine && (
                 <EditWineDialog isOpen={isEditOpen} handleClose={closeEditWineDialog} selectedWineId={selectedWine.id} cellarList={cellarList}></EditWineDialog>
             )}
+            <CreateWineDialog isOpen={isCreateOpen} handleClose={closeCreateWineDialog} cellarList={cellarList}></CreateWineDialog>
         </div>
     );
 };

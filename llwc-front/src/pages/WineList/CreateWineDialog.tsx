@@ -17,8 +17,8 @@ import {
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { TransitionProps } from '@mui/material/transitions';
-import { Cepage, WineData, WineContext } from '../../contexts/wine-context';
-import { UpdateWineRequest, WineAPI } from '../../apis/WineAPI';
+import { Cepage } from '../../contexts/wine-context';
+import { CreateWineRequest, WineAPI } from '../../apis/WineAPI';
 import useWineAPI from '../../hooks/useWineAPI';
 import { AxiosError } from 'axios';
 import { WineTagContext } from '../../contexts/wine-tag-context';
@@ -33,16 +33,16 @@ const Transition = React.forwardRef(function Transition(
     return <Slide direction="up" ref={ref} {...props} />;
 });
 
-interface EditWineDialogProps {
+interface CreateWineDialogProps {
     isOpen: boolean;
     handleClose: () => void;
-    selectedWineId: string;
     cellarList: string[][];
 }
 
 interface ValidationErrorsType {
     name?: string;
     cepages?: string;
+    position?: string;
 }
 
 interface apiErrorsType {
@@ -51,69 +51,74 @@ interface apiErrorsType {
     position?: string;
 }
 
-const EditWineDialog = (props: EditWineDialogProps) => {
-    const { isOpen, handleClose, selectedWineId, cellarList } = props;
+const CreateWineDialog = (props: CreateWineDialogProps) => {
+    const { isOpen, handleClose, cellarList } = props;
 
-    const wineContext = useContext(WineContext);
     const wineTagContext = useContext(WineTagContext);
-    const selectedWine = wineContext.wineList.find(wine => wine.id === selectedWineId) as WineData;
 
     const { getWineList } = useWineAPI();
     const { getWineTagList } = useWineTagAPI();
 
-    const [tagTexts, setTagTexts] = useState<string[]>(selectedWine.tag_texts);
-    const [name, setName] = useState<string>(selectedWine.name);
-    const [producer, setProducer] = useState<string>(selectedWine.producer);
-    const [vintage, setVintage] = useState<number | null>(selectedWine.vintage);
-    const [country, setCountry] = useState<string | null>(selectedWine.country);
-    const [region1, setRegion1] = useState<string>(selectedWine.region_1);
-    const [region2, setRegion2] = useState<string>(selectedWine.region_2);
-    const [region3, setRegion3] = useState<string>(selectedWine.region_3);
-    const [region4, setRegion4] = useState<string>(selectedWine.region_4);
-    const [region5, setRegion5] = useState<string>(selectedWine.region_5);
-    const [cepages, setCepages] = useState<Cepage[]>(selectedWine.cepages);
-    const [boughtAt, setBoughtAt] = useState<string | null>(selectedWine.bought_at);
-    const [boughtFrom, setBoughtFrom] = useState<string>(selectedWine.bought_from);
-    const [priceWithTax, setPriceWithTax] = useState<number | null>(selectedWine.price_with_tax);
-    const [drunkAt, setDrunkAt] = useState<string | null>(selectedWine.drunk_at);
-    const [note, setNote] = useState<string>(selectedWine.note);
-    const [cellarId, setCellarId] = useState<string | null>('DO_NOT_CHANGE_PLACE');
-    const [position, setPosition] = useState<string | null>(selectedWine.position);
+    const [tagTexts, setTagTexts] = useState<string[]>([]);
+    const [name, setName] = useState<string>('');
+    const [producer, setProducer] = useState<string>('');
+    const [vintage, setVintage] = useState<number | null>(null);
+    const [country, setCountry] = useState<string | null>(null);
+    const [region1, setRegion1] = useState<string>('');
+    const [region2, setRegion2] = useState<string>('');
+    const [region3, setRegion3] = useState<string>('');
+    const [region4, setRegion4] = useState<string>('');
+    const [region5, setRegion5] = useState<string>('');
+    const [cepages, setCepages] = useState<Cepage[]>([]);
+    const [boughtAt, setBoughtAt] = useState<string | null>(null);
+    const [boughtFrom, setBoughtFrom] = useState<string>('');
+    const [priceWithTax, setPriceWithTax] = useState<number | null>(null);
+    const [drunkAt, setDrunkAt] = useState<string | null>(null);
+    const [note, setNote] = useState<string>('');
+    const [cellarId, setCellarId] = useState<string | null>('NOT_IN_CELLAR');
+    const [position, setPosition] = useState<string | null>(null);
 
     const [validationErrors, setValidationErrors] = useState<ValidationErrorsType>({});
     const [apiErrors, setApiErrors] = useState<apiErrorsType>({});
 
     useEffect(() => {
         if (isOpen) {
-            setTagTexts(selectedWine.tag_texts);
-            setName(selectedWine.name);
-            setProducer(selectedWine.producer);
-            setVintage(selectedWine.vintage);
-            setCountry(selectedWine.country);
-            setRegion1(selectedWine.region_1);
-            setRegion2(selectedWine.region_2);
-            setRegion3(selectedWine.region_3);
-            setRegion4(selectedWine.region_4);
-            setRegion5(selectedWine.region_5);
-            setCepages(selectedWine.cepages);
-            setBoughtAt(selectedWine.bought_at);
-            setBoughtFrom(selectedWine.bought_from);
-            setPriceWithTax(selectedWine.price_with_tax);
-            setDrunkAt(selectedWine.drunk_at);
-            setNote(selectedWine.note);
-            setCellarId('DO_NOT_CHANGE_PLACE');
-            setPosition(selectedWine.position);
+            setTagTexts([]);
+            setName('');
+            setProducer('');
+            setVintage(null);
+            setCountry(null);
+            setRegion1('');
+            setRegion2('');
+            setRegion3('');
+            setRegion4('');
+            setRegion5('');
+            setCepages([]);
+            setBoughtAt(null);
+            setBoughtFrom('');
+            setPriceWithTax(null);
+            setDrunkAt(null);
+            setNote('');
+            setCellarId(cellarList[0][0]);
+            setPosition(null);
             setValidationErrors({});
             setApiErrors({});
         }
-    }, [isOpen, selectedWine]);
+    }, [cellarList, isOpen]);
 
     const handleSave = async () => {
         if (Object.keys(validationErrors).length > 0) return;
+        if (name === '') {
+            setValidationErrors({ name: 'Name cannot be empty.' });
+            return;
+        }
+        if (cellarId !== 'NOT_IN_CELLAR' && position === null) {
+            setValidationErrors({ position: 'Position cannot be empty while a cellar is selected.' });
+            return;
+        }
         setApiErrors({});
-        // MYMEMO(後日): create にある、name と position のバリデーションどうするか？
 
-        const data: UpdateWineRequest = {
+        const data: CreateWineRequest = {
             name: name,
             producer: producer,
             country: country,
@@ -130,16 +135,15 @@ const EditWineDialog = (props: EditWineDialogProps) => {
             drunk_at: drunkAt,
             note: note,
             tag_texts: tagTexts,
+            cellar_id: cellarId,
+            position,
         };
         const newTagCreated = !tagTexts.every(tag => wineTagContext.wineTagList.includes(tag));
-        if (cellarId === 'MOVE_OUT_OF_CELLAR') {
+        if (cellarId === 'NOT_IN_CELLAR') {
             data.cellar_id = null;
             data.position = null;
-        } else if (cellarId !== 'DO_NOT_CHANGE_PLACE') {
-            data.cellar_id = cellarId;
-            data.position = position;
         }
-        await WineAPI.update(selectedWine.id, data)
+        await WineAPI.create(data)
             .then(async _ => {
                 await getWineList();
                 if (newTagCreated) await getWineTagList();
@@ -192,11 +196,16 @@ const EditWineDialog = (props: EditWineDialogProps) => {
                             label="name"
                             error={Boolean(validationErrors.name)}
                             helperText={validationErrors.name ? validationErrors.name : ''}
-                            defaultValue={selectedWine.name}
+                            defaultValue={''}
                             onChange={event => {
                                 if (event.target.value.length === 0) {
                                     setValidationErrors(current => {
                                         return { ...current, name: 'Name cannot be empty.' };
+                                    });
+                                } else {
+                                    setValidationErrors(current => {
+                                        const { name, ...rest } = current;
+                                        return rest;
                                     });
                                 }
                                 setName(event.target.value);
@@ -208,7 +217,7 @@ const EditWineDialog = (props: EditWineDialogProps) => {
                     <Grid item xs={10}>
                         <TextField
                             label="producer"
-                            defaultValue={selectedWine.producer}
+                            defaultValue={''}
                             onChange={event => {
                                 setProducer(event.target.value);
                             }}
@@ -219,7 +228,7 @@ const EditWineDialog = (props: EditWineDialogProps) => {
                     <Grid item xs={2}>
                         <TextField
                             label="vintage"
-                            defaultValue={selectedWine.vintage}
+                            defaultValue={null}
                             onChange={event => {
                                 setVintage(Number(event.target.value));
                             }}
@@ -232,7 +241,7 @@ const EditWineDialog = (props: EditWineDialogProps) => {
                             label="country"
                             error={Boolean(apiErrors.country)}
                             helperText={apiErrors.country}
-                            defaultValue={selectedWine.country}
+                            defaultValue={null}
                             onChange={event => {
                                 setCountry(event.target.value || null);
                             }}
@@ -243,7 +252,7 @@ const EditWineDialog = (props: EditWineDialogProps) => {
                     <Grid item xs={6}>
                         <TextField
                             label="region_1"
-                            defaultValue={selectedWine.region_1}
+                            defaultValue={''}
                             onChange={event => {
                                 setRegion1(event.target.value);
                             }}
@@ -254,7 +263,7 @@ const EditWineDialog = (props: EditWineDialogProps) => {
                     <Grid item xs={6}>
                         <TextField
                             label="region_2"
-                            defaultValue={selectedWine.region_2}
+                            defaultValue={''}
                             onChange={event => {
                                 setRegion2(event.target.value);
                             }}
@@ -265,7 +274,7 @@ const EditWineDialog = (props: EditWineDialogProps) => {
                     <Grid item xs={6}>
                         <TextField
                             label="region_3"
-                            defaultValue={selectedWine.region_3}
+                            defaultValue={''}
                             onChange={event => {
                                 setRegion3(event.target.value);
                             }}
@@ -276,7 +285,7 @@ const EditWineDialog = (props: EditWineDialogProps) => {
                     <Grid item xs={6}>
                         <TextField
                             label="region_4"
-                            defaultValue={selectedWine.region_4}
+                            defaultValue={''}
                             onChange={event => {
                                 setRegion4(event.target.value);
                             }}
@@ -287,7 +296,7 @@ const EditWineDialog = (props: EditWineDialogProps) => {
                     <Grid item xs={6}>
                         <TextField
                             label="region_5"
-                            defaultValue={selectedWine.region_5}
+                            defaultValue={''}
                             onChange={event => {
                                 setRegion5(event.target.value);
                             }}
@@ -300,9 +309,7 @@ const EditWineDialog = (props: EditWineDialogProps) => {
                             label="cepages"
                             error={Boolean(validationErrors.cepages)}
                             helperText={validationErrors.cepages ? validationErrors.cepages : ''}
-                            defaultValue={
-                                selectedWine.cepages.length > 0 ? JSON.stringify(selectedWine.cepages) : '[{"name":"","abbreviation":"","percentage":"100.0"}]'
-                            }
+                            defaultValue={'[{"name":"","abbreviation":"","percentage":"100.0"}]'}
                             // MYMEMO(後日): show grape_master somewhere
                             onChange={event => {
                                 try {
@@ -326,7 +333,7 @@ const EditWineDialog = (props: EditWineDialogProps) => {
                     <Grid item xs={6}>
                         <TextField
                             label="bought_at"
-                            defaultValue={selectedWine.bought_at}
+                            defaultValue={null}
                             onChange={event => {
                                 setBoughtAt(event.target.value || null);
                             }}
@@ -337,7 +344,7 @@ const EditWineDialog = (props: EditWineDialogProps) => {
                     <Grid item xs={6}>
                         <TextField
                             label="bought_from"
-                            defaultValue={selectedWine.bought_from}
+                            defaultValue={''}
                             onChange={event => {
                                 setBoughtFrom(event.target.value);
                             }}
@@ -348,7 +355,7 @@ const EditWineDialog = (props: EditWineDialogProps) => {
                     <Grid item xs={12}>
                         <TextField
                             label="price_with_tax"
-                            defaultValue={selectedWine.price_with_tax}
+                            defaultValue={null}
                             onChange={event => {
                                 const value = event.target.value === '' ? null : Number(event.target.value);
                                 setPriceWithTax(value);
@@ -360,7 +367,7 @@ const EditWineDialog = (props: EditWineDialogProps) => {
                     <Grid item xs={12}>
                         <TextField
                             label="drunk_at"
-                            defaultValue={selectedWine.drunk_at}
+                            defaultValue={null}
                             onChange={event => {
                                 setDrunkAt(event.target.value || null);
                             }}
@@ -371,7 +378,7 @@ const EditWineDialog = (props: EditWineDialogProps) => {
                     <Grid item xs={12}>
                         <TextField
                             label="note"
-                            defaultValue={selectedWine.note}
+                            defaultValue={''}
                             onChange={event => {
                                 setNote(event.target.value);
                             }}
@@ -387,27 +394,31 @@ const EditWineDialog = (props: EditWineDialogProps) => {
                                 setCellarId(event.target.value);
                             }}
                         >
-                            {/* MYMEMO(後日): チェックにしたほうが良さそう */}
-                            <MenuItem value="DO_NOT_CHANGE_PLACE">DO_NOT_CHANGE_PLACE</MenuItem>
                             {cellarList.map(cellar => (
                                 <MenuItem key={cellar[0]} value={cellar[0]}>
                                     {cellar[1]}
                                 </MenuItem>
                             ))}
-                            <MenuItem value="MOVE_OUT_OF_CELLAR">MOVE_OUT_OF_CELLAR</MenuItem>
+                            <MenuItem value="NOT_IN_CELLAR">NOT_IN_CELLAR</MenuItem>
                         </Select>
                     </Grid>
                     <Grid item xs={12}>
                         {/* MYMEMO(後日): make this a select */}
                         <TextField
                             label="position"
-                            defaultValue={selectedWine.position}
+                            defaultValue={null}
                             onChange={event => {
+                                if (cellarId === 'NOT_IN_CELLAR' || event.target.value !== '') {
+                                    setValidationErrors(current => {
+                                        const { position, ...rest } = current;
+                                        return rest;
+                                    });
+                                }
                                 setPosition(event.target.value || null);
                             }}
-                            disabled={cellarId === 'DO_NOT_CHANGE_PLACE'}
-                            error={Boolean(apiErrors.position)}
-                            helperText={apiErrors.position}
+                            disabled={cellarId === 'NOT_IN_CELLAR'}
+                            error={Boolean(apiErrors.position) || Boolean(validationErrors.position)}
+                            helperText={apiErrors.position || validationErrors.position}
                             variant="standard"
                             fullWidth
                             multiline
@@ -419,4 +430,4 @@ const EditWineDialog = (props: EditWineDialogProps) => {
     );
 };
 
-export default EditWineDialog;
+export default CreateWineDialog;

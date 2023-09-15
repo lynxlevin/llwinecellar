@@ -62,18 +62,16 @@ class UpdateWine:
                 from_space.save(update_fields=["wine_id", "updated_at"])
         if (cellar_id := data.get("cellar_id")) and (position := data.get("position")):
             if not user.has_cellar(cellar_id):
-                raise exceptions.NotFound(detail={"key": "cellar_id", "message": "This cellar does not exist."})
+                raise exceptions.NotFound(detail={"cellar_id": "This cellar does not exist."})
             if position == "basket":
                 to_space = CellarSpace.objects.get_or_create_empty_basket(cellar_id)
             else:
                 row, _, column = position.partition("-")
                 to_space = CellarSpace.objects.get_by_cellar_row_column(cellar_id, row, column)
             if to_space is None:
-                raise exceptions.NotFound(detail={"key": "position", "message": "This position does not exist."})
+                raise exceptions.NotFound(detail={"position": "This position does not exist."})
             if to_space.wine_id is not None:
-                raise exceptions.PermissionDenied(
-                    detail={"key": "position", "message": "That position is already occupied."}
-                )
+                raise exceptions.PermissionDenied(detail={"position": "That position is already occupied."})
             to_space.wine = wine
             to_space.save(update_fields=["wine_id", "updated_at"])
 
