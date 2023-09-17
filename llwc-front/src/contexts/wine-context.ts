@@ -23,10 +23,9 @@ export interface WineData {
     price_with_tax: number | null;
     drunk_at: string | null;
     note: string;
-    cellar_name: string;
+    tag_texts: string[];
     cellar_id: string | null;
     position: string | null;
-    tag_texts: string[];
 }
 
 interface WineContextType {

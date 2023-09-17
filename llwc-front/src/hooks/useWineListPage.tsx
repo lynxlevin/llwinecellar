@@ -35,7 +35,6 @@ const useWineListPage = () => {
     };
 
     const cellarList = cellarContext.list.map(cellar => [cellar.id, cellar.name]);
-    const cellarNames = Object.fromEntries(cellarList);
 
     const handleRequestSort = (event: React.MouseEvent<unknown>, property: keyof WineData) => {
         const isAsc = orderBy === property && order === 'asc';
@@ -162,7 +161,6 @@ const useWineListPage = () => {
                         price_with_tax: null,
                         drunk_at: null,
                         note: '',
-                        cellar_name: '',
                         cellar_id: null,
                         position,
                         tag_texts: [],
@@ -213,7 +211,6 @@ const useWineListPage = () => {
         closeEditWineDialog,
         isEditOpen,
         cellarList,
-        cellarNames,
         emptyRows,
         rowsPerPage,
         page,

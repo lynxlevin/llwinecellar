@@ -136,6 +136,7 @@ const EditWineDialog = (props: EditWineDialogProps) => {
             data.cellar_id = null;
             data.position = null;
         } else if (cellarId !== 'DO_NOT_CHANGE_PLACE') {
+            // MYMEMO(後日): 汚い。null | undefined | string の使い分けはよろしくない。
             data.cellar_id = cellarId;
             data.position = position;
         }

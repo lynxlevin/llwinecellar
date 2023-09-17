@@ -61,7 +61,6 @@ const WineListTableHead = (props: WineListTableHeadProps) => {
 
     const wineHeadCells: WineHeadCell[] = useMemo(() => {
         return [
-            ...(selectedCellars.length !== 1 ? [{ id: 'cellar_name', numeric: false }] : []),
             ...(selectedCellars.toString() !== 'null' ? [{ id: 'position', numeric: false }] : []),
             { id: 'tag_texts', numeric: false },
             { id: 'name', numeric: false },
@@ -180,7 +179,6 @@ export const WineList = () => {
         closeEditWineDialog,
         isEditOpen,
         cellarList,
-        cellarNames,
         emptyRows,
         rowsPerPage,
         page,
@@ -224,9 +222,6 @@ export const WineList = () => {
                                                     : { cursor: 'pointer' }
                                             }
                                         >
-                                            {selectedCellars.length !== 1 && (
-                                                <TableCell>{row.cellar_id ? cellarNames[row.cellar_id] : cellarNames['null']}</TableCell>
-                                            )}
                                             {selectedCellars.toString() !== 'null' && <TableCell>{row.position}</TableCell>}
                                             <TableCell>{row.tag_texts.join(', ')}</TableCell>
                                             <TableCell component="th" id={labelId} scope="row">
