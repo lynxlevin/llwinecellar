@@ -1,6 +1,7 @@
-import React, { useContext, useMemo } from 'react';
+import React, { useContext, useMemo, useState } from 'react';
 import {
     Box,
+    Checkbox,
     Table,
     TableBody,
     TableCell,
@@ -28,8 +29,71 @@ import useUserAPI from '../../hooks/useUserAPI';
 import { UserContext } from '../../contexts/user-context';
 import EditWineDialog from './EditWineDialog';
 import CreateWineDialog from './CreateWineDialog';
+import { WineContext } from '../../contexts/wine-context';
 
 // Originally copied from https://mui.com/material-ui/react-table/#sorting-amp-selecting
+
+interface WineListToolbarProps {
+    selectedCellars: string[];
+    setSelectedCellars: React.Dispatch<React.SetStateAction<string[]>>;
+    cellarList: string[][];
+    handleClickAdd: (event: React.MouseEvent<unknown>) => void;
+}
+
+const WineListToolbar = (props: WineListToolbarProps) => {
+    const { selectedCellars, setSelectedCellars, cellarList, handleClickAdd } = props;
+    const wineContext = useContext(WineContext);
+
+    const [showOnlyDrunkWines, setShowOnlyDrunkWines] = useState(false);
+
+    const handleCheckbox = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setShowOnlyDrunkWines(event.target.checked);
+        wineContext.setWineListQuery({ is_drunk: event.target.checked });
+    };
+
+    const handleCellarSelect = (event: SelectChangeEvent) => {
+        const {
+            target: { value },
+        } = event;
+        setSelectedCellars(typeof value === 'string' ? value.split(',') : value);
+    };
+
+    return (
+        <Toolbar
+            sx={{
+                pl: { sm: 2 },
+                pr: { xs: 1, sm: 1 },
+            }}
+        >
+            <Typography sx={{ flex: '1 1 100%' }} variant="h6" id="tableTitle" component="div">
+                {showOnlyDrunkWines ? 'Drunk ' : ''}Wine List
+            </Typography>
+            <Box>
+                <Checkbox checked={showOnlyDrunkWines} onChange={handleCheckbox} />
+                showOnlyDrunkWines
+            </Box>
+            {/* MYMEMO(後日): change back to single select and get emptyRacksForSelectedCellars from API instead of calculating in front. */}
+            <Select id="cellar-select" multiple value={selectedCellars as unknown as string} onChange={handleCellarSelect}>
+                {cellarList.map(cellar => (
+                    <MenuItem key={cellar[0]} value={cellar[0]}>
+                        {cellar[1]}
+                    </MenuItem>
+                ))}
+                <MenuItem value="NOT_IN_CELLAR">NOT_IN_CELLAR</MenuItem>
+            </Select>
+            <Tooltip title="Add new wine" onClick={handleClickAdd}>
+                <IconButton>
+                    <AddIcon />
+                </IconButton>
+            </Tooltip>
+            <Tooltip title="Filter list">
+                <IconButton>
+                    <FilterListIcon />
+                </IconButton>
+            </Tooltip>
+        </Toolbar>
+    );
+};
 
 interface WineHeadCell {
     id: keyof WineData;
@@ -76,6 +140,7 @@ const WineListTableHead = (props: WineListTableHeadProps) => {
             { id: 'bought_at', numeric: false },
             { id: 'bought_from', numeric: false },
             { id: 'price_with_tax', numeric: true },
+            { id: 'drunk_at', numeric: true },
         ] as WineHeadCell[];
     }, [selectedCellars]);
     // MYMEMO(後日): add filter
@@ -106,56 +171,6 @@ const WineListTableHead = (props: WineListTableHeadProps) => {
                 ))}
             </TableRow>
         </TableHead>
-    );
-};
-
-interface WineListToolbarProps {
-    selectedCellars: string[];
-    setSelectedCellars: React.Dispatch<React.SetStateAction<string[]>>;
-    cellarList: string[][];
-    handleClickAdd: (event: React.MouseEvent<unknown>) => void;
-}
-
-const WineListToolbar = (props: WineListToolbarProps) => {
-    const { selectedCellars, setSelectedCellars, cellarList, handleClickAdd } = props;
-
-    const handleCellarSelect = (event: SelectChangeEvent) => {
-        const {
-            target: { value },
-        } = event;
-        setSelectedCellars(typeof value === 'string' ? value.split(',') : value);
-    };
-
-    return (
-        <Toolbar
-            sx={{
-                pl: { sm: 2 },
-                pr: { xs: 1, sm: 1 },
-            }}
-        >
-            <Typography sx={{ flex: '1 1 100%' }} variant="h6" id="tableTitle" component="div">
-                Wine List
-            </Typography>
-            {/* MYMEMO(後日): change back to single select and get emptyRacksForSelectedCellars from API instead of calculating in front. */}
-            <Select id="cellar-select" multiple value={selectedCellars as unknown as string} onChange={handleCellarSelect}>
-                {cellarList.map(cellar => (
-                    <MenuItem key={cellar[0]} value={cellar[0]}>
-                        {cellar[1]}
-                    </MenuItem>
-                ))}
-                <MenuItem value="NOT_IN_CELLAR">NOT_IN_CELLAR</MenuItem>
-            </Select>
-            <Tooltip title="Add new wine" onClick={handleClickAdd}>
-                <IconButton>
-                    <AddIcon />
-                </IconButton>
-            </Tooltip>
-            <Tooltip title="Filter list">
-                <IconButton>
-                    <FilterListIcon />
-                </IconButton>
-            </Tooltip>
-        </Toolbar>
     );
 };
 
@@ -190,7 +205,6 @@ export const WineList = () => {
     if (userContext.isLoggedIn === false) {
         return <Navigate to="/login" />;
     }
-    // MYMEMO: create DrunkWineList
     return (
         <div>
             <Box sx={{ width: '100%' }}>
@@ -240,6 +254,7 @@ export const WineList = () => {
                                             <TableCell align="right">{row.bought_at}</TableCell>
                                             <TableCell align="right">{row.bought_from}</TableCell>
                                             <TableCell align="right">{row.price_with_tax}</TableCell>
+                                            <TableCell align="right">{row.drunk_at}</TableCell>
                                             {/* MYMEMO(後日): show note: TableContainer を width:max-content にしたらできるけど、全列個別指定が必要になる
                                             https://smartdevpreneur.com/customizing-material-ui-table-cell-width/ */}
                                         </TableRow>

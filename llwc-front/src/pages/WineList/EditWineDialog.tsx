@@ -17,7 +17,7 @@ import {
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { TransitionProps } from '@mui/material/transitions';
-import { Cepage, WineData, WineContext } from '../../contexts/wine-context';
+import { Cepage, WineContext } from '../../contexts/wine-context';
 import { WineRequestBody, WineAPI } from '../../apis/WineAPI';
 import useWineAPI from '../../hooks/useWineAPI';
 import { AxiosError } from 'axios';
@@ -56,35 +56,35 @@ const EditWineDialog = (props: EditWineDialogProps) => {
 
     const wineContext = useContext(WineContext);
     const wineTagContext = useContext(WineTagContext);
-    const selectedWine = wineContext.wineList.find(wine => wine.id === selectedWineId) as WineData;
+    const selectedWine = wineContext.wineList.find(wine => wine.id === selectedWineId);
 
     const { getWineList } = useWineAPI();
     const { getWineTagList } = useWineTagAPI();
 
-    const [tagTexts, setTagTexts] = useState<string[]>(selectedWine.tag_texts);
-    const [name, setName] = useState<string>(selectedWine.name);
-    const [producer, setProducer] = useState<string>(selectedWine.producer);
-    const [vintage, setVintage] = useState<number | null>(selectedWine.vintage);
-    const [country, setCountry] = useState<string | null>(selectedWine.country);
-    const [region1, setRegion1] = useState<string>(selectedWine.region_1);
-    const [region2, setRegion2] = useState<string>(selectedWine.region_2);
-    const [region3, setRegion3] = useState<string>(selectedWine.region_3);
-    const [region4, setRegion4] = useState<string>(selectedWine.region_4);
-    const [region5, setRegion5] = useState<string>(selectedWine.region_5);
-    const [cepages, setCepages] = useState<Cepage[]>(selectedWine.cepages);
-    const [boughtAt, setBoughtAt] = useState<string | null>(selectedWine.bought_at);
-    const [boughtFrom, setBoughtFrom] = useState<string>(selectedWine.bought_from);
-    const [priceWithTax, setPriceWithTax] = useState<number | null>(selectedWine.price_with_tax);
-    const [drunkAt, setDrunkAt] = useState<string | null>(selectedWine.drunk_at);
-    const [note, setNote] = useState<string>(selectedWine.note);
+    const [tagTexts, setTagTexts] = useState<string[]>(selectedWine ? selectedWine.tag_texts : []);
+    const [name, setName] = useState<string>(selectedWine ? selectedWine.name : '');
+    const [producer, setProducer] = useState<string>(selectedWine ? selectedWine.producer : '');
+    const [vintage, setVintage] = useState<number | null>(selectedWine ? selectedWine.vintage : null);
+    const [country, setCountry] = useState<string | null>(selectedWine ? selectedWine.country : null);
+    const [region1, setRegion1] = useState<string>(selectedWine ? selectedWine.region_1 : '');
+    const [region2, setRegion2] = useState<string>(selectedWine ? selectedWine.region_2 : '');
+    const [region3, setRegion3] = useState<string>(selectedWine ? selectedWine.region_3 : '');
+    const [region4, setRegion4] = useState<string>(selectedWine ? selectedWine.region_4 : '');
+    const [region5, setRegion5] = useState<string>(selectedWine ? selectedWine.region_5 : '');
+    const [cepages, setCepages] = useState<Cepage[]>(selectedWine ? selectedWine.cepages : []);
+    const [boughtAt, setBoughtAt] = useState<string | null>(selectedWine ? selectedWine.bought_at : null);
+    const [boughtFrom, setBoughtFrom] = useState<string>(selectedWine ? selectedWine.bought_from : '');
+    const [priceWithTax, setPriceWithTax] = useState<number | null>(selectedWine ? selectedWine.price_with_tax : null);
+    const [drunkAt, setDrunkAt] = useState<string | null>(selectedWine ? selectedWine.drunk_at : null);
+    const [note, setNote] = useState<string>(selectedWine ? selectedWine.note : '');
     const [cellarId, setCellarId] = useState<string | null>('DO_NOT_CHANGE_PLACE');
-    const [position, setPosition] = useState<string | null>(selectedWine.position);
+    const [position, setPosition] = useState<string | null>(selectedWine ? selectedWine.position : null);
 
     const [validationErrors, setValidationErrors] = useState<ValidationErrorsType>({});
     const [apiErrors, setApiErrors] = useState<apiErrorsType>({});
 
     useEffect(() => {
-        if (isOpen) {
+        if (isOpen && selectedWine) {
             setTagTexts(selectedWine.tag_texts);
             setName(selectedWine.name);
             setProducer(selectedWine.producer);
@@ -109,7 +109,7 @@ const EditWineDialog = (props: EditWineDialogProps) => {
     }, [isOpen, selectedWine]);
 
     const handleSave = async () => {
-        if (Object.keys(validationErrors).length > 0) return;
+        if (Object.keys(validationErrors).length > 0 || !selectedWine) return;
         setApiErrors({});
         // MYMEMO(後日): create にある、name と position のバリデーションどうするか？
 
@@ -151,6 +151,9 @@ const EditWineDialog = (props: EditWineDialogProps) => {
             });
     };
 
+    if (!selectedWine) {
+        return <></>;
+    }
     return (
         <Dialog fullScreen open={isOpen} onClose={handleClose} TransitionComponent={Transition}>
             <AppBar position="sticky">

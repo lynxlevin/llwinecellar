@@ -192,8 +192,7 @@ const useWineListPage = () => {
         if (userContext.isLoggedIn === true) {
             getWineList();
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [userContext.isLoggedIn]);
+    }, [getWineList, userContext.isLoggedIn]);
 
     return {
         selectedCellars,

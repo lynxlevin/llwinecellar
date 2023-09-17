@@ -28,9 +28,21 @@ export interface WineData {
     position: string | null;
 }
 
+export interface WineListQuery {
+    is_drunk: boolean;
+    in_cellars?: boolean;
+    cellar_id?: string;
+}
+
 interface WineContextType {
     wineList: WineData[];
     setWineList: React.Dispatch<React.SetStateAction<WineData[]>>;
+    wineListQuery: WineListQuery;
+    setWineListQuery: React.Dispatch<React.SetStateAction<WineListQuery>>;
 }
 
-export const WineContext = createContext({ wineList: [], setWineList: () => {} } as unknown as WineContextType);
+export const WineContext = createContext({
+    wineList: [],
+    setWineList: () => {},
+    wineListQuery: {},
+} as unknown as WineContextType);
