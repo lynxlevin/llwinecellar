@@ -28,8 +28,8 @@ GET {{endpoint}}/api/wines/?cellar_id=aa38eecc-7e8d-42c0-90a0-ad39ba584734
 GET {{endpoint}}/api/wines/?is_drunk=true
 
 ###
-# @name list_not_in_cellars
-GET {{endpoint}}/api/wines/?in_cellars=false
+# @name list_only_out_of_cellars
+GET {{endpoint}}/api/wines/?out_of_cellars=true
 
 ###
 # @name create

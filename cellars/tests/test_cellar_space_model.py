@@ -3,7 +3,7 @@ from django.test import TestCase
 
 from cellars.enums import CellarSpaceType
 from cellars.models import CellarSpace
-from llwinecellar.common.test_utils import CellarFactory, WineInBasketFactory
+from llwinecellar.common.test_utils import CellarFactory, CellarSpaceFactory, WineInBasketFactory, WineInRackFactory
 
 
 class TestCellarSpaceModel(TestCase):
@@ -61,3 +61,35 @@ class TestCellarSpaceModel(TestCase):
 
         self.assertEqual(CellarSpaceType.BASKET, result.type)
         self.assertEqual(cellar.cellarspace_set.count(), original_space_count + 1)
+
+    def test_filter_by_type(self):
+        cellar = CellarFactory()
+        _basket = CellarSpaceFactory(cellar=cellar, type=CellarSpaceType.BASKET)
+
+        result = CellarSpace.objects.filter_by_type(CellarSpaceType.RACK)
+
+        for space in result:
+            self.assertEqual(CellarSpaceType.RACK, space.type)
+
+    def test_filter_empty(self):
+        cellar = CellarFactory()
+        _wine = WineInRackFactory(cellar=cellar, row=1, column=1, user=cellar.user)
+
+        result = CellarSpace.objects.filter_empty()
+
+        for space in result:
+            self.assertIsNone(space.wine)
+
+    def test_order_by_position(self):
+        _cellar = CellarFactory()
+
+        result = CellarSpace.objects.order_by("-row", "column").order_by_position()
+
+        prev = None
+        for space in result:
+            position = f"{space.row}-{space.column}"
+
+            if prev is not None:
+                self.assertLess(prev, position)
+
+            prev = position

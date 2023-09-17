@@ -1,4 +1,4 @@
-from .cellar_factory import CellarFactory
+from .cellar_factory import CellarFactory, CellarSpaceFactory
 from .user_factory import UserFactory
 from .wine_factory import (
     CepageFactory,

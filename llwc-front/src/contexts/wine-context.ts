@@ -30,7 +30,7 @@ export interface WineData {
 
 export interface WineListQuery {
     is_drunk: boolean;
-    in_cellars?: boolean;
+    out_of_cellars?: boolean;
     cellar_id?: string;
 }
 

@@ -1,6 +1,6 @@
 import factory
 
-from cellars.models import Cellar
+from cellars.models import Cellar, CellarSpace
 
 from .user_factory import UserFactory
 
@@ -14,6 +14,11 @@ class CellarFactory(factory.django.DjangoModelFactory):
         model = Cellar
 
     name = factory.Sequence(lambda n: f"cellar_{n}")
-    layout = factory.List([5, 6, 6, 6, 6])
+    layout = factory.List([5, 6, 6])
     has_basket = True
     user = factory.SubFactory(UserFactory)
+
+
+class CellarSpaceFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = CellarSpace

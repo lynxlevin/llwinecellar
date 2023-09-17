@@ -16,7 +16,26 @@ class TestListWine(TestCase):
         cls.base_path = "/api/wines/"
         cls.user = UserFactory()
         cls.cellar = CellarFactory(user=cls.user)
-        # MYMEMO(後日): add cepage and tag
+        # MYMEMO(後日): add cepages and tag
+
+        cls.empty_rack = {
+            "name": "",
+            "producer": "",
+            "country": None,
+            "region_1": "",
+            "region_2": "",
+            "region_3": "",
+            "region_4": "",
+            "region_5": "",
+            "cepages": [],
+            "vintage": None,
+            "bought_at": None,
+            "bought_from": "",
+            "price_with_tax": None,
+            "drunk_at": None,
+            "note": "",
+            "tag_texts": [],
+        }
 
     def test_all(self):
         # Arrange
@@ -47,8 +66,37 @@ class TestListWine(TestCase):
         # Assert
         self.assertEqual(status.HTTP_200_OK, status_code)
 
-        expected = wines_in_cellar
-        self._assert_listed_wines_equal_expected(expected, body["wines"])
+        expected = [
+            *wines_in_cellar,
+            *[
+                {
+                    **self.empty_rack,
+                    "cellar_id": str(self.cellar.id),
+                    "position": f"1-{column}",
+                }
+                for column in range(2, 6)
+            ],
+            *[
+                {
+                    **self.empty_rack,
+                    "cellar_id": str(self.cellar.id),
+                    "position": f"2-{column}",
+                }
+                for column in range(1, 7)
+            ],
+            *[
+                {
+                    **self.empty_rack,
+                    "cellar_id": str(self.cellar.id),
+                    "position": f"3-{column}",
+                }
+                for column in range(1, 7)
+            ],
+        ]
+        self._assert_listed_wines_equal_expected([expected[0]], [body["wines"][0]])
+        for expected_wine, wine_response in zip(expected[1:], body["wines"][1:]):
+            wine_response.pop("id")
+            self.assertDictEqual(expected_wine, wine_response)
 
     def test_is_drunk(self):
         # Arrange
@@ -66,7 +114,7 @@ class TestListWine(TestCase):
         expected = wines_drunk
         self._assert_listed_wines_equal_expected(expected, body["wines"])
 
-    def test_in_cellars_false(self):
+    def test_out_of_cellars(self):
         # Arrange
         _wines_in_cellar = [WineInRackFactory(row=1, column=1, cellar=self.cellar, user=self.user)]
         wines_not_in_cellar = [WineFactory(user=self.user)]
@@ -74,7 +122,7 @@ class TestListWine(TestCase):
         _wines_different_user = [WineFactory()]
 
         # Act
-        status_code, body = self._make_request(f"{self.base_path}?in_cellars=false", self.user)
+        status_code, body = self._make_request(f"{self.base_path}?out_of_cellars=true", self.user)
 
         # Assert
         self.assertEqual(status.HTTP_200_OK, status_code)
@@ -115,7 +163,7 @@ class TestListWine(TestCase):
                 "price_with_tax": expected.price_with_tax,
                 "drunk_at": expected.drunk_at.strftime("%Y-%m-%d") if expected.drunk_at is not None else None,
                 "note": expected.note,
-                "cellar_id": str(expected.cellarspace.cellar_id) if hasattr(expected, "cellarspace") else None,
+                "cellar_id": str(expected.cellar_id) if expected.cellar_id else None,
                 "position": expected.position,
                 "tag_texts": expected.tag_texts,
             }

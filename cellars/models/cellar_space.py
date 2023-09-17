@@ -22,7 +22,7 @@ class CellarSpaceQuerySet(models.QuerySet):
         except CellarSpace.DoesNotExist:
             return None
 
-    def get_or_create_empty_basket(self, cellar_id) -> "CellarSpace":
+    def get_or_create_empty_basket(self, cellar_id) -> Optional["CellarSpace"]:
         cellar = Cellar.objects.get_by_id(cellar_id)
         if not cellar.has_basket:
             return None
@@ -32,6 +32,15 @@ class CellarSpaceQuerySet(models.QuerySet):
             basket = self.create(cellar_id=cellar_id, type=CellarSpaceType.BASKET)
 
         return basket
+
+    def filter_by_type(self, type: CellarSpaceType) -> "CellarSpaceQuerySet":
+        return self.filter(type=type)
+
+    def filter_empty(self) -> "CellarSpaceQuerySet":
+        return self.filter(wine__isnull=True)
+
+    def order_by_position(self) -> "CellarSpaceQuerySet":
+        return self.order_by("row", "column")
 
 
 class CellarSpace(models.Model):
