@@ -18,7 +18,7 @@ import {
 import CloseIcon from '@mui/icons-material/Close';
 import { TransitionProps } from '@mui/material/transitions';
 import { Cepage, WineData, WineContext } from '../../contexts/wine-context';
-import { UpdateWineRequest, WineAPI } from '../../apis/WineAPI';
+import { WineRequestBody, WineAPI } from '../../apis/WineAPI';
 import useWineAPI from '../../hooks/useWineAPI';
 import { AxiosError } from 'axios';
 import { WineTagContext } from '../../contexts/wine-tag-context';
@@ -113,7 +113,7 @@ const EditWineDialog = (props: EditWineDialogProps) => {
         setApiErrors({});
         // MYMEMO(後日): create にある、name と position のバリデーションどうするか？
 
-        const data: UpdateWineRequest = {
+        const data: WineRequestBody = {
             name: name,
             producer: producer,
             country: country,

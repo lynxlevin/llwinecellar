@@ -18,7 +18,7 @@ import {
 import CloseIcon from '@mui/icons-material/Close';
 import { TransitionProps } from '@mui/material/transitions';
 import { Cepage } from '../../contexts/wine-context';
-import { CreateWineRequest, WineAPI } from '../../apis/WineAPI';
+import { WineRequestBody, WineAPI } from '../../apis/WineAPI';
 import useWineAPI from '../../hooks/useWineAPI';
 import { AxiosError } from 'axios';
 import { WineTagContext } from '../../contexts/wine-tag-context';
@@ -118,7 +118,7 @@ const CreateWineDialog = (props: CreateWineDialogProps) => {
         }
         setApiErrors({});
 
-        const data: CreateWineRequest = {
+        const data: WineRequestBody = {
             name: name,
             producer: producer,
             country: country,
