@@ -34,28 +34,25 @@ import { WineContext } from '../../contexts/wine-context';
 // Originally copied from https://mui.com/material-ui/react-table/#sorting-amp-selecting
 
 interface WineListToolbarProps {
-    selectedCellars: string[];
-    setSelectedCellars: React.Dispatch<React.SetStateAction<string[]>>;
+    selectedCellarId: string;
+    setSelectedCellarId: React.Dispatch<React.SetStateAction<string>>;
     cellarList: string[][];
     handleClickAdd: (event: React.MouseEvent<unknown>) => void;
 }
 
 const WineListToolbar = (props: WineListToolbarProps) => {
-    const { selectedCellars, setSelectedCellars, cellarList, handleClickAdd } = props;
+    const { selectedCellarId, setSelectedCellarId, cellarList, handleClickAdd } = props;
     const wineContext = useContext(WineContext);
 
     const [showOnlyDrunkWines, setShowOnlyDrunkWines] = useState(false);
 
     const handleCheckbox = (event: React.ChangeEvent<HTMLInputElement>) => {
         setShowOnlyDrunkWines(event.target.checked);
-        wineContext.setWineListQuery({ is_drunk: event.target.checked });
+        wineContext.setWineListQuery({ ...wineContext.wineListQuery, is_drunk: event.target.checked });
     };
 
     const handleCellarSelect = (event: SelectChangeEvent) => {
-        const {
-            target: { value },
-        } = event;
-        setSelectedCellars(typeof value === 'string' ? value.split(',') : value);
+        setSelectedCellarId(event.target.value);
     };
 
     return (
@@ -72,8 +69,14 @@ const WineListToolbar = (props: WineListToolbarProps) => {
                 <Checkbox checked={showOnlyDrunkWines} onChange={handleCheckbox} />
                 showOnlyDrunkWines
             </Box>
-            {/* MYMEMO(後日): change back to single select and get emptyRacksForSelectedCellars from API instead of calculating in front. */}
-            <Select id="cellar-select" multiple value={selectedCellars as unknown as string} onChange={handleCellarSelect}>
+            {/* MYMEMO: change back to single select and get emptyRacksForSelectedCellars from API instead of calculating in front.
+                ✅1: Change it so that selectedCellars.length is always 0 or 1.
+                ✅2: Change it so that on changing selectedCellars, wineContext is updated.
+                ✅3: Change the select to single.
+                ✅4: Deal with console error
+                5: Clean up code.
+            */}
+            <Select id="cellar-select" value={selectedCellarId} onChange={handleCellarSelect}>
                 {cellarList.map(cellar => (
                     <MenuItem key={cellar[0]} value={cellar[0]}>
                         {cellar[1]}
@@ -104,11 +107,11 @@ interface WineListTableHeadProps {
     onRequestSort: (event: React.MouseEvent<unknown>, property: keyof WineData) => void;
     order: Order;
     orderBy: string;
-    selectedCellars: string[];
+    selectedCellarId: string;
 }
 
 const WineListTableHead = (props: WineListTableHeadProps) => {
-    const { order, orderBy, selectedCellars, onRequestSort } = props;
+    const { order, orderBy, selectedCellarId, onRequestSort } = props;
     const createSortHandler = (property: keyof WineData) => (event: React.MouseEvent<unknown>) => {
         onRequestSort(event, property);
     };
@@ -125,7 +128,7 @@ const WineListTableHead = (props: WineListTableHeadProps) => {
 
     const wineHeadCells: WineHeadCell[] = useMemo(() => {
         return [
-            ...(selectedCellars.toString() !== 'null' ? [{ id: 'position', numeric: false }] : []),
+            ...(selectedCellarId !== 'NOT_IN_CELLAR' ? [{ id: 'position', numeric: false }] : []),
             { id: 'tag_texts', numeric: false },
             { id: 'name', numeric: false },
             { id: 'producer', numeric: false },
@@ -142,7 +145,7 @@ const WineListTableHead = (props: WineListTableHeadProps) => {
             { id: 'price_with_tax', numeric: true },
             { id: 'drunk_at', numeric: true },
         ] as WineHeadCell[];
-    }, [selectedCellars]);
+    }, [selectedCellarId]);
     // MYMEMO(後日): add filter
 
     return (
@@ -179,8 +182,8 @@ export const WineList = () => {
     // MYMEMO(後日): 全ページでこれだけするのは違和感
     useUserAPI();
     const {
-        selectedCellars,
-        setSelectedCellars,
+        selectedCellarId,
+        setSelectedCellarId,
         order,
         orderBy,
         handleRequestSort,
@@ -210,14 +213,14 @@ export const WineList = () => {
             <Box sx={{ width: '100%' }}>
                 <Paper sx={{ width: '100%', mb: 2 }}>
                     <WineListToolbar
-                        setSelectedCellars={setSelectedCellars}
-                        selectedCellars={selectedCellars}
+                        setSelectedCellarId={setSelectedCellarId}
+                        selectedCellarId={selectedCellarId}
                         cellarList={cellarList}
                         handleClickAdd={handleClickAdd}
                     />
                     <TableContainer>
                         <Table sx={{ minWidth: 750 }} aria-labelledby="tableTitle" size="medium">
-                            <WineListTableHead order={order} orderBy={orderBy} selectedCellars={selectedCellars} onRequestSort={handleRequestSort} />
+                            <WineListTableHead order={order} orderBy={orderBy} selectedCellarId={selectedCellarId} onRequestSort={handleRequestSort} />
                             <TableBody>
                                 {visibleRows.map((row, index) => {
                                     const labelId = `enhanced-table-checkbox-${index}`;
@@ -236,7 +239,7 @@ export const WineList = () => {
                                                     : { cursor: 'pointer' }
                                             }
                                         >
-                                            {selectedCellars.toString() !== 'null' && <TableCell>{row.position}</TableCell>}
+                                            {selectedCellarId !== 'NOT_IN_CELLAR' && <TableCell>{row.position}</TableCell>}
                                             <TableCell>{row.tag_texts.join(', ')}</TableCell>
                                             <TableCell component="th" id={labelId} scope="row">
                                                 {row.name}

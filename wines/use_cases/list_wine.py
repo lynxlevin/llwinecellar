@@ -49,7 +49,7 @@ class ListWine:
 
         wines = qs.order_by("created_at").all()
 
-        if cellar_id:
+        if cellar_id and not is_drunk:
             empty_racks = (
                 CellarSpace.objects.filter(cellar_id=cellar_id)
                 .filter_by_type(CellarSpaceType.RACK)

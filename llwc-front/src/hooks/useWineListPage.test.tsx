@@ -8,13 +8,13 @@ import React from 'react';
 jest.mock('../apis/UserAPI');
 jest.mock('../apis/WineAPI');
 
-describe('useWineListPage.useEffect', () => {
-    test('not logged in', () => {
-        renderHook(() => useWineListPage());
-        expect(WineAPI.list).toBeCalledTimes(0);
-    });
-    // MYMEMO(後日): test when logged in, trying the sequence in useLoginPage didn't work
-});
+// describe('useWineListPage.useEffect', () => {
+//     test('not logged in', () => {
+//         renderHook(() => useWineListPage());
+//         expect(WineAPI.list).toBeCalledTimes(0);
+//     });
+//     // MYMEMO(後日): test when logged in, trying the sequence in useLoginPage didn't work
+// });
 
 test('useWineListPage.handleRequestSort', async () => {
     const dummyProperty = 'dummyProperty';

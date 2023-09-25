@@ -13,7 +13,7 @@ const useWineListPage = () => {
 
     const { getWineList } = useWineAPI();
 
-    const [selectedCellars, setSelectedCellars] = useState<string[]>([]);
+    const [selectedCellarId, setSelectedCellarId] = useState<string>('NOT_IN_CELLAR');
     const [order, setOrder] = useState<Order>('asc');
     const [orderBy, setOrderBy] = useState<keyof WineData>('tag_texts');
     const [page, setPage] = useState(0);
@@ -123,70 +123,26 @@ const useWineListPage = () => {
         [ascendingComparator, descendingComparator],
     );
 
-    const winesInSelectedCellars = useMemo(() => {
-        const cellars: (string | null)[] = selectedCellars.slice();
-        if (cellars.includes('NOT_IN_CELLAR')) {
-            const index = cellars.indexOf('NOT_IN_CELLAR');
-            cellars.splice(index, 1);
-            cellars.push(null);
-        }
-        return wineContext.wineList.filter(wine => cellars.includes(wine.cellar_id));
-    }, [selectedCellars, wineContext.wineList]);
-
-    // MYMEMO(後日):get this together with wines from list wine API.
-    const emptyRacksForSelectedCellars = useMemo(() => {
-        if (selectedCellars.length !== 1) return [];
-        if (selectedCellars[0] === 'NOT_IN_CELLAR') return [];
-        const layout = cellarContext.list.find(cellar => cellar.id === selectedCellars[0])!.layout;
-        const filledPositions = winesInSelectedCellars.map(wine => wine.position);
-        const emptyRacks = layout.flatMap((rowSize, index) => {
-            const racksForRow = [];
-            for (let step = 1; step <= rowSize; step++) {
-                const position = `${index + 1}-${step}`;
-                if (!filledPositions.includes(position)) {
-                    const rack: WineData = {
-                        id: `empty-rack(${position})`,
-                        name: '',
-                        producer: '',
-                        country: '',
-                        region_1: '',
-                        region_2: '',
-                        region_3: '',
-                        region_4: '',
-                        region_5: '',
-                        cepages: [],
-                        vintage: null,
-                        bought_at: null,
-                        bought_from: '',
-                        price_with_tax: null,
-                        drunk_at: null,
-                        note: '',
-                        cellar_id: null,
-                        position,
-                        tag_texts: [],
-                    };
-                    racksForRow.push(rack);
-                }
-            }
-            return racksForRow;
-        });
-        return emptyRacks;
-    }, [cellarContext.list, selectedCellars, winesInSelectedCellars]);
-
-    const rowsToShow = useMemo(() => {
-        return winesInSelectedCellars.concat(emptyRacksForSelectedCellars);
-    }, [emptyRacksForSelectedCellars, winesInSelectedCellars]);
-
     const visibleRows = useMemo(() => {
-        return rowsToShow.sort(getComparator(order, orderBy)).slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
-    }, [getComparator, order, orderBy, page, rowsPerPage, rowsToShow]);
+        return wineContext.wineList.sort(getComparator(order, orderBy)).slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+    }, [getComparator, order, orderBy, page, rowsPerPage, wineContext.wineList]);
 
     useEffect(() => {
-        if (userContext.isLoggedIn === true) {
-            const cellars = cellarContext.list.map(cellar => cellar.id);
-            setSelectedCellars([...cellars, 'NOT_IN_CELLAR']);
+        if (cellarContext.list.length > 0) {
+            setSelectedCellarId(cellarContext.list[0].id);
         }
-    }, [cellarContext.list, userContext.isLoggedIn]);
+    }, [cellarContext.list]);
+
+    useEffect(() => {
+        if (selectedCellarId) {
+            if (selectedCellarId === 'NOT_IN_CELLAR') {
+                wineContext.setWineListQuery({ is_drunk: wineContext.wineListQuery.is_drunk, out_of_cellars: true });
+            } else {
+                wineContext.setWineListQuery({ is_drunk: wineContext.wineListQuery.is_drunk, cellar_id: selectedCellarId });
+            }
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [selectedCellarId]);
 
     useEffect(() => {
         if (userContext.isLoggedIn === true) {
@@ -195,12 +151,12 @@ const useWineListPage = () => {
     }, [getWineList, userContext.isLoggedIn]);
 
     return {
-        selectedCellars,
-        setSelectedCellars,
+        selectedCellarId,
+        setSelectedCellarId,
         order,
         orderBy,
         handleRequestSort,
-        rowsCount: rowsToShow.length,
+        rowsCount: wineContext.wineList.length,
         visibleRows,
         selectedWine,
         handleClickAdd,
