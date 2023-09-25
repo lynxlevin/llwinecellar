@@ -15,7 +15,7 @@ const useWineListPage = () => {
 
     const [selectedCellarId, setSelectedCellarId] = useState<string>('NOT_IN_CELLAR');
     const [order, setOrder] = useState<Order>('asc');
-    const [orderBy, setOrderBy] = useState<keyof WineData>('tag_texts');
+    const [orderBy, setOrderBy] = useState<keyof WineData>('position');
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(50);
     const [selectedWine, setSelectedWine] = useState<WineData>();
@@ -43,6 +43,7 @@ const useWineListPage = () => {
     };
 
     const handleClickAdd = (event: React.MouseEvent<unknown>) => {
+        setSelectedWine(undefined);
         setIsCreateOpen(true);
     };
 
@@ -51,12 +52,11 @@ const useWineListPage = () => {
     };
 
     const handleClickRow = (event: React.MouseEvent<unknown>, row: WineData) => {
-        if (row.id.startsWith('empty-rack(')) return;
-        if (selectedWine?.id === row.id) {
-            setIsEditOpen(true);
-        } else {
+        if (selectedWine?.id !== row.id) {
             setSelectedWine(row);
+            return;
         }
+        selectedWine.name === '' ? setIsCreateOpen(true) : setIsEditOpen(true);
     };
 
     const closeEditWineDialog = () => {

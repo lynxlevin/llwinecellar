@@ -69,13 +69,6 @@ const WineListToolbar = (props: WineListToolbarProps) => {
                 <Checkbox checked={showOnlyDrunkWines} onChange={handleCheckbox} />
                 showOnlyDrunkWines
             </Box>
-            {/* MYMEMO: change back to single select and get emptyRacksForSelectedCellars from API instead of calculating in front.
-                ✅1: Change it so that selectedCellars.length is always 0 or 1.
-                ✅2: Change it so that on changing selectedCellars, wineContext is updated.
-                ✅3: Change the select to single.
-                ✅4: Deal with console error
-                5: Clean up code.
-            */}
             <Select id="cellar-select" value={selectedCellarId} onChange={handleCellarSelect}>
                 {cellarList.map(cellar => (
                     <MenuItem key={cellar[0]} value={cellar[0]}>
@@ -107,11 +100,10 @@ interface WineListTableHeadProps {
     onRequestSort: (event: React.MouseEvent<unknown>, property: keyof WineData) => void;
     order: Order;
     orderBy: string;
-    selectedCellarId: string;
 }
 
 const WineListTableHead = (props: WineListTableHeadProps) => {
-    const { order, orderBy, selectedCellarId, onRequestSort } = props;
+    const { order, orderBy, onRequestSort } = props;
     const createSortHandler = (property: keyof WineData) => (event: React.MouseEvent<unknown>) => {
         onRequestSort(event, property);
     };
@@ -126,26 +118,24 @@ const WineListTableHead = (props: WineListTableHeadProps) => {
             .join(' ');
     };
 
-    const wineHeadCells: WineHeadCell[] = useMemo(() => {
-        return [
-            ...(selectedCellarId !== 'NOT_IN_CELLAR' ? [{ id: 'position', numeric: false }] : []),
-            { id: 'tag_texts', numeric: false },
-            { id: 'name', numeric: false },
-            { id: 'producer', numeric: false },
-            { id: 'vintage', numeric: true },
-            { id: 'country', numeric: false },
-            { id: 'region_1', numeric: false },
-            { id: 'region_2', numeric: false },
-            { id: 'region_3', numeric: false },
-            { id: 'region_4', numeric: false },
-            { id: 'region_5', numeric: false },
-            { id: 'cepages', numeric: false },
-            { id: 'bought_at', numeric: false },
-            { id: 'bought_from', numeric: false },
-            { id: 'price_with_tax', numeric: true },
-            { id: 'drunk_at', numeric: true },
-        ] as WineHeadCell[];
-    }, [selectedCellarId]);
+    const wineHeadCells: WineHeadCell[] = [
+        { id: 'position', numeric: false },
+        { id: 'tag_texts', numeric: false },
+        { id: 'name', numeric: false },
+        { id: 'producer', numeric: false },
+        { id: 'vintage', numeric: true },
+        { id: 'country', numeric: false },
+        { id: 'region_1', numeric: false },
+        { id: 'region_2', numeric: false },
+        { id: 'region_3', numeric: false },
+        { id: 'region_4', numeric: false },
+        { id: 'region_5', numeric: false },
+        { id: 'cepages', numeric: false },
+        { id: 'bought_at', numeric: false },
+        { id: 'bought_from', numeric: false },
+        { id: 'price_with_tax', numeric: true },
+        { id: 'drunk_at', numeric: true },
+    ];
     // MYMEMO(後日): add filter
 
     return (
@@ -220,7 +210,7 @@ export const WineList = () => {
                     />
                     <TableContainer>
                         <Table sx={{ minWidth: 750 }} aria-labelledby="tableTitle" size="medium">
-                            <WineListTableHead order={order} orderBy={orderBy} selectedCellarId={selectedCellarId} onRequestSort={handleRequestSort} />
+                            <WineListTableHead order={order} orderBy={orderBy} onRequestSort={handleRequestSort} />
                             <TableBody>
                                 {visibleRows.map((row, index) => {
                                     const labelId = `enhanced-table-checkbox-${index}`;
@@ -233,13 +223,9 @@ export const WineList = () => {
                                             selected={selectedWine?.id === row.id}
                                             tabIndex={-1}
                                             key={row.id}
-                                            sx={
-                                                row.id.startsWith('empty-rack(')
-                                                    ? { cursor: 'pointer', backgroundColor: 'rgba(0, 0, 0, 0.04)' }
-                                                    : { cursor: 'pointer' }
-                                            }
+                                            sx={row.name === '' ? { cursor: 'pointer', backgroundColor: 'rgba(0, 0, 0, 0.04)' } : { cursor: 'pointer' }}
                                         >
-                                            {selectedCellarId !== 'NOT_IN_CELLAR' && <TableCell>{row.position}</TableCell>}
+                                            <TableCell>{row.position}</TableCell>
                                             <TableCell>{row.tag_texts.join(', ')}</TableCell>
                                             <TableCell component="th" id={labelId} scope="row">
                                                 {row.name}
@@ -288,7 +274,12 @@ export const WineList = () => {
             {selectedWine && (
                 <EditWineDialog isOpen={isEditOpen} handleClose={closeEditWineDialog} selectedWineId={selectedWine.id} cellarList={cellarList}></EditWineDialog>
             )}
-            <CreateWineDialog isOpen={isCreateOpen} handleClose={closeCreateWineDialog} cellarList={cellarList}></CreateWineDialog>
+            <CreateWineDialog
+                isOpen={isCreateOpen}
+                handleClose={closeCreateWineDialog}
+                selectedWineId={selectedWine?.id}
+                cellarList={cellarList}
+            ></CreateWineDialog>
         </div>
     );
 };
