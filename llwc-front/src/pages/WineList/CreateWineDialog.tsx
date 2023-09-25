@@ -38,6 +38,7 @@ interface CreateWineDialogProps {
     handleClose: () => void;
     selectedWineId?: string;
     cellarList: string[][];
+    selectedCellarId: string;
 }
 
 interface ValidationErrorsType {
@@ -53,7 +54,7 @@ interface apiErrorsType {
 }
 
 const CreateWineDialog = (props: CreateWineDialogProps) => {
-    const { isOpen, handleClose, selectedWineId, cellarList } = props;
+    const { isOpen, handleClose, selectedWineId, cellarList, selectedCellarId } = props;
 
     const wineContext = useContext(WineContext);
     const wineTagContext = useContext(WineTagContext);
@@ -81,12 +82,12 @@ const CreateWineDialog = (props: CreateWineDialogProps) => {
             priceWithTax: null,
             drunkAt: null,
             note: '',
-            cellarId: selectedWine ? selectedWine.cellar_id : 'NOT_IN_CELLAR',
+            cellarId: selectedWine ? selectedWine.cellar_id : selectedCellarId,
             position: selectedWine ? selectedWine.position : null,
             validationErrors: {},
             apiErrors: {},
         };
-    }, [selectedWine]);
+    }, [selectedCellarId, selectedWine]);
 
     const [tagTexts, setTagTexts] = useState<string[]>(initialValues.tagTexts);
     const [name, setName] = useState<string>(initialValues.name);
@@ -165,7 +166,7 @@ const CreateWineDialog = (props: CreateWineDialogProps) => {
             note: note,
             tag_texts: tagTexts,
             cellar_id: cellarId,
-            position,
+            position: position,
         };
         const newTagCreated = !tagTexts.every(tag => wineTagContext.wineTagList.includes(tag));
         if (cellarId === 'NOT_IN_CELLAR') {
@@ -191,7 +192,7 @@ const CreateWineDialog = (props: CreateWineDialogProps) => {
                         <CloseIcon />
                     </IconButton>
                     <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
-                        Sound
+                        Create
                     </Typography>
                     <Button
                         autoFocus
@@ -417,7 +418,7 @@ const CreateWineDialog = (props: CreateWineDialogProps) => {
                             multiline
                         />
                     </Grid>
-                    <Grid item xs={12}>
+                    <Grid item xs={10}>
                         <Select
                             value={cellarId}
                             onChange={event => {

@@ -1,7 +1,6 @@
-import React, { useContext, useMemo, useState } from 'react';
+import React, { useContext, useState, useRef } from 'react';
 import {
     Box,
-    Checkbox,
     Table,
     TableBody,
     TableCell,
@@ -19,8 +18,11 @@ import {
     IconButton,
     Paper,
 } from '@mui/material';
-import FilterListIcon from '@mui/icons-material/FilterList';
+// import FilterListIcon from '@mui/icons-material/FilterList';
 import AddIcon from '@mui/icons-material/Add';
+import LogoutIcon from '@mui/icons-material/Logout';
+import BookIcon from '@mui/icons-material/Book';
+import WarehouseIcon from '@mui/icons-material/Warehouse';
 import { visuallyHidden } from '@mui/utils';
 import { Navigate } from 'react-router-dom';
 import useWineListPage, { Order } from '../../hooks/useWineListPage';
@@ -38,17 +40,24 @@ interface WineListToolbarProps {
     setSelectedCellarId: React.Dispatch<React.SetStateAction<string>>;
     cellarList: string[][];
     handleClickAdd: (event: React.MouseEvent<unknown>) => void;
+    handleLogout: () => Promise<void>;
 }
 
 const WineListToolbar = (props: WineListToolbarProps) => {
-    const { selectedCellarId, setSelectedCellarId, cellarList, handleClickAdd } = props;
+    const { selectedCellarId, setSelectedCellarId, cellarList, handleClickAdd, handleLogout } = props;
     const wineContext = useContext(WineContext);
 
-    const [showOnlyDrunkWines, setShowOnlyDrunkWines] = useState(false);
+    const [drunkOnly, setDrunkOnly] = useState(false);
 
-    const handleCheckbox = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setShowOnlyDrunkWines(event.target.checked);
-        wineContext.setWineListQuery({ ...wineContext.wineListQuery, is_drunk: event.target.checked });
+    const handleClick = () => {
+        const checked = !drunkOnly;
+        setDrunkOnly(checked);
+        wineContext.setWineListQuery({ is_drunk: checked });
+        if (checked) {
+            setSelectedCellarId('');
+        } else {
+            setSelectedCellarId(cellarList[0][0]);
+        }
     };
 
     const handleCellarSelect = (event: SelectChangeEvent) => {
@@ -62,13 +71,13 @@ const WineListToolbar = (props: WineListToolbarProps) => {
                 pr: { xs: 1, sm: 1 },
             }}
         >
+            <IconButton onClick={handleLogout} sx={{ mt: 1, mb: 2 }}>
+                <LogoutIcon />
+            </IconButton>
             <Typography sx={{ flex: '1 1 100%' }} variant="h6" id="tableTitle" component="div">
-                {showOnlyDrunkWines ? 'Drunk ' : ''}Wine List
+                {drunkOnly ? 'Drunk ' : ''}Wine List
             </Typography>
-            <Box>
-                <Checkbox checked={showOnlyDrunkWines} onChange={handleCheckbox} />
-                showOnlyDrunkWines
-            </Box>
+            <IconButton onClick={handleClick}>{drunkOnly ? <BookIcon /> : <WarehouseIcon />}</IconButton>
             <Select id="cellar-select" value={selectedCellarId} onChange={handleCellarSelect}>
                 {cellarList.map(cellar => (
                     <MenuItem key={cellar[0]} value={cellar[0]}>
@@ -82,11 +91,11 @@ const WineListToolbar = (props: WineListToolbarProps) => {
                     <AddIcon />
                 </IconButton>
             </Tooltip>
-            <Tooltip title="Filter list">
+            {/* <Tooltip title="Filter list">
                 <IconButton>
                     <FilterListIcon />
                 </IconButton>
-            </Tooltip>
+            </Tooltip> */}
         </Toolbar>
     );
 };
@@ -109,6 +118,7 @@ const WineListTableHead = (props: WineListTableHeadProps) => {
     };
 
     const toTitleCase = (text: string): string => {
+        if (text === 'price_with_tax') return 'Price incl.';
         return text
             .toLowerCase()
             .split('_')
@@ -169,8 +179,10 @@ const WineListTableHead = (props: WineListTableHeadProps) => {
 
 export const WineList = () => {
     const userContext = useContext(UserContext);
+    const toolbarRef = useRef<HTMLDivElement>(null);
+    const paginationRef = useRef<HTMLDivElement>(null);
     // MYMEMO(後日): 全ページでこれだけするのは違和感
-    useUserAPI();
+    const { handleLogout } = useUserAPI();
     const {
         selectedCellarId,
         setSelectedCellarId,
@@ -195,6 +207,11 @@ export const WineList = () => {
         getCepageAbbreviations,
     } = useWineListPage();
 
+    const tableHeight =
+        toolbarRef.current && paginationRef.current
+            ? `${window.innerHeight - toolbarRef.current!.clientHeight - paginationRef.current!.clientHeight - 16}px`
+            : '70vh';
+
     if (userContext.isLoggedIn === false) {
         return <Navigate to="/login" />;
     }
@@ -202,14 +219,17 @@ export const WineList = () => {
         <div>
             <Box sx={{ width: '100%' }}>
                 <Paper sx={{ width: '100%', mb: 2 }}>
-                    <WineListToolbar
-                        setSelectedCellarId={setSelectedCellarId}
-                        selectedCellarId={selectedCellarId}
-                        cellarList={cellarList}
-                        handleClickAdd={handleClickAdd}
-                    />
-                    <TableContainer>
-                        <Table sx={{ minWidth: 750 }} aria-labelledby="tableTitle" size="medium">
+                    <div ref={toolbarRef}>
+                        <WineListToolbar
+                            setSelectedCellarId={setSelectedCellarId}
+                            selectedCellarId={selectedCellarId}
+                            cellarList={cellarList}
+                            handleClickAdd={handleClickAdd}
+                            handleLogout={handleLogout}
+                        />
+                    </div>
+                    <TableContainer sx={{ maxHeight: tableHeight }}>
+                        <Table stickyHeader sx={{ minWidth: 750 }} aria-labelledby="tableTitle" size="medium">
                             <WineListTableHead order={order} orderBy={orderBy} onRequestSort={handleRequestSort} />
                             <TableBody>
                                 {visibleRows.map((row, index) => {
@@ -261,14 +281,16 @@ export const WineList = () => {
                             </TableBody>
                         </Table>
                     </TableContainer>
-                    <TablePagination
-                        component="div"
-                        count={rowsCount}
-                        rowsPerPage={rowsPerPage}
-                        page={page}
-                        onPageChange={handleChangePage}
-                        onRowsPerPageChange={handleChangeRowsPerPage}
-                    />
+                    <div ref={paginationRef}>
+                        <TablePagination
+                            component="div"
+                            count={rowsCount}
+                            rowsPerPage={rowsPerPage}
+                            page={page}
+                            onPageChange={handleChangePage}
+                            onRowsPerPageChange={handleChangeRowsPerPage}
+                        />
+                    </div>
                 </Paper>
             </Box>
             {selectedWine && (
@@ -279,6 +301,7 @@ export const WineList = () => {
                 handleClose={closeCreateWineDialog}
                 selectedWineId={selectedWine?.id}
                 cellarList={cellarList}
+                selectedCellarId={selectedCellarId}
             ></CreateWineDialog>
         </div>
     );

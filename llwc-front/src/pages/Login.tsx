@@ -12,7 +12,7 @@ const Login = () => {
     const { errorMessage, handleLogin, handleEmailInput, handlePasswordInput } = useLoginPage();
 
     if (userContext.isLoggedIn === true) {
-        return <Navigate to="/" />;
+        return <Navigate to="/wine-list" />;
     }
     return (
         <Container component="main" maxWidth="xs">

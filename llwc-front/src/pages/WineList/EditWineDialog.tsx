@@ -14,6 +14,7 @@ import {
     MenuItem,
     Autocomplete,
     Chip,
+    Checkbox,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { TransitionProps } from '@mui/material/transitions';
@@ -81,10 +82,11 @@ const EditWineDialog = (props: EditWineDialogProps) => {
             priceWithTax: selectedWine ? selectedWine.price_with_tax : null,
             drunkAt: selectedWine ? selectedWine.drunk_at : null,
             note: selectedWine ? selectedWine.note : '',
-            cellarId: 'DO_NOT_CHANGE_PLACE',
+            cellarId: selectedWine ? selectedWine.cellar_id : 'MOVE_OUT_OF_CELLAR',
             position: selectedWine ? selectedWine.position : null,
             validationErrors: {},
             apiErrors: {},
+            dontMove: true,
         };
     }, [selectedWine]);
 
@@ -110,6 +112,8 @@ const EditWineDialog = (props: EditWineDialogProps) => {
     const [validationErrors, setValidationErrors] = useState<ValidationErrorsType>(initialValues.validationErrors);
     const [apiErrors, setApiErrors] = useState<apiErrorsType>(initialValues.apiErrors);
 
+    const [dontMove, setDontMove] = useState<boolean>(initialValues.dontMove);
+
     useEffect(() => {
         if (isOpen) {
             setTagTexts(initialValues.tagTexts);
@@ -132,6 +136,7 @@ const EditWineDialog = (props: EditWineDialogProps) => {
             setPosition(initialValues.position);
             setValidationErrors(initialValues.validationErrors);
             setApiErrors(initialValues.apiErrors);
+            setDontMove(initialValues.dontMove);
         }
     }, [initialValues, isOpen]);
 
@@ -141,7 +146,7 @@ const EditWineDialog = (props: EditWineDialogProps) => {
             setValidationErrors({ name: 'Name cannot be empty.' });
             return;
         }
-        if (cellarId !== 'NOT_IN_CELLAR' && position === null) {
+        if (cellarId !== 'MOVE_OUT_OF_CELLAR' && position === null) {
             setValidationErrors({ position: 'Position cannot be empty while a cellar is selected.' });
             return;
         }
@@ -164,15 +169,17 @@ const EditWineDialog = (props: EditWineDialogProps) => {
             drunk_at: drunkAt,
             note: note,
             tag_texts: tagTexts,
+            cellar_id: cellarId,
+            position: position,
         };
         const newTagCreated = !tagTexts.every(tag => wineTagContext.wineTagList.includes(tag));
-        if (cellarId === 'MOVE_OUT_OF_CELLAR') {
+        if (dontMove) {
+            // MYMEMO(後日): 汚い。null | undefined | string の使い分けはよろしくない。
+            delete data.cellar_id;
+            delete data.position;
+        } else if (cellarId === 'MOVE_OUT_OF_CELLAR') {
             data.cellar_id = null;
             data.position = null;
-        } else if (cellarId !== 'DO_NOT_CHANGE_PLACE') {
-            // MYMEMO(後日): 汚い。null | undefined | string の使い分けはよろしくない。
-            data.cellar_id = cellarId;
-            data.position = position;
         }
         await WineAPI.update(selectedWine.id, data)
             .then(async _ => {
@@ -185,9 +192,6 @@ const EditWineDialog = (props: EditWineDialogProps) => {
             });
     };
 
-    // if (!selectedWine) {
-    //     return <></>;
-    // }
     return (
         <Dialog fullScreen open={isOpen} onClose={handleClose} TransitionComponent={Transition}>
             <AppBar position="sticky">
@@ -196,7 +200,7 @@ const EditWineDialog = (props: EditWineDialogProps) => {
                         <CloseIcon />
                     </IconButton>
                     <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
-                        Sound
+                        Edit
                     </Typography>
                     <Button
                         autoFocus
@@ -422,15 +426,14 @@ const EditWineDialog = (props: EditWineDialogProps) => {
                             multiline
                         />
                     </Grid>
-                    <Grid item xs={12}>
+                    <Grid item xs={10}>
                         <Select
                             value={cellarId}
                             onChange={event => {
                                 setCellarId(event.target.value);
                             }}
+                            disabled={dontMove}
                         >
-                            {/* MYMEMO(後日): チェックにしたほうが良さそう */}
-                            <MenuItem value="DO_NOT_CHANGE_PLACE">DO_NOT_CHANGE_PLACE</MenuItem>
                             {cellarList.map(cellar => (
                                 <MenuItem key={cellar[0]} value={cellar[0]}>
                                     {cellar[1]}
@@ -438,6 +441,15 @@ const EditWineDialog = (props: EditWineDialogProps) => {
                             ))}
                             <MenuItem value="MOVE_OUT_OF_CELLAR">MOVE_OUT_OF_CELLAR</MenuItem>
                         </Select>
+                    </Grid>
+                    <Grid item xs={2}>
+                        <Checkbox
+                            checked={dontMove}
+                            onChange={event => {
+                                setDontMove(event.target.checked);
+                            }}
+                        />
+                        don't move
                     </Grid>
                     <Grid item xs={12}>
                         {/* MYMEMO(後日): make this a select */}
@@ -453,7 +465,7 @@ const EditWineDialog = (props: EditWineDialogProps) => {
                                 }
                                 setPosition(event.target.value || null);
                             }}
-                            disabled={cellarId === 'DO_NOT_CHANGE_PLACE'}
+                            disabled={dontMove}
                             error={Boolean(apiErrors.position) || Boolean(validationErrors.position)}
                             helperText={apiErrors.position || validationErrors.position}
                             variant="standard"
