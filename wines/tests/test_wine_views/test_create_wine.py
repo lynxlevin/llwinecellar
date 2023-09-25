@@ -87,7 +87,7 @@ class TestCreateWine(TestCase):
         """
         # Arrange
         params = {
-            "name": "",
+            "name": "required",
             "producer": "",
             "country": None,
             "region_1": "",

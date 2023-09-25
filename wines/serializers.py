@@ -11,7 +11,7 @@ class CepageSerializer(serializers.Serializer):
 
 class WineSerializer(serializers.Serializer):
     id = serializers.UUIDField(required=False)
-    name = serializers.CharField(allow_blank=True, max_length=256)
+    name = serializers.CharField(max_length=256)
     producer = serializers.CharField(allow_blank=True, max_length=128)
     country = serializers.ChoiceField(allow_null=True, choices=Country.choices_for_serializer())
     region_1 = serializers.CharField(allow_blank=True, max_length=128)

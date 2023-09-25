@@ -41,7 +41,7 @@ class WineQuerySet(models.QuerySet["Wine"]):
 class Wine(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    name = models.CharField(blank=True, default="", max_length=256)
+    name = models.CharField(max_length=256)
     producer = models.CharField(blank=True, default="", max_length=128)
     _country = models.IntegerField(db_column="country", choices=Country.choices_for_model(), blank=True, null=True)
     _country_str = models.CharField(db_column="country_str", max_length=64, blank=True, null=True)
