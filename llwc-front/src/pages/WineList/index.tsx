@@ -243,7 +243,7 @@ export const WineList = () => {
                                             selected={selectedWine?.id === row.id}
                                             tabIndex={-1}
                                             key={row.id}
-                                            sx={row.name === '' ? { cursor: 'pointer', backgroundColor: 'rgba(0, 0, 0, 0.04)' } : { cursor: 'pointer' }}
+                                            sx={row.name === '' ? { cursor: 'pointer', backgroundColor: 'rgba(0, 0, 0, 0.2)' } : { cursor: 'pointer' }}
                                         >
                                             <TableCell>{row.position}</TableCell>
                                             <TableCell>{row.tag_texts.join(', ')}</TableCell>

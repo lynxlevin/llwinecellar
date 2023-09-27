@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import './App.css';
-import { Routes, Route } from 'react-router-dom';
+import { Link, Routes, Route } from 'react-router-dom';
 import Login from './pages/Login';
 import { WineList } from './pages/WineList';
 import { type Cellar, CellarContext } from './contexts/cellar-context';
@@ -23,7 +23,7 @@ function App() {
                     <WineContext.Provider value={{ wineList, setWineList, wineListQuery, setWineListQuery }}>
                         <WineTagContext.Provider value={{ wineTagList, setWineTagList }}>
                             <Routes>
-                                <Route path="/" element={<></>} />
+                                <Route path="/" element={<Link to="/wine-list">Wine List</Link>} />
                                 <Route path="/login" element={<Login />} />
                                 <Route path="/wine-list" element={<WineList />} />
                             </Routes>

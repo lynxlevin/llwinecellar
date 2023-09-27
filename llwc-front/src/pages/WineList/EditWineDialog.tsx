@@ -146,7 +146,7 @@ const EditWineDialog = (props: EditWineDialogProps) => {
             setValidationErrors({ name: 'Name cannot be empty.' });
             return;
         }
-        if (cellarId !== 'MOVE_OUT_OF_CELLAR' && position === null) {
+        if (position === null && !dontMove && cellarId !== 'MOVE_OUT_OF_CELLAR') {
             setValidationErrors({ position: 'Position cannot be empty while a cellar is selected.' });
             return;
         }
