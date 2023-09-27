@@ -46,22 +46,25 @@ class Command(BaseCommand):
                 region_3=next(li),
                 region_4=next(li),
                 region_5=next(li),
-                vintage=int(next(li)),
+                vintage=int(vin) if (vin := next(li)) != "" else None,
                 bought_at=next(li),
                 bought_from=next(li),
-                price_with_tax=int(next(li)),
+                price_with_tax=int(price) if (price := next(li)) != "" else None,
                 drunk_at=next(li),
                 note=next(li),
                 user_id=1,
             )
-            # tag は 1 つのみでstr で指定
-            tag_text = next(li)
-            tags = [WineTag.objects.get_or_create(user_id=1, text=tag_text)[0]]
-            wine.tags.set(tags)
 
             wine.bought_at = datetime.strptime(wine.bought_at, "%Y/%m/%d") if wine.bought_at else None
             wine.drunk_at = datetime.strptime(wine.drunk_at, "%Y/%m/%d") if wine.drunk_at else None
-            wines.append(wine)
+
+            wine.save()
+
+            # tag は 1 つのみでstr で指定
+            tag_text = next(li)
+            if tag_text != "":
+                tags = [WineTag.objects.get_or_create(user_id=1, text=tag_text)[0]]
+                wine.tags.set(tags)
 
             position = next(li)
             if position != "":
@@ -70,6 +73,4 @@ class Command(BaseCommand):
                 cellar_space = CellarSpace.objects.get_by_cellar_row_column(cellar.id, row, column)
                 cellar_space.wine = wine
                 cellar_spaces.append(cellar_space)
-
-        Wine.objects.bulk_create(wines)
         CellarSpace.objects.bulk_update(cellar_spaces, fields=["wine"])
