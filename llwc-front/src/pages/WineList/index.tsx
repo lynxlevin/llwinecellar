@@ -27,7 +27,7 @@ import BookIcon from '@mui/icons-material/Book';
 import WarehouseIcon from '@mui/icons-material/Warehouse';
 import { visuallyHidden } from '@mui/utils';
 import { Navigate } from 'react-router-dom';
-import useWineListPage, { Order } from '../../hooks/useWineListPage';
+import useWineListPage, { COLUMN_ORDER, Order } from '../../hooks/useWineListPage';
 import { WineData } from '../../contexts/wine-context';
 import useUserAPI from '../../hooks/useUserAPI';
 import { UserContext } from '../../contexts/user-context';
@@ -41,12 +41,13 @@ interface WineListToolbarProps {
     selectedCellarId: string;
     setSelectedCellarId: React.Dispatch<React.SetStateAction<string>>;
     setSortOrder: React.Dispatch<React.SetStateAction<{ key: keyof WineData; order: Order }>>;
+    setOrderedColumn: React.Dispatch<React.SetStateAction<string[]>>;
     cellarList: string[][];
     handleLogout: () => Promise<void>;
 }
 
 const WineListToolbar = (props: WineListToolbarProps) => {
-    const { selectedCellarId, setSelectedCellarId, setSortOrder, cellarList, handleLogout } = props;
+    const { selectedCellarId, setSelectedCellarId, setSortOrder, setOrderedColumn, cellarList, handleLogout } = props;
     const wineContext = useContext(WineContext);
 
     const [drunkOnly, setDrunkOnly] = useState(false);
@@ -60,9 +61,11 @@ const WineListToolbar = (props: WineListToolbarProps) => {
         if (checked) {
             setSelectedCellarId('');
             setSortOrder({ key: 'drunk_at', order: 'desc' });
+            setOrderedColumn(COLUMN_ORDER.drunk);
         } else {
             setSelectedCellarId(cellarList[0][0]);
             setSortOrder({ key: 'position', order: 'asc' });
+            setOrderedColumn(COLUMN_ORDER.default);
         }
     };
 
@@ -123,12 +126,13 @@ interface WineHeadCell {
 }
 
 interface WineListTableHeadProps {
+    orderedColumn: string[];
     onRequestSort: (event: React.MouseEvent<unknown>, property: keyof WineData) => void;
     sortOrder: { key: keyof WineData; order: Order };
 }
 
 const WineListTableHead = (props: WineListTableHeadProps) => {
-    const { sortOrder, onRequestSort } = props;
+    const { orderedColumn, sortOrder, onRequestSort } = props;
     const createSortHandler = (property: keyof WineData) => (event: React.MouseEvent<unknown>) => {
         onRequestSort(event, property);
     };
@@ -143,39 +147,20 @@ const WineListTableHead = (props: WineListTableHeadProps) => {
             })
             .join('');
     };
-
-    const wineHeadCells: WineHeadCell[] = [
-        { id: 'position', numeric: false },
-        { id: 'tag_texts', numeric: false },
-        { id: 'name', numeric: false },
-        { id: 'price_with_tax', numeric: true },
-        { id: 'producer', numeric: false },
-        { id: 'vintage', numeric: true },
-        { id: 'country', numeric: false },
-        { id: 'region_1', numeric: false },
-        { id: 'region_2', numeric: false },
-        { id: 'region_3', numeric: false },
-        { id: 'region_4', numeric: false },
-        { id: 'region_5', numeric: false },
-        { id: 'cepages', numeric: false },
-        { id: 'bought_at', numeric: false },
-        { id: 'bought_from', numeric: false },
-        { id: 'drunk_at', numeric: true },
-    ];
     // MYMEMO(後日): add filter
 
     return (
         <TableHead>
             <TableRow>
-                {wineHeadCells.map(headCell => (
-                    <TableCell key={headCell.id} align="left" padding="normal" sortDirection={sortOrder.key === headCell.id ? sortOrder.order : false}>
+                {orderedColumn.map(column => (
+                    <TableCell key={column} align="left" padding="normal" sortDirection={sortOrder.key === column ? sortOrder.order : false}>
                         <TableSortLabel
-                            active={sortOrder.key === headCell.id}
-                            direction={sortOrder.key === headCell.id ? sortOrder.order : 'asc'}
-                            onClick={createSortHandler(headCell.id)}
+                            active={sortOrder.key === column}
+                            direction={sortOrder.key === column ? sortOrder.order : 'asc'}
+                            onClick={createSortHandler(column as keyof WineData)}
                         >
-                            {toTitleCase(headCell.id)}
-                            {sortOrder.key === headCell.id ? (
+                            {toTitleCase(column)}
+                            {sortOrder.key === column ? (
                                 <Box component="span" sx={visuallyHidden}>
                                     {sortOrder.order === 'desc' ? 'sorted descending' : 'sorted ascending'}
                                 </Box>
@@ -195,6 +180,8 @@ export const WineList = () => {
     // MYMEMO(後日): 全ページでこれだけするのは違和感
     const { handleLogout } = useUserAPI();
     const {
+        orderedColumn,
+        setOrderedColumn,
         selectedCellarId,
         setSelectedCellarId,
         sortOrder,
@@ -234,16 +221,22 @@ export const WineList = () => {
                             setSelectedCellarId={setSelectedCellarId}
                             selectedCellarId={selectedCellarId}
                             setSortOrder={setSortOrder}
+                            setOrderedColumn={setOrderedColumn}
                             cellarList={cellarList}
                             handleLogout={handleLogout}
                         />
                     </div>
                     <TableContainer sx={{ maxHeight: tableHeight }}>
                         <Table stickyHeader sx={{ minWidth: 750 }} aria-labelledby="tableTitle" size="small">
-                            <WineListTableHead sortOrder={sortOrder} onRequestSort={handleRequestSort} />
+                            <WineListTableHead orderedColumn={orderedColumn} sortOrder={sortOrder} onRequestSort={handleRequestSort} />
                             <TableBody>
                                 {visibleRows.map((row, index) => {
                                     const labelId = `enhanced-table-checkbox-${index}`;
+                                    const rowData = {
+                                        ...row,
+                                        tag_texts: row.tag_texts.join(', '),
+                                        cepages: getCepageAbbreviations(row.cepages),
+                                    };
 
                                     return (
                                         <TableRow
@@ -255,25 +248,18 @@ export const WineList = () => {
                                             key={row.id}
                                             sx={row.name === '' ? { cursor: 'pointer', backgroundColor: 'rgba(0, 0, 0, 0.2)' } : { cursor: 'pointer' }}
                                         >
-                                            <TableCell>{row.position}</TableCell>
-                                            <TableCell>{row.tag_texts.join(', ')}</TableCell>
-                                            <TableCell component="th" id={labelId} scope="row">
-                                                {row.name}
-                                            </TableCell>
-                                            <TableCell>{row.price_with_tax}</TableCell>
-                                            <TableCell>{row.producer}</TableCell>
-                                            <TableCell>{row.vintage}</TableCell>
-                                            <TableCell>{row.country}</TableCell>
-                                            <TableCell>{row.region_1}</TableCell>
-                                            <TableCell>{row.region_2}</TableCell>
-                                            <TableCell>{row.region_3}</TableCell>
-                                            <TableCell>{row.region_4}</TableCell>
-                                            <TableCell>{row.region_5}</TableCell>
                                             {/* MYMEMO(後日): make cepages look like tags */}
-                                            <TableCell>{getCepageAbbreviations(row.cepages)}</TableCell>
-                                            <TableCell>{row.bought_at}</TableCell>
-                                            <TableCell>{row.bought_from}</TableCell>
-                                            <TableCell>{row.drunk_at}</TableCell>
+                                            {orderedColumn.map(key => {
+                                                let content = rowData[key as keyof WineData];
+                                                if (key === 'name') {
+                                                    return (
+                                                        <TableCell component="th" id={labelId} scope="row">
+                                                            {content}
+                                                        </TableCell>
+                                                    );
+                                                }
+                                                return <TableCell>{content}</TableCell>;
+                                            })}
                                             {/* MYMEMO(後日): show note: TableContainer を width:max-content にしたらできるけど、全列個別指定が必要になる
                                             https://smartdevpreneur.com/customizing-material-ui-table-cell-width/ */}
                                         </TableRow>

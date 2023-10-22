@@ -6,6 +6,45 @@ import useWineAPI from './useWineAPI';
 
 export type Order = 'asc' | 'desc';
 
+export const COLUMN_ORDER = {
+    default: [
+        'position',
+        'tag_texts',
+        'name',
+        'price_with_tax',
+        'producer',
+        'vintage',
+        'country',
+        'region_1',
+        'region_2',
+        'region_3',
+        'region_4',
+        'region_5',
+        'cepages',
+        'bought_at',
+        'bought_from',
+        'drunk_at',
+    ],
+    drunk: [
+        'drunk_at',
+        'tag_texts',
+        'name',
+        'price_with_tax',
+        'producer',
+        'vintage',
+        'country',
+        'region_1',
+        'region_2',
+        'region_3',
+        'region_4',
+        'region_5',
+        'cepages',
+        'bought_at',
+        'bought_from',
+        'position',
+    ],
+};
+
 const useWineListPage = () => {
     const userContext = useContext(UserContext);
     const cellarContext = useContext(CellarContext);
@@ -20,6 +59,7 @@ const useWineListPage = () => {
     const [selectedWine, setSelectedWine] = useState<WineData>();
     const [isEditOpen, setIsEditOpen] = useState(false);
     const [isCreateOpen, setIsCreateOpen] = useState(false);
+    const [orderedColumn, setOrderedColumn] = useState<string[]>(COLUMN_ORDER.default);
 
     // Avoid a layout jump when reaching the last page with empty rows.
     const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - wineContext.wineList.length) : 0;
@@ -144,6 +184,8 @@ const useWineListPage = () => {
     }, [getWineList, userContext.isLoggedIn]);
 
     return {
+        orderedColumn,
+        setOrderedColumn,
         selectedCellarId,
         setSelectedCellarId,
         sortOrder,
