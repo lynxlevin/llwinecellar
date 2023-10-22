@@ -168,12 +168,7 @@ const WineListTableHead = (props: WineListTableHeadProps) => {
         <TableHead>
             <TableRow>
                 {wineHeadCells.map(headCell => (
-                    <TableCell
-                        key={headCell.id}
-                        align={headCell.numeric ? 'right' : 'left'}
-                        padding="normal"
-                        sortDirection={sortOrder.key === headCell.id ? sortOrder.order : false}
-                    >
+                    <TableCell key={headCell.id} align="left" padding="normal" sortDirection={sortOrder.key === headCell.id ? sortOrder.order : false}>
                         <TableSortLabel
                             active={sortOrder.key === headCell.id}
                             direction={sortOrder.key === headCell.id ? sortOrder.order : 'asc'}
@@ -244,7 +239,7 @@ export const WineList = () => {
                         />
                     </div>
                     <TableContainer sx={{ maxHeight: tableHeight }}>
-                        <Table stickyHeader sx={{ minWidth: 750 }} aria-labelledby="tableTitle" size="medium">
+                        <Table stickyHeader sx={{ minWidth: 750 }} aria-labelledby="tableTitle" size="small">
                             <WineListTableHead sortOrder={sortOrder} onRequestSort={handleRequestSort} />
                             <TableBody>
                                 {visibleRows.map((row, index) => {
@@ -265,20 +260,20 @@ export const WineList = () => {
                                             <TableCell component="th" id={labelId} scope="row">
                                                 {row.name}
                                             </TableCell>
-                                            <TableCell align="right">{row.price_with_tax}</TableCell>
-                                            <TableCell align="right">{row.producer}</TableCell>
-                                            <TableCell align="right">{row.vintage}</TableCell>
-                                            <TableCell align="right">{row.country}</TableCell>
-                                            <TableCell align="right">{row.region_1}</TableCell>
-                                            <TableCell align="right">{row.region_2}</TableCell>
-                                            <TableCell align="right">{row.region_3}</TableCell>
-                                            <TableCell align="right">{row.region_4}</TableCell>
-                                            <TableCell align="right">{row.region_5}</TableCell>
+                                            <TableCell>{row.price_with_tax}</TableCell>
+                                            <TableCell>{row.producer}</TableCell>
+                                            <TableCell>{row.vintage}</TableCell>
+                                            <TableCell>{row.country}</TableCell>
+                                            <TableCell>{row.region_1}</TableCell>
+                                            <TableCell>{row.region_2}</TableCell>
+                                            <TableCell>{row.region_3}</TableCell>
+                                            <TableCell>{row.region_4}</TableCell>
+                                            <TableCell>{row.region_5}</TableCell>
                                             {/* MYMEMO(後日): make cepages look like tags */}
-                                            <TableCell align="right">{getCepageAbbreviations(row.cepages)}</TableCell>
-                                            <TableCell align="right">{row.bought_at}</TableCell>
-                                            <TableCell align="right">{row.bought_from}</TableCell>
-                                            <TableCell align="right">{row.drunk_at}</TableCell>
+                                            <TableCell>{getCepageAbbreviations(row.cepages)}</TableCell>
+                                            <TableCell>{row.bought_at}</TableCell>
+                                            <TableCell>{row.bought_from}</TableCell>
+                                            <TableCell>{row.drunk_at}</TableCell>
                                             {/* MYMEMO(後日): show note: TableContainer を width:max-content にしたらできるけど、全列個別指定が必要になる
                                             https://smartdevpreneur.com/customizing-material-ui-table-cell-width/ */}
                                         </TableRow>
