@@ -132,6 +132,7 @@ const WineListTableHead = (props: WineListTableHeadProps) => {
         { id: 'position', numeric: false },
         { id: 'tag_texts', numeric: false },
         { id: 'name', numeric: false },
+        { id: 'price_with_tax', numeric: true },
         { id: 'producer', numeric: false },
         { id: 'vintage', numeric: true },
         { id: 'country', numeric: false },
@@ -143,7 +144,6 @@ const WineListTableHead = (props: WineListTableHeadProps) => {
         { id: 'cepages', numeric: false },
         { id: 'bought_at', numeric: false },
         { id: 'bought_from', numeric: false },
-        { id: 'price_with_tax', numeric: true },
         { id: 'drunk_at', numeric: true },
     ];
     // MYMEMO(後日): add filter
@@ -250,6 +250,7 @@ export const WineList = () => {
                                             <TableCell component="th" id={labelId} scope="row">
                                                 {row.name}
                                             </TableCell>
+                                            <TableCell align="right">{row.price_with_tax}</TableCell>
                                             <TableCell align="right">{row.producer}</TableCell>
                                             <TableCell align="right">{row.vintage}</TableCell>
                                             <TableCell align="right">{row.country}</TableCell>
@@ -262,7 +263,6 @@ export const WineList = () => {
                                             <TableCell align="right">{getCepageAbbreviations(row.cepages)}</TableCell>
                                             <TableCell align="right">{row.bought_at}</TableCell>
                                             <TableCell align="right">{row.bought_from}</TableCell>
-                                            <TableCell align="right">{row.price_with_tax}</TableCell>
                                             <TableCell align="right">{row.drunk_at}</TableCell>
                                             {/* MYMEMO(後日): show note: TableContainer を width:max-content にしたらできるけど、全列個別指定が必要になる
                                             https://smartdevpreneur.com/customizing-material-ui-table-cell-width/ */}
