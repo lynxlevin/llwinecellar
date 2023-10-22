@@ -9,8 +9,11 @@ https://docs.djangoproject.com/en/4.0/howto/deployment/wsgi/
 
 import os
 
+import environ
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'llwinecellar.settings')
+environ.Env().read_env(".env")
+env = os.environ.get("DJANGO_ENV", "local")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "llwinecellar.settings.{env}")
 
 application = get_wsgi_application()
