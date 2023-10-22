@@ -21,7 +21,6 @@ class Command(BaseCommand):
         file_name = options["file_name"]
 
         csv_lines = []
-        # with open("wines/fixtures/test_wines.csv", "r", encoding="utf_8") as f:
         with open(f"{FILE_DIR}/{file_name}", "r", encoding="utf_8") as f:
             for line in f:
                 if "⭐︎," in line:
@@ -31,7 +30,6 @@ class Command(BaseCommand):
 
         cellar = Cellar.objects.first()
 
-        wines = []
         cellar_spaces = []
 
         for line in csv_lines:
