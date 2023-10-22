@@ -94,6 +94,23 @@ python-versions = ">=3.7"
 python-dateutil = ">=2.4"
 
 [[package]]
+name = "gunicorn"
+version = "21.2.0"
+description = "WSGI HTTP Server for UNIX"
+category = "main"
+optional = false
+python-versions = ">=3.5"
+
+[package.dependencies]
+packaging = "*"
+
+[package.extras]
+eventlet = ["eventlet (>=0.24.1)"]
+gevent = ["gevent (>=1.4.0)"]
+setproctitle = ["setproctitle"]
+tornado = ["tornado (>=0.2)"]
+
+[[package]]
 name = "idna"
 version = "3.4"
 description = "Internationalized Domain Names in Applications (IDNA)"
@@ -126,6 +143,14 @@ description = "Type system extensions for programs checked with the mypy type ch
 category = "main"
 optional = false
 python-versions = ">=3.5"
+
+[[package]]
+name = "packaging"
+version = "23.2"
+description = "Core utilities for Python packages"
+category = "main"
+optional = false
+python-versions = ">=3.7"
 
 [[package]]
 name = "psycopg2"
@@ -242,7 +267,7 @@ zstd = ["zstandard (>=0.18.0)"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "a173389919917ebdcdaa2f0d4857231a057113a0bece0924241476f981905bf4"
+content-hash = "f8edfab2bfa16e870099b25ebc2edee59b92b973fb4662a2cbe24078f658c8de"
 
 [metadata.files]
 asgiref = []
@@ -256,9 +281,11 @@ django-environ = [
 djangorestframework = []
 factory-boy = []
 faker = []
+gunicorn = []
 idna = []
 mypy = []
 mypy-extensions = []
+packaging = []
 psycopg2 = []
 python-dateutil = []
 pytz = []
