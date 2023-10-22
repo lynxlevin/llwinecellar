@@ -26,13 +26,7 @@ env.read_env(".env")
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-ag9_o!e)f)gy1^jv_7-0f#e44vc6hdpt&7tbip5)19)@^lv9&g"
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS: list[str] = []
-
+SECRET_KEY = env.get_value("DJANGO_SECRET_KEY")
 
 # Application definition
 
@@ -136,68 +130,22 @@ USE_TZ = True
 STATIC_URL = "static/"
 STATICFILES_DIRS = (os.path.join(BASE_DIR, "static"),)
 
+# my reference: https://testdriven.io/blog/django-spa-auth/#frontend-served-from-django
+CSRF_COOKIE_SAMESITE = "Strict"
+SESSION_COOKIE_SAMESITE = "Strict"
+CSRF_COOKIE_HTTPONLY = False
+SESSION_COOKIE_HTTPONLY = True
+
+REST_FRAMEWORK = {
+    "DEFAULT_RENDERER_CLASSES": [
+        "rest_framework.renderers.JSONRenderer",
+    ],
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework.authentication.SessionAuthentication",
+    ],
+}
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-
-# Logging
-#  https://docs.djangoproject.com/en/2.0/topics/logging/
-LOGGING = {
-    "version": 1,
-    "desable_existing_loggers": False,
-    "formatters": {
-        "default": {
-            "()": "llwinecellar.logging.Formatter",
-            "format": "[%(asctime)s] [%(levelname)s] [%(name)s:%(lineno)s] %(message)s",
-            "datefmt": "%Y-%m-%d %H:%M:%S",
-        },
-    },
-    "handlers": {
-        "console": {
-            "level": "DEBUG",
-            "class": "logging.StreamHandler",
-            "formatter": "default",
-        },
-        "file": {
-            "level": "DEBUG",
-            "class": "logging.handlers.RotatingFileHandler",
-            "filename": "django.log",
-            "maxBytes": 50 * 1000 * 1000,
-            "backupCount": 1,
-            "formatter": "default",
-        },
-    },
-    "loggers": {
-        "django": {
-            "handlers": ["file"],
-            "level": "DEBUG",
-        },
-        "django.db.backends": {
-            "handlers": ["file"],
-            "level": "INFO",
-            "propagate": False,
-        },
-        "django.utils": {
-            "handlers": ["file"],
-            "level": "INFO",
-            "propagate": False,
-        },
-        "llwinecellar": {
-            "handlers": ["file"],
-            "level": "DEBUG",
-        },
-        "wines": {
-            "handlers": ["file"],
-            "level": "DEBUG",
-        },
-        "cellars": {
-            "handlers": ["file"],
-            "level": "DEBUG",
-        },
-        "users": {
-            "handlers": ["file"],
-            "level": "DEBUG",
-        },
-    },
-}
