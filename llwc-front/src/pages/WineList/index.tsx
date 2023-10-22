@@ -75,7 +75,7 @@ const WineListToolbar = (props: WineListToolbarProps) => {
                 <LogoutIcon />
             </IconButton>
             <Typography sx={{ flex: '1 1 100%' }} variant="h6" id="tableTitle" component="div">
-                {drunkOnly ? 'Drunk ' : ''}Wine List
+                {drunkOnly ? 'Drunk ' : ''}Wines
             </Typography>
             <IconButton onClick={handleClick}>{drunkOnly ? <BookIcon /> : <WarehouseIcon />}</IconButton>
             <Select id="cellar-select" value={selectedCellarId} onChange={handleCellarSelect}>
