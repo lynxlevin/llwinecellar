@@ -6,6 +6,30 @@ export interface Cepage {
     percentage: number | null;
 }
 
+const wineDataKeys = [
+    'id',
+    'name',
+    'producer',
+    'country',
+    'region_1',
+    'region_2',
+    'region_3',
+    'region_4',
+    'region_5',
+    'cepages',
+    'vintage',
+    'bought_at',
+    'bought_from',
+    'price_with_tax',
+    'drunk_at',
+    'note',
+    'tag_texts',
+    'cellar_id',
+    'position',
+] as const;
+
+export type WineDataKeys = (typeof wineDataKeys)[number];
+
 export interface WineData {
     id: string;
     name: string;

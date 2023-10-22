@@ -1,8 +1,8 @@
 import { act, renderHook } from '@testing-library/react';
 import useWineListPage from './useWineListPage';
-import { WineData } from '../contexts/wine-context';
-import { WineAPI } from '../apis/WineAPI';
-import { SelectChangeEvent } from '@mui/material';
+// import { WineData, WineDataKeys } from '../contexts/wine-context';
+// import { WineAPI } from '../apis/WineAPI';
+// import { SelectChangeEvent } from '@mui/material';
 import React from 'react';
 
 jest.mock('../apis/UserAPI');
@@ -20,12 +20,12 @@ jest.mock('../apis/WineAPI');
 //     const dummyProperty = 'dummyProperty';
 //     const { result } = renderHook(() => useWineListPage());
 //     act(() => {
-//         result.current.handleRequestSort({} as React.MouseEvent<unknown>, dummyProperty as keyof WineData);
+//         result.current.handleRequestSort({} as React.MouseEvent<unknown>, dummyProperty as WineDataKeys);
 //     });
 //     expect(result.current.order).toBe('asc');
 //     expect(result.current.orderBy).toBe(dummyProperty);
 //     act(() => {
-//         result.current.handleRequestSort({} as React.MouseEvent<unknown>, dummyProperty as keyof WineData);
+//         result.current.handleRequestSort({} as React.MouseEvent<unknown>, dummyProperty as WineDataKeys);
 //     });
 //     expect(result.current.order).toBe('desc');
 //     expect(result.current.orderBy).toBe(dummyProperty);

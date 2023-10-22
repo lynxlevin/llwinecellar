@@ -1,12 +1,12 @@
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { CellarContext } from '../contexts/cellar-context';
 import { UserContext } from '../contexts/user-context';
-import { Cepage, WineContext, WineData } from '../contexts/wine-context';
+import { Cepage, WineContext, WineData, WineDataKeys } from '../contexts/wine-context';
 import useWineAPI from './useWineAPI';
 
 export type Order = 'asc' | 'desc';
 
-export const COLUMN_ORDER = {
+export const COLUMN_ORDER: { default: WineDataKeys[]; drunk: WineDataKeys[] } = {
     default: [
         'position',
         'tag_texts',
@@ -23,7 +23,6 @@ export const COLUMN_ORDER = {
         'cepages',
         'bought_at',
         'bought_from',
-        'drunk_at',
     ],
     drunk: [
         'drunk_at',
@@ -41,7 +40,6 @@ export const COLUMN_ORDER = {
         'cepages',
         'bought_at',
         'bought_from',
-        'position',
     ],
 };
 
@@ -53,13 +51,13 @@ const useWineListPage = () => {
     const { getWineList } = useWineAPI();
 
     const [selectedCellarId, setSelectedCellarId] = useState<string>('NOT_IN_CELLAR');
-    const [sortOrder, setSortOrder] = useState<{ key: keyof WineData; order: Order }>({ key: 'position', order: 'asc' });
+    const [sortOrder, setSortOrder] = useState<{ key: WineDataKeys; order: Order }>({ key: 'position', order: 'asc' });
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(50);
     const [selectedWine, setSelectedWine] = useState<WineData>();
     const [isEditOpen, setIsEditOpen] = useState(false);
     const [isCreateOpen, setIsCreateOpen] = useState(false);
-    const [orderedColumn, setOrderedColumn] = useState<string[]>(COLUMN_ORDER.default);
+    const [orderedColumn, setOrderedColumn] = useState<WineDataKeys[]>(COLUMN_ORDER.default);
 
     // Avoid a layout jump when reaching the last page with empty rows.
     const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - wineContext.wineList.length) : 0;
@@ -75,7 +73,7 @@ const useWineListPage = () => {
 
     const cellarList = cellarContext.list.map(cellar => [cellar.id, cellar.name]);
 
-    const handleRequestSort = (event: React.MouseEvent<unknown>, property: keyof WineData) => {
+    const handleRequestSort = (event: React.MouseEvent<unknown>, property: WineDataKeys) => {
         const isAsc = sortOrder.key === property && sortOrder.order === 'asc';
         setSortOrder({ key: property, order: isAsc ? 'desc' : 'asc' });
     };

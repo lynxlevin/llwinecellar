@@ -28,7 +28,7 @@ import WarehouseIcon from '@mui/icons-material/Warehouse';
 import { visuallyHidden } from '@mui/utils';
 import { Navigate } from 'react-router-dom';
 import useWineListPage, { COLUMN_ORDER, Order } from '../../hooks/useWineListPage';
-import { WineData } from '../../contexts/wine-context';
+import { WineDataKeys } from '../../contexts/wine-context';
 import useUserAPI from '../../hooks/useUserAPI';
 import { UserContext } from '../../contexts/user-context';
 import EditWineDialog from './EditWineDialog';
@@ -40,8 +40,8 @@ import { WineContext } from '../../contexts/wine-context';
 interface WineListToolbarProps {
     selectedCellarId: string;
     setSelectedCellarId: React.Dispatch<React.SetStateAction<string>>;
-    setSortOrder: React.Dispatch<React.SetStateAction<{ key: keyof WineData; order: Order }>>;
-    setOrderedColumn: React.Dispatch<React.SetStateAction<string[]>>;
+    setSortOrder: React.Dispatch<React.SetStateAction<{ key: WineDataKeys; order: Order }>>;
+    setOrderedColumn: React.Dispatch<React.SetStateAction<WineDataKeys[]>>;
     cellarList: string[][];
     handleLogout: () => Promise<void>;
 }
@@ -120,24 +120,19 @@ const WineListToolbar = (props: WineListToolbarProps) => {
     );
 };
 
-interface WineHeadCell {
-    id: keyof WineData;
-    numeric: boolean;
-}
-
 interface WineListTableHeadProps {
-    orderedColumn: string[];
-    onRequestSort: (event: React.MouseEvent<unknown>, property: keyof WineData) => void;
-    sortOrder: { key: keyof WineData; order: Order };
+    orderedColumn: WineDataKeys[];
+    onRequestSort: (event: React.MouseEvent<unknown>, property: WineDataKeys) => void;
+    sortOrder: { key: WineDataKeys; order: Order };
 }
 
 const WineListTableHead = (props: WineListTableHeadProps) => {
     const { orderedColumn, sortOrder, onRequestSort } = props;
-    const createSortHandler = (property: keyof WineData) => (event: React.MouseEvent<unknown>) => {
+    const createSortHandler = (property: WineDataKeys) => (event: React.MouseEvent<unknown>) => {
         onRequestSort(event, property);
     };
 
-    const toTitleCase = (text: string): string => {
+    const toTitleCase = (text: WineDataKeys): string => {
         if (text === 'price_with_tax') return 'Price';
         return text
             .toLowerCase()
@@ -157,7 +152,7 @@ const WineListTableHead = (props: WineListTableHeadProps) => {
                         <TableSortLabel
                             active={sortOrder.key === column}
                             direction={sortOrder.key === column ? sortOrder.order : 'asc'}
-                            onClick={createSortHandler(column as keyof WineData)}
+                            onClick={createSortHandler(column as WineDataKeys)}
                         >
                             {toTitleCase(column)}
                             {sortOrder.key === column ? (
@@ -250,7 +245,7 @@ export const WineList = () => {
                                         >
                                             {/* MYMEMO(後日): make cepages look like tags */}
                                             {orderedColumn.map(key => {
-                                                let content = rowData[key as keyof WineData];
+                                                let content = rowData[key as WineDataKeys];
                                                 if (key === 'name') {
                                                     return (
                                                         <TableCell component="th" id={labelId} scope="row">
