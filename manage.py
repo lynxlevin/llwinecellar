@@ -3,10 +3,18 @@
 import os
 import sys
 
+import environ
+
 
 def main():
     """Run administrative tasks."""
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'llwinecellar.settings')
+    environ.Env().read_env(".env")
+
+    env = os.environ.get("DJANGO_ENV", "local")
+    if sys.argv[1] == "test":
+        env = "testing"
+
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", f"llwinecellar.settings.{env}")
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:
@@ -18,5 +26,5 @@ def main():
     execute_from_command_line(sys.argv)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

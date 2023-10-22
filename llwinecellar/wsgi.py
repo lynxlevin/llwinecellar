@@ -14,6 +14,6 @@ from django.core.wsgi import get_wsgi_application
 
 environ.Env().read_env(".env")
 env = os.environ.get("DJANGO_ENV", "local")
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "llwinecellar.settings.{env}")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", f"llwinecellar.settings.{env}")
 
 application = get_wsgi_application()
