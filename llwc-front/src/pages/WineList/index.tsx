@@ -10,15 +10,18 @@ import {
     TableRow,
     TableSortLabel,
     Toolbar,
-    Tooltip,
     Typography,
     Select,
+    Menu,
+    MenuList,
     MenuItem,
+    ListItemText,
     SelectChangeEvent,
     IconButton,
     Paper,
 } from '@mui/material';
 // import FilterListIcon from '@mui/icons-material/FilterList';
+import MenuIcon from '@mui/icons-material/Menu';
 import LogoutIcon from '@mui/icons-material/Logout';
 import BookIcon from '@mui/icons-material/Book';
 import WarehouseIcon from '@mui/icons-material/Warehouse';
@@ -47,8 +50,10 @@ const WineListToolbar = (props: WineListToolbarProps) => {
     const wineContext = useContext(WineContext);
 
     const [drunkOnly, setDrunkOnly] = useState(false);
+    const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null);
+    const isMenuOpen = Boolean(menuAnchor);
 
-    const handleClick = () => {
+    const toggleListMode = () => {
         const checked = !drunkOnly;
         setDrunkOnly(checked);
         wineContext.setWineListQuery({ is_drunk: checked });
@@ -65,6 +70,14 @@ const WineListToolbar = (props: WineListToolbarProps) => {
         setSelectedCellarId(event.target.value);
     };
 
+    const openMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
+        setMenuAnchor(event.currentTarget);
+    };
+
+    const closeMenu = () => {
+        setMenuAnchor(null);
+    };
+
     return (
         <Toolbar
             sx={{
@@ -72,13 +85,10 @@ const WineListToolbar = (props: WineListToolbarProps) => {
                 pr: { xs: 1, sm: 1 },
             }}
         >
-            <IconButton onClick={handleLogout} sx={{ mt: 1, mb: 2 }}>
-                <LogoutIcon />
-            </IconButton>
             <Typography sx={{ flex: '1 1 100%' }} variant="h6" id="tableTitle" component="div">
                 {drunkOnly ? 'Drunk ' : ''}Wines
             </Typography>
-            <IconButton onClick={handleClick}>{drunkOnly ? <BookIcon /> : <WarehouseIcon />}</IconButton>
+            <IconButton onClick={toggleListMode}>{drunkOnly ? <BookIcon /> : <WarehouseIcon />}</IconButton>
             <Select id="cellar-select" value={selectedCellarId} onChange={handleCellarSelect}>
                 {cellarList.map(cellar => (
                     <MenuItem key={cellar[0]} value={cellar[0]}>
@@ -87,11 +97,22 @@ const WineListToolbar = (props: WineListToolbarProps) => {
                 ))}
                 <MenuItem value="NOT_IN_CELLAR">NOT_IN_CELLAR</MenuItem>
             </Select>
+            <IconButton onClick={openMenu}>
+                <MenuIcon />
+            </IconButton>
             {/* <Tooltip title="Filter list">
                 <IconButton>
                     <FilterListIcon />
                 </IconButton>
             </Tooltip> */}
+            <Menu open={isMenuOpen} anchorEl={menuAnchor} onClose={closeMenu}>
+                <MenuList>
+                    <MenuItem onClick={handleLogout}>
+                        <LogoutIcon />
+                        <ListItemText>Log out</ListItemText>
+                    </MenuItem>
+                </MenuList>
+            </Menu>
         </Toolbar>
     );
 };
