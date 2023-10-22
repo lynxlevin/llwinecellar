@@ -40,11 +40,6 @@ const useWineListPage = () => {
         setSortOrder({ key: property, order: isAsc ? 'desc' : 'asc' });
     };
 
-    const handleClickAdd = (event: React.MouseEvent<unknown>) => {
-        setSelectedWine(undefined);
-        setIsCreateOpen(true);
-    };
-
     const closeCreateWineDialog = () => {
         setIsCreateOpen(false);
     };
@@ -157,7 +152,6 @@ const useWineListPage = () => {
         rowsCount: wineContext.wineList.length,
         visibleRows,
         selectedWine,
-        handleClickAdd,
         closeCreateWineDialog,
         isCreateOpen,
         handleClickRow,

@@ -19,7 +19,6 @@ import {
     Paper,
 } from '@mui/material';
 // import FilterListIcon from '@mui/icons-material/FilterList';
-import AddIcon from '@mui/icons-material/Add';
 import LogoutIcon from '@mui/icons-material/Logout';
 import BookIcon from '@mui/icons-material/Book';
 import WarehouseIcon from '@mui/icons-material/Warehouse';
@@ -40,12 +39,11 @@ interface WineListToolbarProps {
     setSelectedCellarId: React.Dispatch<React.SetStateAction<string>>;
     setSortOrder: React.Dispatch<React.SetStateAction<{ key: keyof WineData; order: Order }>>;
     cellarList: string[][];
-    handleClickAdd: (event: React.MouseEvent<unknown>) => void;
     handleLogout: () => Promise<void>;
 }
 
 const WineListToolbar = (props: WineListToolbarProps) => {
-    const { selectedCellarId, setSelectedCellarId, setSortOrder, cellarList, handleClickAdd, handleLogout } = props;
+    const { selectedCellarId, setSelectedCellarId, setSortOrder, cellarList, handleLogout } = props;
     const wineContext = useContext(WineContext);
 
     const [drunkOnly, setDrunkOnly] = useState(false);
@@ -89,11 +87,6 @@ const WineListToolbar = (props: WineListToolbarProps) => {
                 ))}
                 <MenuItem value="NOT_IN_CELLAR">NOT_IN_CELLAR</MenuItem>
             </Select>
-            <Tooltip title="Add new wine" onClick={handleClickAdd}>
-                <IconButton>
-                    <AddIcon />
-                </IconButton>
-            </Tooltip>
             {/* <Tooltip title="Filter list">
                 <IconButton>
                     <FilterListIcon />
@@ -194,7 +187,6 @@ export const WineList = () => {
         rowsCount,
         visibleRows,
         selectedWine,
-        handleClickAdd,
         closeCreateWineDialog,
         isCreateOpen,
         handleClickRow,
@@ -227,7 +219,6 @@ export const WineList = () => {
                             selectedCellarId={selectedCellarId}
                             setSortOrder={setSortOrder}
                             cellarList={cellarList}
-                            handleClickAdd={handleClickAdd}
                             handleLogout={handleLogout}
                         />
                     </div>
