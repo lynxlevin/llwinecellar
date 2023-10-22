@@ -134,14 +134,14 @@ const WineListTableHead = (props: WineListTableHeadProps) => {
     };
 
     const toTitleCase = (text: string): string => {
-        if (text === 'price_with_tax') return 'Price incl.';
+        if (text === 'price_with_tax') return 'Price';
         return text
             .toLowerCase()
             .split('_')
             .map(function (word: string) {
                 return word.replace(word[0], word[0].toUpperCase());
             })
-            .join(' ');
+            .join('');
     };
 
     const wineHeadCells: WineHeadCell[] = [
