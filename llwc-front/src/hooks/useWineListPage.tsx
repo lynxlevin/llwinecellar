@@ -14,8 +14,7 @@ const useWineListPage = () => {
     const { getWineList } = useWineAPI();
 
     const [selectedCellarId, setSelectedCellarId] = useState<string>('NOT_IN_CELLAR');
-    const [order, setOrder] = useState<Order>('asc');
-    const [orderBy, setOrderBy] = useState<keyof WineData>('position');
+    const [sortOrder, setSortOrder] = useState<{ key: keyof WineData; order: Order }>({ key: 'position', order: 'asc' });
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(50);
     const [selectedWine, setSelectedWine] = useState<WineData>();
@@ -37,9 +36,8 @@ const useWineListPage = () => {
     const cellarList = cellarContext.list.map(cellar => [cellar.id, cellar.name]);
 
     const handleRequestSort = (event: React.MouseEvent<unknown>, property: keyof WineData) => {
-        const isAsc = orderBy === property && order === 'asc';
-        setOrder(isAsc ? 'desc' : 'asc');
-        setOrderBy(property);
+        const isAsc = sortOrder.key === property && sortOrder.order === 'asc';
+        setSortOrder({ key: property, order: isAsc ? 'desc' : 'asc' });
     };
 
     const handleClickAdd = (event: React.MouseEvent<unknown>) => {
@@ -73,59 +71,59 @@ const useWineListPage = () => {
             .join(', ');
     };
 
-    const compare = <T,>(a: T, b: T, orderBy: keyof T) => {
-        if (orderBy === 'tag_texts') {
-            if ((b[orderBy] as string[]).join(', ') < (a[orderBy] as string[]).join(', ')) return 1;
-            if ((b[orderBy] as string[]).join(', ') > (a[orderBy] as string[]).join(', ')) return -1;
+    const compare = <T,>(a: T, b: T, orderKey: keyof T) => {
+        if (orderKey === 'tag_texts') {
+            if ((b[orderKey] as string[]).join(', ') < (a[orderKey] as string[]).join(', ')) return 1;
+            if ((b[orderKey] as string[]).join(', ') > (a[orderKey] as string[]).join(', ')) return -1;
             return 0;
         }
-        if (orderBy === 'cepages') {
-            if (getCepageAbbreviations(b[orderBy] as Cepage[]) < getCepageAbbreviations(a[orderBy] as Cepage[])) return 1;
-            if (getCepageAbbreviations(b[orderBy] as Cepage[]) > getCepageAbbreviations(a[orderBy] as Cepage[])) return -1;
+        if (orderKey === 'cepages') {
+            if (getCepageAbbreviations(b[orderKey] as Cepage[]) < getCepageAbbreviations(a[orderKey] as Cepage[])) return 1;
+            if (getCepageAbbreviations(b[orderKey] as Cepage[]) > getCepageAbbreviations(a[orderKey] as Cepage[])) return -1;
             return 0;
         }
-        if (b[orderBy] < a[orderBy]) return 1;
-        if (b[orderBy] > a[orderBy]) return -1;
+        if (b[orderKey] < a[orderKey]) return 1;
+        if (b[orderKey] > a[orderKey]) return -1;
         return 0;
     };
 
-    const ascendingComparator = useCallback(<T,>(a: T, b: T, orderBy: keyof T) => {
-        if (orderBy === 'tag_texts' || orderBy === 'cepages') {
-            if ((a[orderBy] as string[]).length === 0) return 1;
-            if ((b[orderBy] as string[]).length === 0) return -1;
-            return compare(a, b, orderBy);
+    const ascendingComparator = useCallback(<T,>(a: T, b: T, orderKey: keyof T) => {
+        if (orderKey === 'tag_texts' || orderKey === 'cepages') {
+            if ((a[orderKey] as string[]).length === 0) return 1;
+            if ((b[orderKey] as string[]).length === 0) return -1;
+            return compare(a, b, orderKey);
         }
-        if (!a[orderBy]) return 1;
-        if (!b[orderBy]) return -1;
-        return compare(a, b, orderBy);
+        if (!a[orderKey]) return 1;
+        if (!b[orderKey]) return -1;
+        return compare(a, b, orderKey);
     }, []);
 
-    const descendingComparator = useCallback(<T,>(a: T, b: T, orderBy: keyof T) => {
-        if (!a[orderBy]) {
+    const descendingComparator = useCallback(<T,>(a: T, b: T, orderKey: keyof T) => {
+        if (!a[orderKey]) {
             return 1;
         }
-        if (!b[orderBy]) {
+        if (!b[orderKey]) {
             return -1;
         }
-        return -compare(a, b, orderBy);
+        return -compare(a, b, orderKey);
     }, []);
 
     const getComparator = useCallback(
         <Key extends keyof any>(
             order: Order,
-            orderBy: Key,
+            orderKey: Key,
         ): ((
             a: { [key in Key]: number | string | null | Cepage[] | string[] },
             b: { [key in Key]: number | string | null | Cepage[] | string[] },
         ) => number) => {
-            return order === 'desc' ? (a, b) => descendingComparator(a, b, orderBy) : (a, b) => ascendingComparator(a, b, orderBy);
+            return order === 'desc' ? (a, b) => descendingComparator(a, b, orderKey) : (a, b) => ascendingComparator(a, b, orderKey);
         },
         [ascendingComparator, descendingComparator],
     );
 
     const visibleRows = useMemo(() => {
-        return wineContext.wineList.sort(getComparator(order, orderBy)).slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
-    }, [getComparator, order, orderBy, page, rowsPerPage, wineContext.wineList]);
+        return wineContext.wineList.sort(getComparator(sortOrder.order, sortOrder.key)).slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+    }, [getComparator, page, rowsPerPage, sortOrder, wineContext.wineList]);
 
     useEffect(() => {
         if (cellarContext.list.length > 0) {
@@ -153,8 +151,8 @@ const useWineListPage = () => {
     return {
         selectedCellarId,
         setSelectedCellarId,
-        order,
-        orderBy,
+        sortOrder,
+        setSortOrder,
         handleRequestSort,
         rowsCount: wineContext.wineList.length,
         visibleRows,

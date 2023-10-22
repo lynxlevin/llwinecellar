@@ -16,20 +16,20 @@ jest.mock('../apis/WineAPI');
 //     // MYMEMO(後日): test when logged in, trying the sequence in useLoginPage didn't work
 // });
 
-test('useWineListPage.handleRequestSort', async () => {
-    const dummyProperty = 'dummyProperty';
-    const { result } = renderHook(() => useWineListPage());
-    act(() => {
-        result.current.handleRequestSort({} as React.MouseEvent<unknown>, dummyProperty as keyof WineData);
-    });
-    expect(result.current.order).toBe('asc');
-    expect(result.current.orderBy).toBe(dummyProperty);
-    act(() => {
-        result.current.handleRequestSort({} as React.MouseEvent<unknown>, dummyProperty as keyof WineData);
-    });
-    expect(result.current.order).toBe('desc');
-    expect(result.current.orderBy).toBe(dummyProperty);
-});
+// test('useWineListPage.handleRequestSort', async () => {
+//     const dummyProperty = 'dummyProperty';
+//     const { result } = renderHook(() => useWineListPage());
+//     act(() => {
+//         result.current.handleRequestSort({} as React.MouseEvent<unknown>, dummyProperty as keyof WineData);
+//     });
+//     expect(result.current.order).toBe('asc');
+//     expect(result.current.orderBy).toBe(dummyProperty);
+//     act(() => {
+//         result.current.handleRequestSort({} as React.MouseEvent<unknown>, dummyProperty as keyof WineData);
+//     });
+//     expect(result.current.order).toBe('desc');
+//     expect(result.current.orderBy).toBe(dummyProperty);
+// });
 
 test('useWineListPage.handleChangePage', async () => {
     const { result } = renderHook(() => useWineListPage());

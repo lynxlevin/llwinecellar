@@ -38,13 +38,14 @@ import { WineContext } from '../../contexts/wine-context';
 interface WineListToolbarProps {
     selectedCellarId: string;
     setSelectedCellarId: React.Dispatch<React.SetStateAction<string>>;
+    setSortOrder: React.Dispatch<React.SetStateAction<{ key: keyof WineData; order: Order }>>;
     cellarList: string[][];
     handleClickAdd: (event: React.MouseEvent<unknown>) => void;
     handleLogout: () => Promise<void>;
 }
 
 const WineListToolbar = (props: WineListToolbarProps) => {
-    const { selectedCellarId, setSelectedCellarId, cellarList, handleClickAdd, handleLogout } = props;
+    const { selectedCellarId, setSelectedCellarId, setSortOrder, cellarList, handleClickAdd, handleLogout } = props;
     const wineContext = useContext(WineContext);
 
     const [drunkOnly, setDrunkOnly] = useState(false);
@@ -55,8 +56,10 @@ const WineListToolbar = (props: WineListToolbarProps) => {
         wineContext.setWineListQuery({ is_drunk: checked });
         if (checked) {
             setSelectedCellarId('');
+            setSortOrder({ key: 'drunk_at', order: 'desc' });
         } else {
             setSelectedCellarId(cellarList[0][0]);
+            setSortOrder({ key: 'position', order: 'asc' });
         }
     };
 
@@ -107,12 +110,11 @@ interface WineHeadCell {
 
 interface WineListTableHeadProps {
     onRequestSort: (event: React.MouseEvent<unknown>, property: keyof WineData) => void;
-    order: Order;
-    orderBy: string;
+    sortOrder: { key: keyof WineData; order: Order };
 }
 
 const WineListTableHead = (props: WineListTableHeadProps) => {
-    const { order, orderBy, onRequestSort } = props;
+    const { sortOrder, onRequestSort } = props;
     const createSortHandler = (property: keyof WineData) => (event: React.MouseEvent<unknown>) => {
         onRequestSort(event, property);
     };
@@ -156,17 +158,17 @@ const WineListTableHead = (props: WineListTableHeadProps) => {
                         key={headCell.id}
                         align={headCell.numeric ? 'right' : 'left'}
                         padding="normal"
-                        sortDirection={orderBy === headCell.id ? order : false}
+                        sortDirection={sortOrder.key === headCell.id ? sortOrder.order : false}
                     >
                         <TableSortLabel
-                            active={orderBy === headCell.id}
-                            direction={orderBy === headCell.id ? order : 'asc'}
+                            active={sortOrder.key === headCell.id}
+                            direction={sortOrder.key === headCell.id ? sortOrder.order : 'asc'}
                             onClick={createSortHandler(headCell.id)}
                         >
                             {toTitleCase(headCell.id)}
-                            {orderBy === headCell.id ? (
+                            {sortOrder.key === headCell.id ? (
                                 <Box component="span" sx={visuallyHidden}>
-                                    {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
+                                    {sortOrder.order === 'desc' ? 'sorted descending' : 'sorted ascending'}
                                 </Box>
                             ) : null}
                         </TableSortLabel>
@@ -186,8 +188,8 @@ export const WineList = () => {
     const {
         selectedCellarId,
         setSelectedCellarId,
-        order,
-        orderBy,
+        sortOrder,
+        setSortOrder,
         handleRequestSort,
         rowsCount,
         visibleRows,
@@ -223,6 +225,7 @@ export const WineList = () => {
                         <WineListToolbar
                             setSelectedCellarId={setSelectedCellarId}
                             selectedCellarId={selectedCellarId}
+                            setSortOrder={setSortOrder}
                             cellarList={cellarList}
                             handleClickAdd={handleClickAdd}
                             handleLogout={handleLogout}
@@ -230,7 +233,7 @@ export const WineList = () => {
                     </div>
                     <TableContainer sx={{ maxHeight: tableHeight }}>
                         <Table stickyHeader sx={{ minWidth: 750 }} aria-labelledby="tableTitle" size="medium">
-                            <WineListTableHead order={order} orderBy={orderBy} onRequestSort={handleRequestSort} />
+                            <WineListTableHead sortOrder={sortOrder} onRequestSort={handleRequestSort} />
                             <TableBody>
                                 {visibleRows.map((row, index) => {
                                     const labelId = `enhanced-table-checkbox-${index}`;
