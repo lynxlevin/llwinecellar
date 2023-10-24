@@ -62,7 +62,7 @@ const useWineListPage = () => {
     // Avoid a layout jump when reaching the last page with empty rows.
     const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - wineContext.wineList.length) : 0;
 
-    const handleChangePage = (event: unknown, newPage: number) => {
+    const handleChangePage = (_event: unknown, newPage: number) => {
         setPage(newPage);
     };
 
@@ -132,12 +132,8 @@ const useWineListPage = () => {
     }, []);
 
     const descendingComparator = useCallback(<T,>(a: T, b: T, orderKey: keyof T) => {
-        if (!a[orderKey]) {
-            return 1;
-        }
-        if (!b[orderKey]) {
-            return -1;
-        }
+        if (!a[orderKey]) return 1;
+        if (!b[orderKey]) return -1;
         return -compare(a, b, orderKey);
     }, []);
 

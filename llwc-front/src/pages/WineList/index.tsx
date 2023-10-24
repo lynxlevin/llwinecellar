@@ -1,4 +1,4 @@
-import React, { useContext, useState, useRef } from 'react';
+import React, { useContext, useState, useRef, useMemo } from 'react';
 import {
     Box,
     Table,
@@ -54,6 +54,18 @@ const WineListToolbar = (props: WineListToolbarProps) => {
     const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null);
     const isMenuOpen = Boolean(menuAnchor);
 
+    const pageTitle = useMemo(() => {
+        let title = 'Wines';
+        if (drunkOnly) return 'Drunk' + title;
+
+        if (selectedCellarId !== 'NOT_IN_CELLAR') {
+            const cellarCapacity = wineContext.wineList.length;
+            const winesInCellarCount = wineContext.wineList.filter(wine => wine.name !== '').length;
+            title += ` (${winesInCellarCount}/${cellarCapacity})`;
+        }
+        return title;
+    }, [drunkOnly, selectedCellarId, wineContext.wineList]);
+
     const toggleListMode = () => {
         const checked = !drunkOnly;
         setDrunkOnly(checked);
@@ -89,7 +101,7 @@ const WineListToolbar = (props: WineListToolbarProps) => {
             }}
         >
             <Typography sx={{ flex: '1 1 100%' }} variant="h6" id="tableTitle" component="div">
-                {drunkOnly ? 'Drunk ' : ''}Wines
+                {pageTitle}
             </Typography>
             <IconButton onClick={toggleListMode}>{drunkOnly ? <BookIcon /> : <WarehouseIcon />}</IconButton>
             <Select id="cellar-select" value={selectedCellarId} onChange={handleCellarSelect}>
