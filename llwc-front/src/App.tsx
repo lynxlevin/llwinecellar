@@ -7,6 +7,7 @@ import { type Cellar, CellarContext } from './contexts/cellar-context';
 import { UserContext } from './contexts/user-context';
 import { WineContext, WineData, WineListQuery } from './contexts/wine-context';
 import { WineTagContext } from './contexts/wine-tag-context';
+import { Settings } from './pages/Settings';
 
 function App() {
     const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
@@ -23,9 +24,20 @@ function App() {
                     <WineContext.Provider value={{ wineList, setWineList, wineListQuery, setWineListQuery }}>
                         <WineTagContext.Provider value={{ wineTagList, setWineTagList }}>
                             <Routes>
-                                <Route path="/" element={<Link to="/wine-list">Wine List</Link>} />
+                                <Route
+                                    path="/"
+                                    element={
+                                        <>
+                                            <p></p>
+                                            <Link to="/wine-list">Wine List</Link>
+                                            <p></p>
+                                            <Link to="/settings">Settings</Link>
+                                        </>
+                                    }
+                                />
                                 <Route path="/login" element={<Login />} />
                                 <Route path="/wine-list" element={<WineList />} />
+                                <Route path="/settings" element={<Settings />} />
                             </Routes>
                         </WineTagContext.Provider>
                     </WineContext.Provider>

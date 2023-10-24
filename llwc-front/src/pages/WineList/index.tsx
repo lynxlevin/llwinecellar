@@ -1,4 +1,5 @@
 import React, { useContext, useState, useRef, useMemo } from 'react';
+import { Link, Navigate } from 'react-router-dom';
 import {
     Box,
     Table,
@@ -23,10 +24,10 @@ import {
 // import FilterListIcon from '@mui/icons-material/FilterList';
 import MenuIcon from '@mui/icons-material/Menu';
 import LogoutIcon from '@mui/icons-material/Logout';
+import SettingsIcon from '@mui/icons-material/Settings';
 import BookIcon from '@mui/icons-material/Book';
 import WarehouseIcon from '@mui/icons-material/Warehouse';
 import { visuallyHidden } from '@mui/utils';
-import { Navigate } from 'react-router-dom';
 import useWineListPage, { COLUMN_ORDER, Order } from '../../hooks/useWineListPage';
 import { WineDataKeys } from '../../contexts/wine-context';
 import useUserAPI from '../../hooks/useUserAPI';
@@ -100,7 +101,7 @@ const WineListToolbar = (props: WineListToolbarProps) => {
                 pr: { xs: 1, sm: 1 },
             }}
         >
-            <Typography sx={{ flex: '1 1 100%' }} variant="h6" id="tableTitle" component="div">
+            <Typography sx={{ flex: '1 1 10%' }} variant="h6" id="tableTitle" component="div">
                 {pageTitle}
             </Typography>
             <IconButton onClick={toggleListMode}>{drunkOnly ? <BookIcon /> : <WarehouseIcon />}</IconButton>
@@ -125,6 +126,12 @@ const WineListToolbar = (props: WineListToolbarProps) => {
                     <MenuItem onClick={handleLogout}>
                         <LogoutIcon />
                         <ListItemText>Log out</ListItemText>
+                    </MenuItem>
+                    <MenuItem>
+                        <SettingsIcon />
+                        <Link to="/settings" style={{ color: 'rgba(0, 0, 0, 0.87)', textDecorationLine: 'none' }}>
+                            Settings
+                        </Link>
                     </MenuItem>
                 </MenuList>
             </Menu>
