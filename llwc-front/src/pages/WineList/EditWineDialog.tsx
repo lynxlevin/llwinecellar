@@ -109,6 +109,8 @@ const EditWineDialog = (props: EditWineDialogProps) => {
     const [cellarId, setCellarId] = useState<string | null>(initialValues.cellarId);
     const [position, setPosition] = useState<string | null>(initialValues.position);
 
+    const [cepagesInput, setCepagesInput] = useState<string>(JSON.stringify(initialValues.cepages));
+
     const [validationErrors, setValidationErrors] = useState<ValidationErrorsType>(initialValues.validationErrors);
     const [apiErrors, setApiErrors] = useState<apiErrorsType>(initialValues.apiErrors);
 
@@ -134,11 +136,19 @@ const EditWineDialog = (props: EditWineDialogProps) => {
             setNote(initialValues.note);
             setCellarId(initialValues.cellarId);
             setPosition(initialValues.position);
+            setCepagesInput(JSON.stringify(initialValues.cepages));
             setValidationErrors(initialValues.validationErrors);
             setApiErrors(initialValues.apiErrors);
             setDontMove(initialValues.dontMove);
         }
     }, [initialValues, isOpen]);
+
+    const addToCepagesInput = () => {
+        // MYMEMO: no validation when there's emptyCepage in cepages
+        const emptyCepage: Cepage = { name: '', abbreviation: '', percentage: '100.0' };
+        const cepages_ = JSON.parse(cepagesInput);
+        setCepagesInput(JSON.stringify([...cepages_, emptyCepage]));
+    };
 
     const handleSave = async () => {
         if (Object.keys(validationErrors).length > 0 || !selectedWine) return;
@@ -343,16 +353,17 @@ const EditWineDialog = (props: EditWineDialogProps) => {
                             fullWidth
                         />
                     </Grid>
-                    <Grid item xs={12}>
+                    <Grid item xs={10}>
                         <TextField
                             label="cepages"
                             error={Boolean(validationErrors.cepages)}
                             helperText={validationErrors.cepages ? validationErrors.cepages : ''}
-                            value={cepages.length > 0 ? JSON.stringify(cepages) : '[{"name":"","abbreviation":"","percentage":"100.0"}]'}
+                            value={cepagesInput}
                             // MYMEMO(後日): show grape_master somewhere
                             onChange={event => {
+                                setCepagesInput(event.target.value);
                                 try {
-                                    setCepages(JSON.parse(event.target.value || '[]'));
+                                    setCepages(JSON.parse(event.target.value));
                                     setValidationErrors(current => {
                                         const { cepages, ...rest } = current;
                                         return rest;
@@ -368,6 +379,9 @@ const EditWineDialog = (props: EditWineDialogProps) => {
                             variant="standard"
                             fullWidth
                         />
+                    </Grid>
+                    <Grid item xs={2}>
+                        <Button onClick={addToCepagesInput}>Add Cepages</Button>
                     </Grid>
                     <Grid item xs={6}>
                         <TextField

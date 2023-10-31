@@ -3,7 +3,7 @@ import { createContext } from 'react';
 export interface Cepage {
     name: string;
     abbreviation: string | null;
-    percentage: number | null;
+    percentage: string | null;
 }
 
 const wineDataKeys = [

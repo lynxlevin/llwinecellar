@@ -24,6 +24,7 @@ class GrapeMaster(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
+        # MYMEMO: this constraint complains when abbreviation differs from registered GrapeMaster
         constraints = (
             models.UniqueConstraint(
                 fields=["name", "user"],
