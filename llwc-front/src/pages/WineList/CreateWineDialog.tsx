@@ -64,6 +64,11 @@ const CreateWineDialog = (props: CreateWineDialogProps) => {
     const { getWineList } = useWineAPI();
     const { getWineTagList } = useWineTagAPI();
 
+    const getLocaleISODateString = (date_?: Date) => {
+        const date = date_ ? date_ : new Date();
+        return `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
+    };
+
     const initialValues = useMemo(() => {
         return {
             tagTexts: [],
@@ -77,7 +82,7 @@ const CreateWineDialog = (props: CreateWineDialogProps) => {
             region4: '',
             region5: '',
             cepages: [],
-            boughtAt: null,
+            boughtAt: getLocaleISODateString(),
             boughtFrom: '',
             priceWithTax: null,
             drunkAt: null,
