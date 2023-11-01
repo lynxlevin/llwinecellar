@@ -29,3 +29,19 @@ class TestWineModel(TestCase):
         result = list(WineTag.objects.filter_eq_user_id(self.user.id).order_by("created_at").all())
 
         self.assertEqual(expected, result)
+
+    def test_order_by_text(self):
+        tags = [
+            WineTagFactory(text="1"),
+            WineTagFactory(text="5"),
+            WineTagFactory(text="2"),
+            WineTagFactory(text="9"),
+            WineTagFactory(text="3"),
+        ]
+
+        tags.sort(key=lambda tag: tag.text)
+        expected = tags
+
+        result = list(WineTag.objects.order_by_text().all())
+
+        self.assertEqual(expected, result)

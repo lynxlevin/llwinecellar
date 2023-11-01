@@ -29,6 +29,7 @@ class TestWineTagViews(TestCase):
         # Assert
         self.assertEqual(status.HTTP_200_OK, status_code)
 
+        tags.sort(key=lambda tag: tag.text)
         expected = {
             "tag_texts": [tag.text for tag in tags],
         }

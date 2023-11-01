@@ -14,4 +14,4 @@ class ListWineTags:
     def execute(self, user: User):
         logger.info(self.__class__.__name__, extra={"user": user})
 
-        return WineTag.objects.filter_eq_user_id(user.id).values_list("text", flat=True)
+        return WineTag.objects.filter_eq_user_id(user.id).order_by_text().values_list("text", flat=True)

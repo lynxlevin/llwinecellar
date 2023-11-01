@@ -22,6 +22,9 @@ class WineTagQuerySet(models.QuerySet["WineTag"]):
     def filter_eq_user_id(self, user_id) -> "WineTagQuerySet":
         return self.filter(user_id=user_id)
 
+    def order_by_text(self) -> "WineTagQuerySet":
+        return self.order_by("text")
+
 
 class WineTag(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
