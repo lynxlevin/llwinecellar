@@ -303,16 +303,24 @@ export const WineList = () => {
                     </div>
                 </Paper>
             </Box>
-            {selectedWine && (
-                <EditWineDialog isOpen={isEditOpen} handleClose={closeEditWineDialog} selectedWineId={selectedWine.id} cellarList={cellarList}></EditWineDialog>
+            {isEditOpen && selectedWine && (
+                <EditWineDialog
+                    isOpen={isEditOpen}
+                    handleClose={closeEditWineDialog}
+                    selectedWineId={selectedWine.id}
+                    cellarList={cellarList}
+                    action={'edit'}
+                ></EditWineDialog>
             )}
-            <CreateWineDialog
-                isOpen={isCreateOpen}
-                handleClose={closeCreateWineDialog}
-                selectedWineId={selectedWine?.id}
-                cellarList={cellarList}
-                selectedCellarId={selectedCellarId}
-            ></CreateWineDialog>
+            {isCreateOpen && selectedWine && (
+                <CreateWineDialog
+                    isOpen={isCreateOpen}
+                    handleClose={closeCreateWineDialog}
+                    selectedWineId={selectedWine?.id}
+                    cellarList={cellarList}
+                    action={'create'}
+                ></CreateWineDialog>
+            )}
         </div>
     );
 };

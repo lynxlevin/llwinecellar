@@ -14,6 +14,7 @@ import {
     MenuItem,
     Autocomplete,
     Chip,
+    Checkbox,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { TransitionProps } from '@mui/material/transitions';
@@ -33,12 +34,14 @@ const Transition = React.forwardRef(function Transition(
     return <Slide direction="up" ref={ref} {...props} />;
 });
 
+type WineDialogAction = 'create' | 'edit';
+
 interface CreateWineDialogProps {
     isOpen: boolean;
     handleClose: () => void;
-    selectedWineId?: string;
+    selectedWineId: string;
     cellarList: string[][];
-    selectedCellarId: string;
+    action: WineDialogAction;
 }
 
 interface ValidationErrorsType {
@@ -54,7 +57,7 @@ interface apiErrorsType {
 }
 
 const CreateWineDialog = (props: CreateWineDialogProps) => {
-    const { isOpen, handleClose, selectedWineId, cellarList, selectedCellarId } = props;
+    const { isOpen, handleClose, selectedWineId, cellarList, action } = props;
 
     const wineContext = useContext(WineContext);
     const wineTagContext = useContext(WineTagContext);
@@ -64,6 +67,8 @@ const CreateWineDialog = (props: CreateWineDialogProps) => {
     const { getWineList } = useWineAPI();
     const { getWineTagList } = useWineTagAPI();
 
+    const noCellarCode = action === 'create' ? 'NOT_IN_CELLAR' : 'MOVE_OUT_OF_CELLAR';
+
     const getLocaleISODateString = (date_?: Date) => {
         const date = date_ ? date_ : new Date();
         return `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
@@ -71,28 +76,29 @@ const CreateWineDialog = (props: CreateWineDialogProps) => {
 
     const initialValues = useMemo(() => {
         return {
-            tagTexts: [],
-            name: '',
-            producer: '',
-            vintage: null,
-            country: null,
-            region1: '',
-            region2: '',
-            region3: '',
-            region4: '',
-            region5: '',
-            cepages: [],
-            boughtAt: getLocaleISODateString(),
-            boughtFrom: '',
-            priceWithTax: null,
-            drunkAt: null,
-            note: '',
-            cellarId: selectedWine ? selectedWine.cellar_id : selectedCellarId,
+            tagTexts: selectedWine ? selectedWine.tag_texts : [],
+            name: selectedWine ? selectedWine.name : '',
+            producer: selectedWine ? selectedWine.producer : '',
+            vintage: selectedWine ? selectedWine.vintage : null,
+            country: selectedWine ? selectedWine.country : null,
+            region1: selectedWine ? selectedWine.region_1 : '',
+            region2: selectedWine ? selectedWine.region_2 : '',
+            region3: selectedWine ? selectedWine.region_3 : '',
+            region4: selectedWine ? selectedWine.region_4 : '',
+            region5: selectedWine ? selectedWine.region_5 : '',
+            cepages: selectedWine ? selectedWine.cepages : [],
+            boughtAt: selectedWine ? selectedWine.bought_at : getLocaleISODateString(),
+            boughtFrom: selectedWine ? selectedWine.bought_from : '',
+            priceWithTax: selectedWine ? selectedWine.price_with_tax : null,
+            drunkAt: selectedWine ? selectedWine.drunk_at : null,
+            note: selectedWine ? selectedWine.note : '',
+            cellarId: selectedWine ? selectedWine.cellar_id : noCellarCode,
             position: selectedWine ? selectedWine.position : null,
             validationErrors: {},
             apiErrors: {},
+            dontMove: action === 'edit',
         };
-    }, [selectedCellarId, selectedWine]);
+    }, [action, noCellarCode, selectedWine]);
 
     const [tagTexts, setTagTexts] = useState<string[]>(initialValues.tagTexts);
     const [name, setName] = useState<string>(initialValues.name);
@@ -118,6 +124,8 @@ const CreateWineDialog = (props: CreateWineDialogProps) => {
     const [validationErrors, setValidationErrors] = useState<ValidationErrorsType>(initialValues.validationErrors);
     const [apiErrors, setApiErrors] = useState<apiErrorsType>(initialValues.apiErrors);
 
+    const [dontMove, setDontMove] = useState<boolean>(initialValues.dontMove);
+
     useEffect(() => {
         if (isOpen) {
             setTagTexts(initialValues.tagTexts);
@@ -141,6 +149,7 @@ const CreateWineDialog = (props: CreateWineDialogProps) => {
             setCepagesInput(JSON.stringify(initialValues.cepages));
             setValidationErrors(initialValues.validationErrors);
             setApiErrors(initialValues.apiErrors);
+            setDontMove(initialValues.dontMove);
         }
     }, [initialValues, isOpen]);
 
@@ -152,12 +161,12 @@ const CreateWineDialog = (props: CreateWineDialogProps) => {
     };
 
     const handleSave = async () => {
-        if (Object.keys(validationErrors).length > 0) return;
+        if (Object.keys(validationErrors).length > 0 || !selectedWine) return;
         if (name === '') {
             setValidationErrors({ name: 'Name cannot be empty.' });
             return;
         }
-        if (cellarId !== 'NOT_IN_CELLAR' && position === null) {
+        if (cellarId !== noCellarCode && position === null && !dontMove) {
             setValidationErrors({ position: 'Position cannot be empty while a cellar is selected.' });
             return;
         }
@@ -184,19 +193,35 @@ const CreateWineDialog = (props: CreateWineDialogProps) => {
             position: position,
         };
         const newTagCreated = !tagTexts.every(tag => wineTagContext.wineTagList.includes(tag));
-        if (cellarId === 'NOT_IN_CELLAR') {
+        if (action === 'edit' && dontMove) {
+            // MYMEMO(後日): 汚い。null | undefined | string の使い分けはよろしくない。
+            delete data.cellar_id;
+            delete data.position;
+        } else if (cellarId === noCellarCode) {
             data.cellar_id = null;
             data.position = null;
         }
-        await WineAPI.create(data)
-            .then(async _ => {
-                await getWineList();
-                if (newTagCreated) await getWineTagList();
-                handleClose();
-            })
-            .catch((err: AxiosError<{ country?: string; cellar_id?: string; position?: string }>) => {
-                setApiErrors(err.response!.data as unknown as { country: string });
-            });
+        if (action === 'create') {
+            await WineAPI.create(data)
+                .then(async _ => {
+                    await getWineList();
+                    if (newTagCreated) await getWineTagList();
+                    handleClose();
+                })
+                .catch((err: AxiosError<{ country?: string; cellar_id?: string; position?: string }>) => {
+                    setApiErrors(err.response!.data as unknown as { country: string });
+                });
+        } else if (action === 'edit') {
+            await WineAPI.update(selectedWine.id, data)
+                .then(async _ => {
+                    await getWineList();
+                    if (newTagCreated) await getWineTagList();
+                    handleClose();
+                })
+                .catch((err: AxiosError<{ country?: string; cellar_id?: string; position?: string }>) => {
+                    setApiErrors(err.response!.data as unknown as { country: string });
+                });
+        }
     };
 
     return (
@@ -207,7 +232,7 @@ const CreateWineDialog = (props: CreateWineDialogProps) => {
                         <CloseIcon />
                     </IconButton>
                     <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
-                        Create
+                        {action === 'create' ? 'Create' : 'Edit'}
                     </Typography>
                     <Button
                         autoFocus
@@ -443,22 +468,34 @@ const CreateWineDialog = (props: CreateWineDialogProps) => {
                             onChange={event => {
                                 setCellarId(event.target.value);
                             }}
+                            disabled={dontMove}
                         >
                             {cellarList.map(cellar => (
                                 <MenuItem key={cellar[0]} value={cellar[0]}>
                                     {cellar[1]}
                                 </MenuItem>
                             ))}
-                            <MenuItem value="NOT_IN_CELLAR">NOT_IN_CELLAR</MenuItem>
+                            <MenuItem value={noCellarCode}>{noCellarCode}</MenuItem>
                         </Select>
                     </Grid>
+                    {action === 'edit' && (
+                        <Grid item xs={2}>
+                            <Checkbox
+                                checked={dontMove}
+                                onChange={event => {
+                                    setDontMove(event.target.checked);
+                                }}
+                            />
+                            don't move
+                        </Grid>
+                    )}
                     <Grid item xs={12}>
                         {/* MYMEMO(後日): make this a select */}
                         <TextField
                             label="position"
                             value={position ?? ''}
                             onChange={event => {
-                                if (cellarId === 'NOT_IN_CELLAR' || event.target.value !== '') {
+                                if (cellarId === noCellarCode || event.target.value !== '') {
                                     setValidationErrors(current => {
                                         const { position, ...rest } = current;
                                         return rest;
@@ -466,7 +503,7 @@ const CreateWineDialog = (props: CreateWineDialogProps) => {
                                 }
                                 setPosition(event.target.value || null);
                             }}
-                            disabled={cellarId === 'NOT_IN_CELLAR'}
+                            disabled={cellarId === noCellarCode || dontMove}
                             error={Boolean(apiErrors.position) || Boolean(validationErrors.position)}
                             helperText={apiErrors.position || validationErrors.position}
                             variant="standard"
