@@ -260,16 +260,16 @@ export const WineList = () => {
                                             sx={row.name === '' ? { cursor: 'pointer', backgroundColor: 'rgba(0, 0, 0, 0.2)' } : { cursor: 'pointer' }}
                                         >
                                             {/* MYMEMO(後日): make cepages look like tags */}
-                                            {orderedColumn.map(key => {
-                                                let content = rowData[key as WineDataKeys];
-                                                if (key === 'name') {
+                                            {orderedColumn.map(column => {
+                                                let content = rowData[column as WineDataKeys];
+                                                if (column === 'name') {
                                                     return (
-                                                        <TableCell component="th" id={labelId} scope="row">
+                                                        <TableCell component="th" id={labelId} scope="row" key={row.id + column}>
                                                             {content}
                                                         </TableCell>
                                                     );
                                                 }
-                                                return <TableCell>{content}</TableCell>;
+                                                return <TableCell key={row.id + column}>{content}</TableCell>;
                                             })}
                                             {/* MYMEMO(後日): show note: TableContainer を width:max-content にしたらできるけど、全列個別指定が必要になる
                                             https://smartdevpreneur.com/customizing-material-ui-table-cell-width/ */}
