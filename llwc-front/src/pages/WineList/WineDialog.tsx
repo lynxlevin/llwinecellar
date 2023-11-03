@@ -410,7 +410,7 @@ const WineDialog = (props: WineDialogProps) => {
                         />
                     </Grid>
                     <Grid item xs={2}>
-                        <Button onClick={addToCepagesInput}>Add Cepages</Button>
+                        <Button onClick={addToCepagesInput}>Add</Button>
                     </Grid>
                     <Grid item xs={6}>
                         <TextField
