@@ -31,6 +31,7 @@ import { visuallyHidden } from '@mui/utils';
 import useWineListPage, { COLUMN_ORDER, Order } from '../../hooks/useWineListPage';
 import { WineDataKeys } from '../../contexts/wine-context';
 import useUserAPI from '../../hooks/useUserAPI';
+import { CellarContext } from '../../contexts/cellar-context';
 import { UserContext } from '../../contexts/user-context';
 import WineDialog from './WineDialog';
 import { WineContext } from '../../contexts/wine-context';
@@ -42,12 +43,13 @@ interface WineListToolbarProps {
     setSelectedCellarId: React.Dispatch<React.SetStateAction<string>>;
     setSortOrder: React.Dispatch<React.SetStateAction<{ key: WineDataKeys; order: Order }>>;
     setOrderedColumn: React.Dispatch<React.SetStateAction<WineDataKeys[]>>;
-    cellarList: string[][];
     handleLogout: () => Promise<void>;
 }
 
 const WineListToolbar = (props: WineListToolbarProps) => {
-    const { selectedCellarId, setSelectedCellarId, setSortOrder, setOrderedColumn, cellarList, handleLogout } = props;
+    const { selectedCellarId, setSelectedCellarId, setSortOrder, setOrderedColumn, handleLogout } = props;
+
+    const cellarContext = useContext(CellarContext);
     const wineContext = useContext(WineContext);
 
     const [drunkOnly, setDrunkOnly] = useState(false);
@@ -75,7 +77,7 @@ const WineListToolbar = (props: WineListToolbarProps) => {
             setSortOrder({ key: 'drunk_at', order: 'desc' });
             setOrderedColumn(COLUMN_ORDER.drunk);
         } else {
-            setSelectedCellarId(cellarList[0][0]);
+            setSelectedCellarId(cellarContext.list[0].id);
             setSortOrder({ key: 'position', order: 'asc' });
             setOrderedColumn(COLUMN_ORDER.default);
         }
@@ -105,9 +107,9 @@ const WineListToolbar = (props: WineListToolbarProps) => {
             </Typography>
             <IconButton onClick={toggleListMode}>{drunkOnly ? <BookIcon /> : <WarehouseIcon />}</IconButton>
             <Select id="cellar-select" value={selectedCellarId} onChange={handleCellarSelect}>
-                {cellarList.map(cellar => (
-                    <MenuItem key={cellar[0]} value={cellar[0]}>
-                        {cellar[1]}
+                {cellarContext.list.map(cellar => (
+                    <MenuItem key={cellar.id} value={cellar.id}>
+                        {cellar.name}
                     </MenuItem>
                 ))}
                 <MenuItem value="NOT_IN_CELLAR">NOT_IN_CELLAR</MenuItem>
@@ -206,7 +208,6 @@ export const WineList = () => {
         wineDialogState,
         handleClickRow,
         closeWineDialog,
-        cellarList,
         emptyRows,
         rowsPerPage,
         page,
@@ -233,7 +234,6 @@ export const WineList = () => {
                             selectedCellarId={selectedCellarId}
                             setSortOrder={setSortOrder}
                             setOrderedColumn={setOrderedColumn}
-                            cellarList={cellarList}
                             handleLogout={handleLogout}
                         />
                     </div>
@@ -305,7 +305,6 @@ export const WineList = () => {
                     isOpen={wineDialogState.open}
                     handleClose={closeWineDialog}
                     selectedWine={selectedWine}
-                    cellarList={cellarList}
                     action={wineDialogState.action}
                 ></WineDialog>
             )}

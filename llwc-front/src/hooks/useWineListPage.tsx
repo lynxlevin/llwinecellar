@@ -71,8 +71,6 @@ const useWineListPage = () => {
         setPage(0);
     };
 
-    const cellarList = cellarContext.list.map(cellar => [cellar.id, cellar.name]);
-
     const handleRequestSort = (event: React.MouseEvent<unknown>, property: WineDataKeys) => {
         const isAsc = sortOrder.key === property && sortOrder.order === 'asc';
         setSortOrder({ key: property, order: isAsc ? 'desc' : 'asc' });
@@ -189,7 +187,6 @@ const useWineListPage = () => {
         wineDialogState,
         handleClickRow,
         closeWineDialog,
-        cellarList,
         emptyRows,
         rowsPerPage,
         page,

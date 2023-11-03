@@ -18,6 +18,7 @@ import {
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { TransitionProps } from '@mui/material/transitions';
+import { CellarContext } from '../../contexts/cellar-context';
 import { Cepage, WineData } from '../../contexts/wine-context';
 import { WineRequestBody, WineAPI } from '../../apis/WineAPI';
 import useWineAPI from '../../hooks/useWineAPI';
@@ -39,7 +40,6 @@ interface WineDialogProps {
     isOpen: boolean;
     handleClose: () => void;
     selectedWine: WineData;
-    cellarList: string[][];
     action: WineDialogAction;
 }
 
@@ -56,8 +56,9 @@ interface apiErrorsType {
 }
 
 const WineDialog = (props: WineDialogProps) => {
-    const { isOpen, handleClose, selectedWine, cellarList, action } = props;
+    const { isOpen, handleClose, selectedWine, action } = props;
 
+    const cellarContext = useContext(CellarContext);
     const wineTagContext = useContext(WineTagContext);
 
     const { getWineList } = useWineAPI();
@@ -466,9 +467,9 @@ const WineDialog = (props: WineDialogProps) => {
                             }}
                             disabled={dontMove}
                         >
-                            {cellarList.map(cellar => (
-                                <MenuItem key={cellar[0]} value={cellar[0]}>
-                                    {cellar[1]}
+                            {cellarContext.list.map(cellar => (
+                                <MenuItem key={cellar.id} value={cellar.id}>
+                                    {cellar.name}
                                 </MenuItem>
                             ))}
                             <MenuItem value={noCellarCode}>{noCellarCode}</MenuItem>
