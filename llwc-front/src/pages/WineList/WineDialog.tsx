@@ -157,17 +157,30 @@ const WineDialog = (props: WineDialogProps) => {
         setCepagesInput(JSON.stringify([...cepages_, emptyCepage]));
     };
 
-    const handleSave = async () => {
-        if (Object.keys(validationErrors).length > 0) return;
+    const addValidationError = (error: ValidationErrorsType) => {
+        setValidationErrors(current => {
+            return { ...current, ...error };
+        });
+    };
+
+    const validateOnSave = (): boolean => {
+        setApiErrors({});
+        let isValid = true;
+
+        if (Object.keys(validationErrors).length > 0) isValid = false;
         if (name === '') {
-            setValidationErrors({ name: 'Name cannot be empty.' });
-            return;
+            addValidationError({ name: 'Name cannot be empty.' });
+            isValid = false;
         }
         if (cellarId !== noCellarCode && position === null && !dontMove) {
-            setValidationErrors({ position: 'Position cannot be empty while a cellar is selected.' });
-            return;
+            addValidationError({ position: 'Position cannot be empty while a cellar is selected.' });
+            isValid = false;
         }
-        setApiErrors({});
+        return isValid;
+    };
+
+    const handleSave = async () => {
+        if (!validateOnSave()) return;
 
         const data: WineRequestBody = {
             name: name,
@@ -189,7 +202,6 @@ const WineDialog = (props: WineDialogProps) => {
             cellar_id: cellarId,
             position: position,
         };
-        const newTagCreated = !tagTexts.every(tag => wineTagContext.wineTagList.includes(tag));
         if (action === 'edit' && dontMove) {
             // MYMEMO(後日): 汚い。null | undefined | string の使い分けはよろしくない。
             delete data.cellar_id;
@@ -198,6 +210,8 @@ const WineDialog = (props: WineDialogProps) => {
             data.cellar_id = null;
             data.position = null;
         }
+
+        const newTagCreated = !tagTexts.every(tag => wineTagContext.wineTagList.includes(tag));
         if (action === 'create') {
             await WineAPI.create(data)
                 .then(async _ => {
@@ -206,7 +220,7 @@ const WineDialog = (props: WineDialogProps) => {
                     handleClose();
                 })
                 .catch((err: AxiosError<{ country?: string; cellar_id?: string; position?: string }>) => {
-                    setApiErrors(err.response!.data as unknown as { country: string });
+                    setApiErrors(err.response!.data as apiErrorsType);
                 });
         } else if (action === 'edit') {
             await WineAPI.update(selectedWine.id, data)
@@ -216,7 +230,7 @@ const WineDialog = (props: WineDialogProps) => {
                     handleClose();
                 })
                 .catch((err: AxiosError<{ country?: string; cellar_id?: string; position?: string }>) => {
-                    setApiErrors(err.response!.data as unknown as { country: string });
+                    setApiErrors(err.response!.data as apiErrorsType);
                 });
         }
     };
@@ -266,9 +280,7 @@ const WineDialog = (props: WineDialogProps) => {
                             value={name}
                             onChange={event => {
                                 if (event.target.value.length === 0) {
-                                    setValidationErrors(current => {
-                                        return { ...current, name: 'Name cannot be empty.' };
-                                    });
+                                    addValidationError({ name: 'Name cannot be empty.' });
                                 } else {
                                     setValidationErrors(current => {
                                         const { name, ...rest } = current;
@@ -389,9 +401,7 @@ const WineDialog = (props: WineDialogProps) => {
                                     });
                                 } catch (error) {
                                     if (error instanceof SyntaxError) {
-                                        setValidationErrors(current => {
-                                            return { ...current, cepages: (error as SyntaxError).message };
-                                        });
+                                        addValidationError({ cepages: (error as SyntaxError).message });
                                     }
                                 }
                             }}
