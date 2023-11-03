@@ -24,6 +24,7 @@ import useWineAPI from '../../hooks/useWineAPI';
 import { AxiosError } from 'axios';
 import { WineTagContext } from '../../contexts/wine-tag-context';
 import useWineTagAPI from '../../hooks/useWineTagAPI';
+import { WineDialogAction } from '../../hooks/useWineListPage';
 
 const Transition = React.forwardRef(function Transition(
     props: TransitionProps & {
@@ -34,9 +35,7 @@ const Transition = React.forwardRef(function Transition(
     return <Slide direction="up" ref={ref} {...props} />;
 });
 
-type WineDialogAction = 'create' | 'edit';
-
-interface CreateWineDialogProps {
+interface WineDialogProps {
     isOpen: boolean;
     handleClose: () => void;
     selectedWineId: string;
@@ -56,7 +55,7 @@ interface apiErrorsType {
     position?: string;
 }
 
-const CreateWineDialog = (props: CreateWineDialogProps) => {
+const WineDialog = (props: WineDialogProps) => {
     const { isOpen, handleClose, selectedWineId, cellarList, action } = props;
 
     const wineContext = useContext(WineContext);
@@ -517,4 +516,4 @@ const CreateWineDialog = (props: CreateWineDialogProps) => {
     );
 };
 
-export default CreateWineDialog;
+export default WineDialog;

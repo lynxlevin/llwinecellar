@@ -5,6 +5,7 @@ import { Cepage, WineContext, WineData, WineDataKeys } from '../contexts/wine-co
 import useWineAPI from './useWineAPI';
 
 export type Order = 'asc' | 'desc';
+export type WineDialogAction = 'create' | 'edit';
 
 export const COLUMN_ORDER: { default: WineDataKeys[]; drunk: WineDataKeys[] } = {
     default: [
@@ -55,8 +56,7 @@ const useWineListPage = () => {
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(50);
     const [selectedWine, setSelectedWine] = useState<WineData>();
-    const [isEditOpen, setIsEditOpen] = useState(false);
-    const [isCreateOpen, setIsCreateOpen] = useState(false);
+    const [wineDialogState, setWineDialogState] = useState<{ open: boolean; action: WineDialogAction }>({ open: false, action: 'create' });
     const [orderedColumn, setOrderedColumn] = useState<WineDataKeys[]>(COLUMN_ORDER.default);
 
     // Avoid a layout jump when reaching the last page with empty rows.
@@ -78,20 +78,18 @@ const useWineListPage = () => {
         setSortOrder({ key: property, order: isAsc ? 'desc' : 'asc' });
     };
 
-    const closeCreateWineDialog = () => {
-        setIsCreateOpen(false);
-    };
-
     const handleClickRow = (event: React.MouseEvent<unknown>, row: WineData) => {
         if (selectedWine?.id !== row.id) {
             setSelectedWine(row);
             return;
         }
-        selectedWine.name === '' ? setIsCreateOpen(true) : setIsEditOpen(true);
+        selectedWine.name === '' ? setWineDialogState({ open: true, action: 'create' }) : setWineDialogState({ open: true, action: 'edit' });
     };
 
-    const closeEditWineDialog = () => {
-        setIsEditOpen(false);
+    const closeWineDialog = () => {
+        setWineDialogState(current => {
+            return { ...current, open: false };
+        });
     };
 
     const getCepageAbbreviations = (cepages: Cepage[]) => {
@@ -188,11 +186,9 @@ const useWineListPage = () => {
         rowsCount: wineContext.wineList.length,
         visibleRows,
         selectedWine,
-        closeCreateWineDialog,
-        isCreateOpen,
+        wineDialogState,
         handleClickRow,
-        closeEditWineDialog,
-        isEditOpen,
+        closeWineDialog,
         cellarList,
         emptyRows,
         rowsPerPage,

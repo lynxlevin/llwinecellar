@@ -32,8 +32,7 @@ import useWineListPage, { COLUMN_ORDER, Order } from '../../hooks/useWineListPag
 import { WineDataKeys } from '../../contexts/wine-context';
 import useUserAPI from '../../hooks/useUserAPI';
 import { UserContext } from '../../contexts/user-context';
-import EditWineDialog from './EditWineDialog';
-import CreateWineDialog from './CreateWineDialog';
+import WineDialog from './WineDialog';
 import { WineContext } from '../../contexts/wine-context';
 
 // Originally copied from https://mui.com/material-ui/react-table/#sorting-amp-selecting
@@ -204,11 +203,9 @@ export const WineList = () => {
         rowsCount,
         visibleRows,
         selectedWine,
-        closeCreateWineDialog,
-        isCreateOpen,
+        wineDialogState,
         handleClickRow,
-        closeEditWineDialog,
-        isEditOpen,
+        closeWineDialog,
         cellarList,
         emptyRows,
         rowsPerPage,
@@ -303,23 +300,14 @@ export const WineList = () => {
                     </div>
                 </Paper>
             </Box>
-            {isEditOpen && selectedWine && (
-                <EditWineDialog
-                    isOpen={isEditOpen}
-                    handleClose={closeEditWineDialog}
-                    selectedWineId={selectedWine.id}
-                    cellarList={cellarList}
-                    action={'edit'}
-                ></EditWineDialog>
-            )}
-            {isCreateOpen && selectedWine && (
-                <CreateWineDialog
-                    isOpen={isCreateOpen}
-                    handleClose={closeCreateWineDialog}
+            {selectedWine && (
+                <WineDialog
+                    isOpen={wineDialogState.open}
+                    handleClose={closeWineDialog}
                     selectedWineId={selectedWine?.id}
                     cellarList={cellarList}
-                    action={'create'}
-                ></CreateWineDialog>
+                    action={wineDialogState.action}
+                ></WineDialog>
             )}
         </div>
     );
