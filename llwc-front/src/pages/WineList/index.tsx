@@ -293,6 +293,7 @@ export const WineList = () => {
                             component="div"
                             count={rowsCount}
                             rowsPerPage={rowsPerPage}
+                            rowsPerPageOptions={[25, 50, 100, 200]}
                             page={page}
                             onPageChange={handleChangePage}
                             onRowsPerPageChange={handleChangeRowsPerPage}

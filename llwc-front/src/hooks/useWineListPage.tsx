@@ -54,7 +54,7 @@ const useWineListPage = () => {
     const [selectedCellarId, setSelectedCellarId] = useState<string>('NOT_IN_CELLAR');
     const [sortOrder, setSortOrder] = useState<{ key: WineDataKeys; order: Order }>({ key: 'position', order: 'asc' });
     const [page, setPage] = useState(0);
-    const [rowsPerPage, setRowsPerPage] = useState(50);
+    const [rowsPerPage, setRowsPerPage] = useState(100);
     const [selectedWine, setSelectedWine] = useState<WineData>();
     const [wineDialogState, setWineDialogState] = useState<{ open: boolean; action: WineDialogAction }>({ open: false, action: 'create' });
     const [orderedColumn, setOrderedColumn] = useState<WineDataKeys[]>(COLUMN_ORDER.default);
