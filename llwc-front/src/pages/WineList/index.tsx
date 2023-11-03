@@ -304,7 +304,7 @@ export const WineList = () => {
                 <WineDialog
                     isOpen={wineDialogState.open}
                     handleClose={closeWineDialog}
-                    selectedWineId={selectedWine?.id}
+                    selectedWine={selectedWine}
                     cellarList={cellarList}
                     action={wineDialogState.action}
                 ></WineDialog>

@@ -18,7 +18,7 @@ import {
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { TransitionProps } from '@mui/material/transitions';
-import { Cepage, WineContext } from '../../contexts/wine-context';
+import { Cepage, WineData } from '../../contexts/wine-context';
 import { WineRequestBody, WineAPI } from '../../apis/WineAPI';
 import useWineAPI from '../../hooks/useWineAPI';
 import { AxiosError } from 'axios';
@@ -38,7 +38,7 @@ const Transition = React.forwardRef(function Transition(
 interface WineDialogProps {
     isOpen: boolean;
     handleClose: () => void;
-    selectedWineId: string;
+    selectedWine: WineData;
     cellarList: string[][];
     action: WineDialogAction;
 }
@@ -56,12 +56,9 @@ interface apiErrorsType {
 }
 
 const WineDialog = (props: WineDialogProps) => {
-    const { isOpen, handleClose, selectedWineId, cellarList, action } = props;
+    const { isOpen, handleClose, selectedWine, cellarList, action } = props;
 
-    const wineContext = useContext(WineContext);
     const wineTagContext = useContext(WineTagContext);
-
-    const selectedWine = wineContext.wineList.find(wine => wine.id === selectedWineId);
 
     const { getWineList } = useWineAPI();
     const { getWineTagList } = useWineTagAPI();
@@ -75,29 +72,29 @@ const WineDialog = (props: WineDialogProps) => {
 
     const initialValues = useMemo(() => {
         return {
-            tagTexts: selectedWine ? selectedWine.tag_texts : [],
-            name: selectedWine ? selectedWine.name : '',
-            producer: selectedWine ? selectedWine.producer : '',
-            vintage: selectedWine ? selectedWine.vintage : null,
-            country: selectedWine ? selectedWine.country : null,
-            region1: selectedWine ? selectedWine.region_1 : '',
-            region2: selectedWine ? selectedWine.region_2 : '',
-            region3: selectedWine ? selectedWine.region_3 : '',
-            region4: selectedWine ? selectedWine.region_4 : '',
-            region5: selectedWine ? selectedWine.region_5 : '',
-            cepages: selectedWine ? selectedWine.cepages : [],
-            boughtAt: selectedWine ? selectedWine.bought_at : getLocaleISODateString(),
-            boughtFrom: selectedWine ? selectedWine.bought_from : '',
-            priceWithTax: selectedWine ? selectedWine.price_with_tax : null,
-            drunkAt: selectedWine ? selectedWine.drunk_at : null,
-            note: selectedWine ? selectedWine.note : '',
-            cellarId: selectedWine ? selectedWine.cellar_id : noCellarCode,
-            position: selectedWine ? selectedWine.position : null,
+            tagTexts: action === 'edit' ? selectedWine.tag_texts : [],
+            name: action === 'edit' ? selectedWine.name : '',
+            producer: action === 'edit' ? selectedWine.producer : '',
+            vintage: action === 'edit' ? selectedWine.vintage : null,
+            country: action === 'edit' ? selectedWine.country : null,
+            region1: action === 'edit' ? selectedWine.region_1 : '',
+            region2: action === 'edit' ? selectedWine.region_2 : '',
+            region3: action === 'edit' ? selectedWine.region_3 : '',
+            region4: action === 'edit' ? selectedWine.region_4 : '',
+            region5: action === 'edit' ? selectedWine.region_5 : '',
+            cepages: action === 'edit' ? selectedWine.cepages : [],
+            boughtAt: action === 'edit' ? selectedWine.bought_at : getLocaleISODateString(),
+            boughtFrom: action === 'edit' ? selectedWine.bought_from : '',
+            priceWithTax: action === 'edit' ? selectedWine.price_with_tax : null,
+            drunkAt: action === 'edit' ? selectedWine.drunk_at : null,
+            note: action === 'edit' ? selectedWine.note : '',
+            cellarId: selectedWine.cellar_id,
+            position: selectedWine.position,
             validationErrors: {},
             apiErrors: {},
             dontMove: action === 'edit',
         };
-    }, [action, noCellarCode, selectedWine]);
+    }, [action, selectedWine]);
 
     const [tagTexts, setTagTexts] = useState<string[]>(initialValues.tagTexts);
     const [name, setName] = useState<string>(initialValues.name);
@@ -160,7 +157,7 @@ const WineDialog = (props: WineDialogProps) => {
     };
 
     const handleSave = async () => {
-        if (Object.keys(validationErrors).length > 0 || !selectedWine) return;
+        if (Object.keys(validationErrors).length > 0) return;
         if (name === '') {
             setValidationErrors({ name: 'Name cannot be empty.' });
             return;
