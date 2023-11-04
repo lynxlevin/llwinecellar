@@ -182,7 +182,7 @@ describe('WineDialog', () => {
             });
         });
 
-        it('save__move_out_of_cellar', async () => {
+        it('save__not_in_cellar', async () => {
             render(<App />, { wrapper: BrowserRouter });
 
             fireEvent.click(screen.getByText('Wine List'));
@@ -198,7 +198,7 @@ describe('WineDialog', () => {
             });
             const cellarChoices = within(await screen.findByRole('listbox'));
             act(() => {
-                userEvent.click(cellarChoices.getByText('MOVE_OUT_OF_CELLAR'));
+                userEvent.click(cellarChoices.getByText('NOT_IN_CELLAR'));
             });
             act(() => {
                 userEvent.click(modal.getByRole('button', { name: 'save' }));

@@ -30,6 +30,52 @@ import { WineTagContext } from '../../contexts/wine-tag-context';
 import useWineTagAPI from '../../hooks/useWineTagAPI';
 import { WineDialogAction } from '../../hooks/useWineListPage';
 
+const countries = [
+    'France',
+    'Italy',
+    'Germany',
+    'Luxembourg',
+    'Spain',
+    'Portugal',
+    'Switzerland',
+    'Austria',
+    'England',
+    'Hungary',
+    'Bulgaria',
+    'Slovenia',
+    'Croatia',
+    'Bosnia Herzegovina',
+    'Macedonia',
+    'Serbia',
+    'Montenegro',
+    'Czech Republic',
+    'Slovak Republic',
+    'Romania',
+    'Malta',
+    'Greece',
+    'Japan',
+    'Armenia',
+    'Georgia',
+    'Moldova',
+    'Russia',
+    'Ukraine',
+    'America',
+    'Mexico',
+    'Canada',
+    'Chile',
+    'Argentina',
+    'Brazil',
+    'Uruguay',
+    'Australia',
+    'New Zealand',
+    'Cyprus',
+    'Israel',
+    'Lebanon',
+    'Turkey',
+    'North Africa',
+    'South Africa',
+] as const;
+
 const Transition = React.forwardRef(function Transition(
     props: TransitionProps & {
         children: React.ReactElement;
@@ -326,17 +372,18 @@ const WineDialog = (props: WineDialogProps) => {
                         />
                     </Grid>
                     <Grid item xs={6}>
-                        <TextField
-                            label="country"
-                            error={Boolean(apiErrors.country)}
-                            helperText={apiErrors.country}
-                            value={country ?? ''}
-                            onChange={event => {
-                                setCountry(event.target.value || null);
+                        <Autocomplete
+                            options={countries}
+                            value={country}
+                            renderTags={(value: readonly string[], getTagProps) =>
+                                value.map((option: string, index: number) => <Chip variant="outlined" label={option} {...getTagProps({ index })} />)
+                            }
+                            renderInput={params => <TextField {...params} label="country" />}
+                            onChange={(event: any, newValue: string | null) => {
+                                setCountry(newValue);
                             }}
-                            variant="standard"
-                            fullWidth
                         />
+                        {/* MYMEMO(後日): consider using _.throttle or _.debounce on all onChanges */}
                     </Grid>
                     <Grid item xs={6}>
                         <TextField
