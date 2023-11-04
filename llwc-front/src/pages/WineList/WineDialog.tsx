@@ -10,10 +10,13 @@ import {
     TextField,
     Toolbar,
     Typography,
+    FormControl,
+    InputLabel,
     Select,
     MenuItem,
     Autocomplete,
     Chip,
+    FormControlLabel,
     Checkbox,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
@@ -470,30 +473,39 @@ const WineDialog = (props: WineDialogProps) => {
                         />
                     </Grid>
                     <Grid item xs={10}>
-                        <Select
-                            value={cellarId}
-                            onChange={event => {
-                                setCellarId(event.target.value);
-                            }}
-                            disabled={dontMove}
-                        >
-                            {cellarContext.list.map(cellar => (
-                                <MenuItem key={cellar.id} value={cellar.id}>
-                                    {cellar.name}
-                                </MenuItem>
-                            ))}
-                            <MenuItem value={noCellarCode}>{noCellarCode}</MenuItem>
-                        </Select>
+                        <FormControl>
+                            <InputLabel id="cellar-id-input-label">cellar</InputLabel>
+                            <Select
+                                labelId="cellar-id-input-label"
+                                label="cellar"
+                                value={cellarId}
+                                onChange={event => {
+                                    setCellarId(event.target.value);
+                                }}
+                                disabled={dontMove}
+                            >
+                                {cellarContext.list.map(cellar => (
+                                    <MenuItem key={cellar.id} value={cellar.id}>
+                                        {cellar.name}
+                                    </MenuItem>
+                                ))}
+                                <MenuItem value={noCellarCode}>{noCellarCode}</MenuItem>
+                            </Select>
+                        </FormControl>
                     </Grid>
                     {action === 'edit' && (
                         <Grid item xs={2}>
-                            <Checkbox
-                                checked={dontMove}
-                                onChange={event => {
-                                    setDontMove(event.target.checked);
-                                }}
+                            <FormControlLabel
+                                label="don't move"
+                                control={
+                                    <Checkbox
+                                        checked={dontMove}
+                                        onChange={event => {
+                                            setDontMove(event.target.checked);
+                                        }}
+                                    />
+                                }
                             />
-                            don't move
                         </Grid>
                     )}
                     <Grid item xs={12}>
