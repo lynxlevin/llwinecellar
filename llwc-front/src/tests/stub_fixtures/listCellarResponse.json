@@ -1,0 +1,10 @@
+{
+    "cellars": [
+        {
+            "id": "cellar00-0000-0000-0000-000000000000",
+            "name": "Forester",
+            "layout": [5, 6, 6, 6, 6],
+            "has_basket": true
+        }
+    ]
+}
