@@ -67,7 +67,7 @@ const WineDialog = (props: WineDialogProps) => {
     const { getWineList } = useWineAPI();
     const { getWineTagList } = useWineTagAPI();
 
-    const noCellarCode = action === 'create' ? 'NOT_IN_CELLAR' : 'MOVE_OUT_OF_CELLAR';
+    const noCellarCode = 'NOT_IN_CELLAR';
 
     const getLocaleISODateString = (date_?: Date) => {
         const date = date_ ? date_ : new Date();
@@ -92,7 +92,7 @@ const WineDialog = (props: WineDialogProps) => {
             priceWithTax: action === 'edit' ? selectedWine.price_with_tax : null,
             drunkAt: action === 'edit' ? selectedWine.drunk_at : null,
             note: action === 'edit' ? selectedWine.note : '',
-            cellarId: selectedWine.cellar_id ?? '',
+            cellarId: selectedWine.cellar_id ?? noCellarCode,
             position: selectedWine.position,
             validationErrors: {},
             apiErrors: {},
@@ -483,7 +483,9 @@ const WineDialog = (props: WineDialogProps) => {
                     </Grid>
                     <Grid item xs={10}>
                         <FormControl>
-                            <InputLabel id="cellar-id-input-label">cellar</InputLabel>
+                            <InputLabel id="cellar-id-input-label" shrink>
+                                cellar
+                            </InputLabel>
                             <Select
                                 labelId="cellar-id-input-label"
                                 label="cellar"
