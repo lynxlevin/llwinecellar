@@ -77,10 +77,9 @@ const useWineListPage = () => {
     };
 
     const handleClickRow = (event: React.MouseEvent<unknown>, row: WineData) => {
-        if (selectedWine?.id !== row.id) {
-            setSelectedWine(row);
-            return;
-        }
+        const isFirstClick = selectedWine?.id !== row.id;
+        setSelectedWine(row);
+        if (isFirstClick) return;
         selectedWine.name === '' ? setWineDialogState({ open: true, action: 'create' }) : setWineDialogState({ open: true, action: 'edit' });
     };
 
