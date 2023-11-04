@@ -92,7 +92,7 @@ const WineDialog = (props: WineDialogProps) => {
             priceWithTax: action === 'edit' ? selectedWine.price_with_tax : null,
             drunkAt: action === 'edit' ? selectedWine.drunk_at : null,
             note: action === 'edit' ? selectedWine.note : '',
-            cellarId: selectedWine.cellar_id,
+            cellarId: selectedWine.cellar_id ?? '',
             position: selectedWine.position,
             validationErrors: {},
             apiErrors: {},
@@ -158,6 +158,12 @@ const WineDialog = (props: WineDialogProps) => {
         const emptyCepage: Cepage = { name: '', abbreviation: '', percentage: '100.0' };
         const cepages_ = JSON.parse(cepagesInput);
         setCepagesInput(JSON.stringify([...cepages_, emptyCepage]));
+    };
+
+    const fillDrunkAtAndMoveOutOfCellar = () => {
+        if (!drunkAt) setDrunkAt(getLocaleISODateString());
+        setDontMove(false);
+        setCellarId(noCellarCode);
     };
 
     const addValidationError = (error: ValidationErrorsType) => {
@@ -449,7 +455,7 @@ const WineDialog = (props: WineDialogProps) => {
                             fullWidth
                         />
                     </Grid>
-                    <Grid item xs={12}>
+                    <Grid item xs={10}>
                         <TextField
                             label="drunk_at"
                             value={drunkAt ?? ''}
@@ -459,6 +465,9 @@ const WineDialog = (props: WineDialogProps) => {
                             variant="standard"
                             fullWidth
                         />
+                    </Grid>
+                    <Grid item xs={2}>
+                        <Button onClick={fillDrunkAtAndMoveOutOfCellar}>Drink</Button>
                     </Grid>
                     <Grid item xs={12}>
                         <TextField
