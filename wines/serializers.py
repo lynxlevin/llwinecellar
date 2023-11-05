@@ -78,3 +78,7 @@ class WineTagsSerializer(serializers.Serializer):
 
 class DeleteWineTagQuerySerializer(serializers.Serializer):
     tag_text = serializers.CharField(max_length=256)
+
+
+class WineRegionsSerializer(serializers.Serializer):
+    regions = serializers.ListField(allow_empty=True, child=serializers.CharField())
