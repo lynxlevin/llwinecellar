@@ -5,6 +5,7 @@ import App from '../../App';
 import { BrowserRouter } from 'react-router-dom';
 import listCellarResponse from '../stub_fixtures/listCellarResponse.json';
 import listWineTagResponse from '../stub_fixtures/listWineTagResponse.json';
+import listWineRegionResponse from '../stub_fixtures/listWineRegionResponse.json';
 import listWineResponse from '../stub_fixtures/listWineResponse.json';
 
 const server = setupServer(
@@ -16,6 +17,9 @@ const server = setupServer(
     }),
     rest.get('/api/wine_tags/', (req, res, ctx) => {
         return res(ctx.json(listWineTagResponse));
+    }),
+    rest.get('/api/wine_regions/', (req, res, ctx) => {
+        return res(ctx.json(listWineRegionResponse));
     }),
     rest.get('/api/wines/', (req, res, ctx) => {
         return res(ctx.json(listWineResponse));

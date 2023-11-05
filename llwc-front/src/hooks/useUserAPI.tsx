@@ -5,13 +5,17 @@ import { CellarAPI } from '../apis/CellarAPI';
 import useWineTagAPI from '../hooks/useWineTagAPI';
 import { UserContext } from '../contexts/user-context';
 import { WineTagContext } from '../contexts/wine-tag-context';
+import { WineRegionContext } from '../contexts/wine-region-context';
+import useWineRegionAPI from './useWineRegionAPI';
 
 const useUserAPI = () => {
     const userContext = useContext(UserContext);
     const cellarContext = useContext(CellarContext);
     const wineTagContext = useContext(WineTagContext);
+    const wineRegionContext = useContext(WineRegionContext);
 
     const { getWineTagList } = useWineTagAPI();
+    const { getWineRegionList } = useWineRegionAPI();
 
     const handleLogout = async () => {
         await UserAPI.logout();
@@ -32,6 +36,9 @@ const useUserAPI = () => {
                 }
                 if (wineTagContext.wineTagList.length === 0) {
                     getWineTagList();
+                }
+                if (wineRegionContext.wineRegionList.length === 0) {
+                    getWineRegionList();
                 }
             }
         };

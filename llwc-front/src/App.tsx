@@ -7,6 +7,7 @@ import { type Cellar, CellarContext } from './contexts/cellar-context';
 import { UserContext } from './contexts/user-context';
 import { WineContext, WineData, WineListQuery } from './contexts/wine-context';
 import { WineTagContext } from './contexts/wine-tag-context';
+import { WineRegionContext } from './contexts/wine-region-context';
 import { Settings } from './pages/Settings';
 
 function App() {
@@ -16,6 +17,7 @@ function App() {
     const [wineList, setWineList] = useState<WineData[]>([]);
     const [wineListQuery, setWineListQuery] = useState<WineListQuery>({ is_drunk: false });
     const [wineTagList, setWineTagList] = useState<string[]>([]);
+    const [wineRegionList, setWineRegionList] = useState<string[]>([]);
 
     return (
         <div className="App">
@@ -23,22 +25,24 @@ function App() {
                 <CellarContext.Provider value={{ list, setList }}>
                     <WineContext.Provider value={{ wineList, setWineList, wineListQuery, setWineListQuery }}>
                         <WineTagContext.Provider value={{ wineTagList, setWineTagList }}>
-                            <Routes>
-                                <Route
-                                    path="/"
-                                    element={
-                                        <>
-                                            <p></p>
-                                            <Link to="/wine-list">Wine List</Link>
-                                            <p></p>
-                                            <Link to="/settings">Settings</Link>
-                                        </>
-                                    }
-                                />
-                                <Route path="/login" element={<Login />} />
-                                <Route path="/wine-list" element={<WineList />} />
-                                <Route path="/settings" element={<Settings />} />
-                            </Routes>
+                            <WineRegionContext.Provider value={{ wineRegionList, setWineRegionList }}>
+                                <Routes>
+                                    <Route
+                                        path="/"
+                                        element={
+                                            <>
+                                                <p></p>
+                                                <Link to="/wine-list">Wine List</Link>
+                                                <p></p>
+                                                <Link to="/settings">Settings</Link>
+                                            </>
+                                        }
+                                    />
+                                    <Route path="/login" element={<Login />} />
+                                    <Route path="/wine-list" element={<WineList />} />
+                                    <Route path="/settings" element={<Settings />} />
+                                </Routes>
+                            </WineRegionContext.Provider>
                         </WineTagContext.Provider>
                     </WineContext.Provider>
                 </CellarContext.Provider>
