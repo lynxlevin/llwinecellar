@@ -207,11 +207,11 @@ const WineDialog = (props: WineDialogProps) => {
         if (country === null) return null;
 
         let regionValue = country;
-        if (region1 !== '') regionValue += `>${region1}`;
-        if (region2 !== '') regionValue += `>${region2}`;
-        if (region3 !== '') regionValue += `>${region3}`;
-        if (region4 !== '') regionValue += `>${region4}`;
-        if (region5 !== '') regionValue += `>${region5}`;
+        if (region1) regionValue += `>${region1}`;
+        if (region2) regionValue += `>${region2}`;
+        if (region3) regionValue += `>${region3}`;
+        if (region4) regionValue += `>${region4}`;
+        if (region5) regionValue += `>${region5}`;
 
         return regionValue;
     };
@@ -471,11 +471,11 @@ const WineDialog = (props: WineDialogProps) => {
                                 if (newValue) {
                                     const [_country, _region1, _region2, _region3, _region4, _region5] = newValue.split('>');
                                     setCountry(_country);
-                                    setRegion1(_region1);
-                                    setRegion2(_region2);
-                                    setRegion3(_region3);
-                                    setRegion4(_region4);
-                                    setRegion5(_region5);
+                                    setRegion1(_region1 ?? '');
+                                    setRegion2(_region2 ?? '');
+                                    setRegion3(_region3 ?? '');
+                                    setRegion4(_region4 ?? '');
+                                    setRegion5(_region5 ?? '');
                                 }
                             }}
                         />
