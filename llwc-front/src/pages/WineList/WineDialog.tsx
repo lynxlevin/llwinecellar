@@ -27,8 +27,10 @@ import { WineRequestBody, WineAPI } from '../../apis/WineAPI';
 import useWineAPI from '../../hooks/useWineAPI';
 import { AxiosError } from 'axios';
 import { WineTagContext } from '../../contexts/wine-tag-context';
+import { WineRegionContext } from '../../contexts/wine-region-context';
 import useWineTagAPI from '../../hooks/useWineTagAPI';
 import { WineDialogAction } from '../../hooks/useWineListPage';
+import useWineRegionAPI from '../../hooks/useWineRegionAPI';
 
 const countries = [
     'France',
@@ -109,9 +111,11 @@ const WineDialog = (props: WineDialogProps) => {
 
     const cellarContext = useContext(CellarContext);
     const wineTagContext = useContext(WineTagContext);
+    const wineRegionContext = useContext(WineRegionContext);
 
     const { getWineList } = useWineAPI();
     const { getWineTagList } = useWineTagAPI();
+    const { getWineRegionList } = useWineRegionAPI();
 
     const noCellarCode = 'NOT_IN_CELLAR';
 
@@ -271,6 +275,7 @@ const WineDialog = (props: WineDialogProps) => {
             await WineAPI.create(data)
                 .then(async _ => {
                     await getWineList();
+                    await getWineRegionList();
                     if (newTagCreated) await getWineTagList();
                     handleClose();
                 })
@@ -281,6 +286,7 @@ const WineDialog = (props: WineDialogProps) => {
             await WineAPI.update(selectedWine.id, data)
                 .then(async _ => {
                     await getWineList();
+                    await getWineRegionList();
                     if (newTagCreated) await getWineTagList();
                     handleClose();
                 })
@@ -439,6 +445,28 @@ const WineDialog = (props: WineDialogProps) => {
                             variant="standard"
                             fullWidth
                         />
+                    </Grid>
+                    <Grid item xs={12}>
+                        <Autocomplete
+                            options={wineRegionContext.wineRegionList}
+                            value={country !== null ? `${country}>${region1}>${region2}>${region3}>${region4}>${region5}` : null}
+                            renderTags={(value: readonly string[], getTagProps) =>
+                                value.map((option: string, index: number) => <Chip variant="outlined" label={option} {...getTagProps({ index })} />)
+                            }
+                            renderInput={params => <TextField {...params} label="wine_region" />}
+                            onChange={(event: any, newValue: string | null) => {
+                                if (newValue) {
+                                    const [_country, _region1, _region2, _region3, _region4, _region5] = newValue.split('>');
+                                    setCountry(_country);
+                                    setRegion1(_region1);
+                                    setRegion2(_region2);
+                                    setRegion3(_region3);
+                                    setRegion4(_region4);
+                                    setRegion5(_region5);
+                                }
+                            }}
+                        />
+                        {/* MYMEMO(後日): consider using _.throttle or _.debounce on all onChanges */}
                     </Grid>
                     <Grid item xs={10}>
                         <TextField
