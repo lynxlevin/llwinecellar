@@ -203,6 +203,19 @@ const WineDialog = (props: WineDialogProps) => {
         }
     }, [initialValues, isOpen]);
 
+    const getWineRegionValue = () => {
+        if (country === null) return null;
+
+        let regionValue = country;
+        if (region1 !== '') regionValue += `>${region1}`;
+        if (region2 !== '') regionValue += `>${region2}`;
+        if (region3 !== '') regionValue += `>${region3}`;
+        if (region4 !== '') regionValue += `>${region4}`;
+        if (region5 !== '') regionValue += `>${region5}`;
+
+        return regionValue;
+    };
+
     const addToCepagesInput = () => {
         // MYMEMO: no validation when there's emptyCepage in cepages
         const emptyCepage: Cepage = { name: '', abbreviation: '', percentage: '100.0' };
@@ -449,7 +462,7 @@ const WineDialog = (props: WineDialogProps) => {
                     <Grid item xs={12}>
                         <Autocomplete
                             options={wineRegionContext.wineRegionList}
-                            value={country !== null ? `${country}>${region1}>${region2}>${region3}>${region4}>${region5}` : null}
+                            value={getWineRegionValue()}
                             renderTags={(value: readonly string[], getTagProps) =>
                                 value.map((option: string, index: number) => <Chip variant="outlined" label={option} {...getTagProps({ index })} />)
                             }
