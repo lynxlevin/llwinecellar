@@ -1,4 +1,5 @@
 import logging
+from typing import TYPE_CHECKING
 
 from django.test import Client, TestCase
 from rest_framework import status
@@ -6,6 +7,9 @@ from rest_framework import status
 from llwinecellar.common.test_utils import UserFactory, WineFactory
 
 from ..enums import Country
+
+if TYPE_CHECKING:
+    from ..models import Wine
 
 logger = logging.getLogger(__name__)
 
@@ -107,7 +111,7 @@ class TestWineRegionViews(TestCase):
         expected = {
             "regions": sorted(
                 [
-                    f"{w.country.label}>{w.region_1}>{w.region_2}>{w.region_3}>{w.region_4}>{w.region_5}"
+                    f"{w.country.label}>{w.region_1}>{w.region_2}>{w.region_3}>{w.region_4}>{w.region_5}".strip(">")
                     for w in wines[0:-2]
                 ]
             )

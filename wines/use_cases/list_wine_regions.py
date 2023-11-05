@@ -23,7 +23,9 @@ class ListWineRegions:
 
         regions = sorted(
             [
-                f"{Country[r['_country_str']].label}>{r['region_1']}>{r['region_2']}>{r['region_3']}>{r['region_4']}>{r['region_5']}"
+                f"{Country[r['_country_str']].label}>{r['region_1']}>{r['region_2']}>{r['region_3']}>{r['region_4']}>{r['region_5']}".strip(
+                    ">"
+                )
                 for r in region_values
                 if r["_country_str"]
             ]
