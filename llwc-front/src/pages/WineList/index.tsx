@@ -35,6 +35,7 @@ import { CellarContext } from '../../contexts/cellar-context';
 import { UserContext } from '../../contexts/user-context';
 import WineDialog from './WineDialog';
 import { WineContext } from '../../contexts/wine-context';
+import appIcon from '../../assets/icon.png';
 
 // Originally copied from https://mui.com/material-ui/react-table/#sorting-amp-selecting
 
@@ -102,6 +103,9 @@ const WineListToolbar = (props: WineListToolbarProps) => {
                 pr: { xs: 1, sm: 1 },
             }}
         >
+            <Link to="/">
+                <img srcSet={`${appIcon}?w=36&h=36&fit=crop&auto=format&dpr=32 32x`} src={`${appIcon}?w=36&h=36&fit=crop&auto=format`} alt="app_icon" />
+            </Link>
             <Typography sx={{ flex: '1 1 10%' }} variant="h6" id="tableTitle" component="div">
                 {pageTitle}
             </Typography>

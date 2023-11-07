@@ -31,10 +31,10 @@ afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
 
 test('WineList page', async () => {
-    const { container } = render(<App />, { wrapper: BrowserRouter });
+    const { baseElement } = render(<App />, { wrapper: BrowserRouter });
 
     await fireEvent.click(screen.getByText('Wine List'));
     await screen.findByText('1-1');
 
-    expect(container).toMatchSnapshot();
+    expect(baseElement).toMatchSnapshot();
 });
