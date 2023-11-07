@@ -86,6 +86,7 @@ const WineListToolbar = (props: WineListToolbarProps) => {
 
     const handleCellarSelect = (event: SelectChangeEvent) => {
         setSelectedCellarId(event.target.value);
+        closeMenu();
     };
 
     const openMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -110,14 +111,6 @@ const WineListToolbar = (props: WineListToolbarProps) => {
                 {pageTitle}
             </Typography>
             <IconButton onClick={toggleListMode}>{drunkOnly ? <BookIcon /> : <WarehouseIcon />}</IconButton>
-            <Select id="cellar-select" value={selectedCellarId} onChange={handleCellarSelect}>
-                {cellarContext.list.map(cellar => (
-                    <MenuItem key={cellar.id} value={cellar.id}>
-                        {cellar.name}
-                    </MenuItem>
-                ))}
-                <MenuItem value="NOT_IN_CELLAR">NOT_IN_CELLAR</MenuItem>
-            </Select>
             <IconButton onClick={openMenu}>
                 <MenuIcon />
             </IconButton>
@@ -128,15 +121,25 @@ const WineListToolbar = (props: WineListToolbarProps) => {
             </Tooltip> */}
             <Menu open={isMenuOpen} anchorEl={menuAnchor} onClose={closeMenu}>
                 <MenuList>
-                    <MenuItem onClick={handleLogout}>
-                        <LogoutIcon />
-                        <ListItemText>Log out</ListItemText>
+                    <MenuItem>
+                        <Select id="cellar-select" value={selectedCellarId} onChange={handleCellarSelect}>
+                            {cellarContext.list.map(cellar => (
+                                <MenuItem key={cellar.id} value={cellar.id}>
+                                    {cellar.name}
+                                </MenuItem>
+                            ))}
+                            <MenuItem value="NOT_IN_CELLAR">NOT_IN_CELLAR</MenuItem>
+                        </Select>
                     </MenuItem>
                     <MenuItem>
                         <SettingsIcon />
                         <Link to="/settings" style={{ color: 'rgba(0, 0, 0, 0.87)', textDecorationLine: 'none' }}>
                             Settings
                         </Link>
+                    </MenuItem>
+                    <MenuItem onClick={handleLogout}>
+                        <LogoutIcon />
+                        <ListItemText>Log out</ListItemText>
                     </MenuItem>
                 </MenuList>
             </Menu>
