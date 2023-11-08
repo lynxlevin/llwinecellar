@@ -58,6 +58,7 @@ const useWineListPage = () => {
     const [selectedWine, setSelectedWine] = useState<WineData>();
     const [wineDialogState, setWineDialogState] = useState<{ open: boolean; action: WineDialogAction }>({ open: false, action: 'create' });
     const [orderedColumn, setOrderedColumn] = useState<WineDataKeys[]>(COLUMN_ORDER.default);
+    const [isLoading, setIsLoading] = useState(true);
 
     // Avoid a layout jump when reaching the last page with empty rows.
     const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - wineContext.wineList.length) : 0;
@@ -162,6 +163,7 @@ const useWineListPage = () => {
             } else {
                 wineContext.setWineListQuery({ is_drunk: false, cellar_id: selectedCellarId });
             }
+            setIsLoading(false);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selectedCellarId]);
@@ -192,6 +194,7 @@ const useWineListPage = () => {
         handleChangePage,
         handleChangeRowsPerPage,
         getCepageAbbreviations,
+        isLoading,
     };
 };
 

@@ -36,6 +36,7 @@ import { UserContext } from '../../contexts/user-context';
 import WineDialog from './WineDialog';
 import { WineContext } from '../../contexts/wine-context';
 import appIcon from '../../assets/icon.png';
+import Loading from '../Loading';
 
 // Originally copied from https://mui.com/material-ui/react-table/#sorting-amp-selecting
 
@@ -221,6 +222,7 @@ export const WineList = () => {
         handleChangePage,
         handleChangeRowsPerPage,
         getCepageAbbreviations,
+        isLoading,
     } = useWineListPage();
 
     const tableHeight =
@@ -230,6 +232,9 @@ export const WineList = () => {
 
     if (userContext.isLoggedIn === false) {
         return <Navigate to="/login" />;
+    }
+    if (isLoading) {
+        return <Loading />;
     }
     return (
         <div>
