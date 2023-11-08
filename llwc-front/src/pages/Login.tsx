@@ -1,10 +1,10 @@
-import React, { useContext } from 'react';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import { Alert, Avatar, Button, TextField, Box, Typography, Container, CssBaseline } from '@mui/material';
+import { useContext } from 'react';
+import { Alert, Button, TextField, Box, Typography, Container, CssBaseline } from '@mui/material';
 import useLoginPage from '../hooks/useLoginPage';
 import { Navigate } from 'react-router-dom';
 import useUserAPI from '../hooks/useUserAPI';
 import { UserContext } from '../contexts/user-context';
+import appIcon from '../assets/icon.png';
 
 const Login = () => {
     useUserAPI();
@@ -25,9 +25,7 @@ const Login = () => {
                     alignItems: 'center',
                 }}
             >
-                <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-                    <LockOutlinedIcon />
-                </Avatar>
+                <img srcSet={`${appIcon}?w=36&h=36&fit=crop&auto=format&dpr=32 32x`} src={`${appIcon}?w=36&h=36&fit=crop&auto=format`} alt="app_icon" />
                 <Typography component="h1" variant="h5">
                     Sign in
                 </Typography>
