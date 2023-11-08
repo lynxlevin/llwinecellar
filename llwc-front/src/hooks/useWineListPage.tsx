@@ -158,9 +158,9 @@ const useWineListPage = () => {
     useEffect(() => {
         if (selectedCellarId) {
             if (selectedCellarId === 'NOT_IN_CELLAR') {
-                wineContext.setWineListQuery({ is_drunk: wineContext.wineListQuery.is_drunk, out_of_cellars: true });
+                wineContext.setWineListQuery({ is_drunk: false, out_of_cellars: true });
             } else {
-                wineContext.setWineListQuery({ is_drunk: wineContext.wineListQuery.is_drunk, cellar_id: selectedCellarId });
+                wineContext.setWineListQuery({ is_drunk: false, cellar_id: selectedCellarId });
             }
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
