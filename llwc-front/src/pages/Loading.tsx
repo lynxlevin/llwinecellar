@@ -1,5 +1,5 @@
 import { Box, Container } from '@mui/material';
-import appIcon from '../assets/icon.png';
+import AppIcon from '../components/AppIcon';
 
 const Loading = () => {
     return (
@@ -13,7 +13,7 @@ const Loading = () => {
                     justifyContent: 'center',
                 }}
             >
-                <img srcSet={`${appIcon}?w=16&h=16&fit=crop&auto=format&dpr=16 16x`} src={`${appIcon}?w=16&h=16&fit=crop&auto=format`} alt="app_icon" />
+                <AppIcon height={16} />
             </Box>
         </Container>
     );

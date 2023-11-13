@@ -4,7 +4,7 @@ import useLoginPage from '../hooks/useLoginPage';
 import { Navigate } from 'react-router-dom';
 import useUserAPI from '../hooks/useUserAPI';
 import { UserContext } from '../contexts/user-context';
-import appIcon from '../assets/icon.png';
+import AppIcon from '../components/AppIcon';
 
 const Login = () => {
     useUserAPI();
@@ -25,7 +25,7 @@ const Login = () => {
                     alignItems: 'center',
                 }}
             >
-                <img srcSet={`${appIcon}?w=36&h=36&fit=crop&auto=format&dpr=32 32x`} src={`${appIcon}?w=36&h=36&fit=crop&auto=format`} alt="app_icon" />
+                <AppIcon height={32} />
                 <Typography component="h1" variant="h5">
                     Sign in
                 </Typography>
