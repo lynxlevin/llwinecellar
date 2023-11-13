@@ -1,5 +1,4 @@
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
-import { CellarContext } from '../contexts/cellar-context';
 import { UserContext } from '../contexts/user-context';
 import { Cepage, WineContext, WineData, WineDataKeys } from '../contexts/wine-context';
 import useWineAPI from './useWineAPI';
@@ -46,12 +45,10 @@ export const COLUMN_ORDER: { default: WineDataKeys[]; drunk: WineDataKeys[] } = 
 
 const useWineListPage = () => {
     const userContext = useContext(UserContext);
-    const cellarContext = useContext(CellarContext);
     const wineContext = useContext(WineContext);
 
     const { getWineList } = useWineAPI();
 
-    const [selectedCellarId, setSelectedCellarId] = useState<string>();
     const [sortOrder, setSortOrder] = useState<{ key: WineDataKeys; order: Order }>({ key: 'position', order: 'asc' });
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(100);
@@ -151,34 +148,15 @@ const useWineListPage = () => {
     }, [getComparator, page, rowsPerPage, sortOrder, wineContext.wineList]);
 
     useEffect(() => {
-        if (cellarContext.cellarList.length > 0) {
-            setSelectedCellarId(cellarContext.cellarList[0].id);
-        }
-    }, [cellarContext.cellarList]);
-
-    useEffect(() => {
-        if (selectedCellarId) {
-            if (selectedCellarId === 'NOT_IN_CELLAR') {
-                wineContext.setWineListQuery({ is_drunk: false, out_of_cellars: true });
-            } else {
-                wineContext.setWineListQuery({ is_drunk: false, cellar_id: selectedCellarId });
-            }
+        if (userContext.isLoggedIn === true && wineContext.wineListQuery.cellarId !== undefined) {
+            getWineList();
             setIsLoading(false);
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [selectedCellarId]);
-
-    useEffect(() => {
-        if (userContext.isLoggedIn === true && !isLoading) {
-            getWineList();
-        }
-    }, [getWineList, isLoading, userContext.isLoggedIn]);
+    }, [getWineList, userContext.isLoggedIn, wineContext.wineListQuery.cellarId]);
 
     return {
         orderedColumn,
         setOrderedColumn,
-        selectedCellarId,
-        setSelectedCellarId,
         sortOrder,
         setSortOrder,
         handleRequestSort,

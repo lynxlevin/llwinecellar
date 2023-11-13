@@ -53,9 +53,8 @@ export interface WineData {
 }
 
 export interface WineListQuery {
-    is_drunk: boolean;
-    out_of_cellars?: boolean;
-    cellar_id?: string;
+    isDrunk: boolean;
+    cellarId: string | undefined;
 }
 
 interface WineContextType {

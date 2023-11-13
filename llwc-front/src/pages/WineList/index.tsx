@@ -41,15 +41,13 @@ import Loading from '../Loading';
 // Originally copied from https://mui.com/material-ui/react-table/#sorting-amp-selecting
 
 interface WineListToolbarProps {
-    selectedCellarId: string | undefined;
-    setSelectedCellarId: React.Dispatch<React.SetStateAction<string | undefined>>;
     setSortOrder: React.Dispatch<React.SetStateAction<{ key: WineDataKeys; order: Order }>>;
     setOrderedColumn: React.Dispatch<React.SetStateAction<WineDataKeys[]>>;
     handleLogout: () => Promise<void>;
 }
 
 const WineListToolbar = (props: WineListToolbarProps) => {
-    const { selectedCellarId, setSelectedCellarId, setSortOrder, setOrderedColumn, handleLogout } = props;
+    const { setSortOrder, setOrderedColumn, handleLogout } = props;
 
     const cellarContext = useContext(CellarContext);
     const wineContext = useContext(WineContext);
@@ -62,31 +60,32 @@ const WineListToolbar = (props: WineListToolbarProps) => {
         let title = 'Wines';
         if (drunkOnly) return 'Drunk' + title;
 
-        if (selectedCellarId !== 'NOT_IN_CELLAR') {
+        if (wineContext.wineListQuery.cellarId !== 'NOT_IN_CELLAR') {
             const cellarCapacity = wineContext.wineList.length;
             const winesInCellarCount = wineContext.wineList.filter(wine => wine.name !== '').length;
             title += ` (${winesInCellarCount}/${cellarCapacity})`;
         }
         return title;
-    }, [drunkOnly, selectedCellarId, wineContext.wineList]);
+    }, [wineContext.wineListQuery.cellarId, drunkOnly, wineContext.wineList]);
 
     const toggleListMode = () => {
         const checked = !drunkOnly;
         setDrunkOnly(checked);
-        wineContext.setWineListQuery({ is_drunk: checked });
         if (checked) {
-            setSelectedCellarId('');
+            wineContext.setWineListQuery({ isDrunk: true, cellarId: '' });
             setSortOrder({ key: 'drunk_at', order: 'desc' });
             setOrderedColumn(COLUMN_ORDER.drunk);
         } else {
-            setSelectedCellarId(cellarContext.cellarList[0].id);
+            wineContext.setWineListQuery({ isDrunk: false, cellarId: cellarContext.cellarList[0].id });
             setSortOrder({ key: 'position', order: 'asc' });
             setOrderedColumn(COLUMN_ORDER.default);
         }
     };
 
     const handleCellarSelect = (event: SelectChangeEvent) => {
-        setSelectedCellarId(event.target.value);
+        wineContext.setWineListQuery(curr => {
+            return { ...curr, cellarId: event.target.value };
+        });
         closeMenu();
     };
 
@@ -123,7 +122,7 @@ const WineListToolbar = (props: WineListToolbarProps) => {
             <Menu open={isMenuOpen} anchorEl={menuAnchor} onClose={closeMenu}>
                 <MenuList>
                     <MenuItem>
-                        <Select id="cellar-select" value={selectedCellarId} onChange={handleCellarSelect}>
+                        <Select id="cellar-select" value={wineContext.wineListQuery.cellarId} onChange={handleCellarSelect}>
                             {cellarContext.cellarList.map(cellar => (
                                 <MenuItem key={cellar.id} value={cellar.id}>
                                     {cellar.name}
@@ -205,8 +204,6 @@ export const WineList = () => {
     const {
         orderedColumn,
         setOrderedColumn,
-        selectedCellarId,
-        setSelectedCellarId,
         sortOrder,
         setSortOrder,
         handleRequestSort,
@@ -241,13 +238,7 @@ export const WineList = () => {
             <Box sx={{ width: '100%' }}>
                 <Paper sx={{ width: '100%', mb: 2 }}>
                     <div ref={toolbarRef}>
-                        <WineListToolbar
-                            setSelectedCellarId={setSelectedCellarId}
-                            selectedCellarId={selectedCellarId}
-                            setSortOrder={setSortOrder}
-                            setOrderedColumn={setOrderedColumn}
-                            handleLogout={handleLogout}
-                        />
+                        <WineListToolbar setSortOrder={setSortOrder} setOrderedColumn={setOrderedColumn} handleLogout={handleLogout} />
                     </div>
                     <TableContainer sx={{ maxHeight: tableHeight }}>
                         <Table stickyHeader sx={{ minWidth: 750 }} aria-labelledby="tableTitle" size="small">

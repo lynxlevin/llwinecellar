@@ -12,4 +12,7 @@ interface CellarContextType {
     setCellarList: React.Dispatch<React.SetStateAction<Cellar[]>>;
 }
 
-export const CellarContext = createContext({ cellarList: [], setCellarList: () => {} } as unknown as CellarContextType);
+export const CellarContext = createContext({
+    cellarList: [],
+    setCellarList: () => {},
+} as unknown as CellarContextType);

@@ -3,7 +3,7 @@ import './App.css';
 import { Link, Routes, Route } from 'react-router-dom';
 import Login from './pages/Login';
 import { WineList } from './pages/WineList';
-import { type Cellar, CellarContext } from './contexts/cellar-context';
+import { CellarContext, type Cellar } from './contexts/cellar-context';
 import { UserContext } from './contexts/user-context';
 import { WineContext, WineData, WineListQuery } from './contexts/wine-context';
 import { WineTagContext } from './contexts/wine-tag-context';
@@ -15,7 +15,7 @@ function App() {
     // MYMEMO(後日): CellarContext を準備するのはまだ早いかも
     const [cellarList, setCellarList] = useState<Cellar[]>([]);
     const [wineList, setWineList] = useState<WineData[]>([]);
-    const [wineListQuery, setWineListQuery] = useState<WineListQuery>({ is_drunk: false });
+    const [wineListQuery, setWineListQuery] = useState<WineListQuery>({ isDrunk: false, cellarId: undefined });
     const [wineTagList, setWineTagList] = useState<string[]>([]);
     const [wineRegionList, setWineRegionList] = useState<string[]>([]);
 
