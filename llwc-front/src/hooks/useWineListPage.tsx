@@ -151,10 +151,10 @@ const useWineListPage = () => {
     }, [getComparator, page, rowsPerPage, sortOrder, wineContext.wineList]);
 
     useEffect(() => {
-        if (cellarContext.list.length > 0) {
-            setSelectedCellarId(cellarContext.list[0].id);
+        if (cellarContext.cellarList.length > 0) {
+            setSelectedCellarId(cellarContext.cellarList[0].id);
         }
-    }, [cellarContext.list]);
+    }, [cellarContext.cellarList]);
 
     useEffect(() => {
         if (selectedCellarId) {

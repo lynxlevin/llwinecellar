@@ -583,7 +583,7 @@ const WineDialog = (props: WineDialogProps) => {
                                 }}
                                 disabled={dontMove}
                             >
-                                {cellarContext.list.map(cellar => (
+                                {cellarContext.cellarList.map(cellar => (
                                     <MenuItem key={cellar.id} value={cellar.id}>
                                         {cellar.name}
                                     </MenuItem>

@@ -79,7 +79,7 @@ const WineListToolbar = (props: WineListToolbarProps) => {
             setSortOrder({ key: 'drunk_at', order: 'desc' });
             setOrderedColumn(COLUMN_ORDER.drunk);
         } else {
-            setSelectedCellarId(cellarContext.list[0].id);
+            setSelectedCellarId(cellarContext.cellarList[0].id);
             setSortOrder({ key: 'position', order: 'asc' });
             setOrderedColumn(COLUMN_ORDER.default);
         }
@@ -124,7 +124,7 @@ const WineListToolbar = (props: WineListToolbarProps) => {
                 <MenuList>
                     <MenuItem>
                         <Select id="cellar-select" value={selectedCellarId} onChange={handleCellarSelect}>
-                            {cellarContext.list.map(cellar => (
+                            {cellarContext.cellarList.map(cellar => (
                                 <MenuItem key={cellar.id} value={cellar.id}>
                                     {cellar.name}
                                 </MenuItem>

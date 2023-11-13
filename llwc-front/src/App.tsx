@@ -13,7 +13,7 @@ import { Settings } from './pages/Settings';
 function App() {
     const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
     // MYMEMO(後日): CellarContext を準備するのはまだ早いかも
-    const [list, setList] = useState<Cellar[]>([]);
+    const [cellarList, setCellarList] = useState<Cellar[]>([]);
     const [wineList, setWineList] = useState<WineData[]>([]);
     const [wineListQuery, setWineListQuery] = useState<WineListQuery>({ is_drunk: false });
     const [wineTagList, setWineTagList] = useState<string[]>([]);
@@ -22,7 +22,7 @@ function App() {
     return (
         <div className="App">
             <UserContext.Provider value={{ isLoggedIn, setIsLoggedIn }}>
-                <CellarContext.Provider value={{ list, setList }}>
+                <CellarContext.Provider value={{ cellarList, setCellarList }}>
                     <WineContext.Provider value={{ wineList, setWineList, wineListQuery, setWineListQuery }}>
                         <WineTagContext.Provider value={{ wineTagList, setWineTagList }}>
                             <WineRegionContext.Provider value={{ wineRegionList, setWineRegionList }}>

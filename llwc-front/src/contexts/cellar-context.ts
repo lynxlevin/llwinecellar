@@ -8,8 +8,8 @@ export interface Cellar {
 }
 
 interface CellarContextType {
-    list: Cellar[];
-    setList: React.Dispatch<React.SetStateAction<Cellar[]>>;
+    cellarList: Cellar[];
+    setCellarList: React.Dispatch<React.SetStateAction<Cellar[]>>;
 }
 
-export const CellarContext = createContext({ list: [], setList: () => {} } as unknown as CellarContextType);
+export const CellarContext = createContext({ cellarList: [], setCellarList: () => {} } as unknown as CellarContextType);

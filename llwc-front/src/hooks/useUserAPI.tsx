@@ -30,9 +30,9 @@ const useUserAPI = () => {
             userContext.setIsLoggedIn(isAuthenticated);
             if (isAuthenticated) {
                 // MYMEMO(後日): length ではなく、フラグを立てるべき
-                if (cellarContext.list.length === 0) {
+                if (cellarContext.cellarList.length === 0) {
                     const res = await CellarAPI.list();
-                    cellarContext.setList(res.data.cellars);
+                    cellarContext.setCellarList(res.data.cellars);
                 }
                 if (wineTagContext.wineTagList.length === 0) {
                     getWineTagList();
