@@ -51,7 +51,7 @@ const useWineListPage = () => {
 
     const { getWineList } = useWineAPI();
 
-    const [selectedCellarId, setSelectedCellarId] = useState<string>('NOT_IN_CELLAR');
+    const [selectedCellarId, setSelectedCellarId] = useState<string>();
     const [sortOrder, setSortOrder] = useState<{ key: WineDataKeys; order: Order }>({ key: 'position', order: 'asc' });
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(100);
@@ -169,10 +169,10 @@ const useWineListPage = () => {
     }, [selectedCellarId]);
 
     useEffect(() => {
-        if (userContext.isLoggedIn === true) {
+        if (userContext.isLoggedIn === true && !isLoading) {
             getWineList();
         }
-    }, [getWineList, userContext.isLoggedIn]);
+    }, [getWineList, isLoading, userContext.isLoggedIn]);
 
     return {
         orderedColumn,

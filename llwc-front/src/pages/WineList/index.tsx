@@ -41,8 +41,8 @@ import Loading from '../Loading';
 // Originally copied from https://mui.com/material-ui/react-table/#sorting-amp-selecting
 
 interface WineListToolbarProps {
-    selectedCellarId: string;
-    setSelectedCellarId: React.Dispatch<React.SetStateAction<string>>;
+    selectedCellarId: string | undefined;
+    setSelectedCellarId: React.Dispatch<React.SetStateAction<string | undefined>>;
     setSortOrder: React.Dispatch<React.SetStateAction<{ key: WineDataKeys; order: Order }>>;
     setOrderedColumn: React.Dispatch<React.SetStateAction<WineDataKeys[]>>;
     handleLogout: () => Promise<void>;
