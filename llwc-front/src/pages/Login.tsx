@@ -25,7 +25,7 @@ const Login = () => {
                     alignItems: 'center',
                 }}
             >
-                <AppIcon height={32} />
+                <AppIcon height={36} />
                 <Typography component="h1" variant="h5">
                     Sign in
                 </Typography>

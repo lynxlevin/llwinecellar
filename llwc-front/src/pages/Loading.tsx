@@ -13,7 +13,7 @@ const Loading = () => {
                     justifyContent: 'center',
                 }}
             >
-                <AppIcon height={16} />
+                <AppIcon height={64} />
             </Box>
         </Container>
     );

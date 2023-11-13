@@ -105,7 +105,7 @@ const WineListToolbar = (props: WineListToolbarProps) => {
             }}
         >
             <Link to="/">
-                <AppIcon height={32} />
+                <AppIcon height={36} />
             </Link>
             <Typography sx={{ flex: '1 1 10%' }} variant="h6" id="tableTitle" component="div">
                 {pageTitle}
