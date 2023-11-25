@@ -8,7 +8,7 @@ DEBUG = False
 env = environ.Env()
 env.read_env(".env")
 
-ALLOWED_HOSTS = environ.list("ALLOWED_HOSTS")
+ALLOWED_HOSTS = env.list("ALLOWED_HOSTS")
 
 
 # Logging
