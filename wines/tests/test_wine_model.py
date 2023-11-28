@@ -58,6 +58,14 @@ class TestWineModel(TestCase):
 
         self._assert_filtered_wines(expected, wines_not_in_cellar)
 
+    def test_filter_eq_price_with_tax__isnull(self):
+        wine_without_price = WineFactory(price_with_tax=None)
+
+        wines_with_price = Wine.objects.filter_eq_price_with_tax__isnull().order_by("created_at")
+
+        expected = [wine_without_price]
+        self._assert_filtered_wines(expected, wines_with_price),
+
     """
     Utility Functions
     """

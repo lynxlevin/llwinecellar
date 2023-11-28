@@ -28,6 +28,9 @@ class WineQuerySet(models.QuerySet["Wine"]):
     def filter_eq_cellarspace__isnull(self, flag=True) -> "WineQuerySet":
         return self.filter(cellarspace__isnull=flag)
 
+    def filter_eq_price_with_tax__isnull(self, flag=True) -> "WineQuerySet":
+        return self.filter(price_with_tax__isnull=flag)
+
     def select_cellarspace(self) -> "WineQuerySet":
         return self.select_related("cellarspace")
 

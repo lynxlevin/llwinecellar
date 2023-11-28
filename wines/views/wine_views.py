@@ -10,6 +10,7 @@ from llwinecellar.exception_handler import exception_handler_with_logging
 
 from ..models import Wine
 from ..serializers import (
+    AggregateWinesQuerySerializer,
     ListWineQuerySerializer,
     MoveWineResponseSerializer,
     MoveWineSerializer,
@@ -17,7 +18,7 @@ from ..serializers import (
     WineSerializer,
     WinesSerializer,
 )
-from ..use_cases import CreateWine, ListWine, MoveWine, UpdateWine
+from ..use_cases import AggregateWines, CreateWine, ListWine, MoveWine, UpdateWine
 
 logger = logging.getLogger(__name__)
 
@@ -82,5 +83,18 @@ class WineViewSet(viewsets.GenericViewSet):
             serializer = MoveWineResponseSerializer({"wines": moved_wines})
             return Response(serializer.data)
 
+        except Exception as exc:
+            return exception_handler_with_logging(exc)
+
+    @action(detail=False, methods=["get"], url_path="aggregate")
+    def aggregate(self, request, use_case=AggregateWines(), format=None):
+        try:
+            serializer = AggregateWinesQuerySerializer(data=request.GET.dict())
+            serializer.is_valid(raise_exception=True)
+
+            queries = serializer.validated_data
+            aggregation = use_case.execute(user=request.user, queries=queries)
+
+            return Response({"aggregation": aggregation})
         except Exception as exc:
             return exception_handler_with_logging(exc)

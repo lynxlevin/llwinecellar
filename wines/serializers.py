@@ -82,3 +82,9 @@ class DeleteWineTagQuerySerializer(serializers.Serializer):
 
 class WineRegionsSerializer(serializers.Serializer):
     regions = serializers.ListField(allow_empty=True, child=serializers.CharField())
+
+
+class AggregateWinesQuerySerializer(serializers.Serializer):
+    is_drunk = serializers.BooleanField(required=False)
+    drunk_at__gte = serializers.DateField(required=False)
+    drunk_at__lte = serializers.DateField(required=False)
