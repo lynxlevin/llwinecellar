@@ -15,7 +15,7 @@ class Command(BaseCommand):
             [
                 wine.cellarspace.cellar.name if hasattr(wine, "cellarspace") else None,
                 wine.position,
-                # wine.tags,
+                ", ".join(wine.tag_texts),
                 wine.name,
                 wine.producer,
                 wine.vintage,

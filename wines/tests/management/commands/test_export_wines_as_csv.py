@@ -13,6 +13,7 @@ from llwinecellar.common.test_utils import (
     UserFactory,
     WineFactory,
     WineInRackFactory,
+    WineTagFactory,
 )
 
 
@@ -35,10 +36,12 @@ class TestExportWinesAsCsv(TestCase):
         ]
         CepageFactory(wine=cls.wines[0], grape=cls.grapes[0], percentage=60.0)
         CepageFactory(wine=cls.wines[0], grape=cls.grapes[1], percentage=40.0)
+        cls.tags = WineTagFactory.create_batch(2, user=cls.user)
+        cls.wines[0].tags.set(cls.tags)
 
     """
     MYMEMO:
-    - add tags, with_id flag for not refresh_all in import.
+    - add with_id flag for not refresh_all in import.
     - add import command: refresh_all flag, with caution message.
     - バッチ実行して、古いものの削除機能付きでバッチ実行もいいかも
     """
@@ -56,7 +59,7 @@ class TestExportWinesAsCsv(TestCase):
             [
                 wine.cellarspace.cellar.name if hasattr(wine, "cellarspace") else "",
                 wine.position if hasattr(wine, "cellarspace") else "",
-                # wine.tags,
+                ", ".join(wine.tag_texts),
                 wine.name,
                 wine.producer,
                 str(wine.vintage),
