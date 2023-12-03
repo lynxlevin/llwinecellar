@@ -12,11 +12,22 @@ class TestExportWinesAsCsv(TestCase):
     def setUpTestData(cls):
         cls.user = UserFactory()
         cls.cellar = CellarFactory(user=cls.user)
-        cls.wines = [WineInRackFactory(user=cls.user, cellar=cls.cellar, row=1, column=2)]
+        cls.wines = [
+            WineInRackFactory(user=cls.user, cellar=cls.cellar, row=1, column=2),
+            WineFactory(user=cls.user),
+            WineFactory(user=cls.user, country=None),
+            DrunkWineFactory(user=cls.user),
+        ]
+
+    """
+    MYMEMO:
+    - add tags and cepages, with_id flag for not refresh_all in import.
+    - add import command: refresh_all flag, with caution message.
+    - バッチ実行して、古いものの削除機能付きでバッチ実行もいいかも
+    """
 
     def test_export_for_all_users(self):
         file_path = "exports/wines.csv"
-        wine = self.wines[0]
 
         call_command("export_wines_as_csv")
 
@@ -24,17 +35,16 @@ class TestExportWinesAsCsv(TestCase):
             reader = csv.reader(f)
             exported_csv_rows = [row for row in reader]
 
-        expected_csv_rows = [["abc", "def"], ["ghi"]]
         expected_csv_rows = [
             [
-                wine.cellarspace.cellar.name,
-                wine.position,
+                wine.cellarspace.cellar.name if hasattr(wine, "cellarspace") else "",
+                wine.position if hasattr(wine, "cellarspace") else "",
                 # wine.tags,
                 wine.name,
                 wine.producer,
                 str(wine.vintage),
                 str(wine.price),
-                wine.country.label,
+                wine.country.label if wine.country else "",
                 wine.region_1,
                 wine.region_2,
                 wine.region_3,
@@ -44,12 +54,10 @@ class TestExportWinesAsCsv(TestCase):
                 wine.bought_at.isoformat() if wine.bought_at else "",
                 wine.bought_from,
                 wine.drunk_at.isoformat() if wine.drunk_at else "",
-                wine.note,  # MYMEMO: add new lines and commas.
+                wine.note,
             ]
+            for wine in self.wines
         ]
         self.assertEqual(expected_csv_rows, exported_csv_rows)
 
         os.remove(file_path)
-
-    # def test_export_per_user(self):
-    # def test_export_per_cellar(self):

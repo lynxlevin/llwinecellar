@@ -1,6 +1,6 @@
 import csv
 
-from django.core.management.base import BaseCommand, CommandParser
+from django.core.management.base import BaseCommand
 
 from wines.models import Wine
 
@@ -8,22 +8,18 @@ FILE_DIR = "wines/fixtures"
 
 
 class Command(BaseCommand):
-    # def add_arguments(self, parser: CommandParser) -> None:
-    # parser.add_argument("--user_id", type=int)
-
     def handle(self, *args, **options):
-        # user_id = options["user_id"]
         wines = Wine.objects.all()
         text_lines = [
             [
-                wine.cellarspace.cellar.name,
+                wine.cellarspace.cellar.name if hasattr(wine, "cellarspace") else None,
                 wine.position,
                 # wine.tags,
                 wine.name,
                 wine.producer,
                 wine.vintage,
                 wine.price,
-                wine.country.label,
+                wine.country.label if wine.country else None,
                 wine.region_1,
                 wine.region_2,
                 wine.region_3,
