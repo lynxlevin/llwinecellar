@@ -35,7 +35,7 @@ class UpdateWine:
         wine.vintage = data["vintage"]
         wine.bought_at = data["bought_at"]
         wine.bought_from = data["bought_from"]
-        wine.price_with_tax = data["price_with_tax"]
+        wine.price = data["price"]
         wine.drunk_at = data["drunk_at"]
         wine.note = data["note"]
 

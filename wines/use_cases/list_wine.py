@@ -27,7 +27,7 @@ class ListWine:
             "vintage": None,
             "bought_at": None,
             "bought_from": "",
-            "price_with_tax": None,
+            "price": None,
             "drunk_at": None,
             "note": "",
             "tag_texts": [],

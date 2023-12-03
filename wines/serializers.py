@@ -23,7 +23,7 @@ class WineSerializer(serializers.Serializer):
     vintage = serializers.IntegerField(allow_null=True, min_value=0, max_value=32_767, default=None)
     bought_at = serializers.DateField(allow_null=True)
     bought_from = serializers.CharField(allow_blank=True, max_length=64)
-    price_with_tax = serializers.IntegerField(allow_null=True, min_value=0, max_value=2_147_483_647)
+    price = serializers.IntegerField(allow_null=True, min_value=0, max_value=2_147_483_647)
     drunk_at = serializers.DateField(allow_null=True)
     note = serializers.CharField(allow_blank=True)
     tag_texts = serializers.ListField(allow_empty=True, child=serializers.CharField(max_length=256))
