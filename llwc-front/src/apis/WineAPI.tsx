@@ -19,7 +19,7 @@ export interface WineRequestBody {
     vintage: number | null;
     bought_at: string | null;
     bought_from: string;
-    price_with_tax: number | null;
+    price: number | null;
     drunk_at: string | null;
     note: string;
     tag_texts: string[];

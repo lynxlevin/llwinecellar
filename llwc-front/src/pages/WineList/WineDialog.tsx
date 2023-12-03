@@ -139,7 +139,7 @@ const WineDialog = (props: WineDialogProps) => {
             cepages: action === 'edit' ? selectedWine.cepages : [],
             boughtAt: action === 'edit' ? selectedWine.bought_at : getLocaleISODateString(),
             boughtFrom: action === 'edit' ? selectedWine.bought_from : '',
-            priceWithTax: action === 'edit' ? selectedWine.price_with_tax : null,
+            priceWithTax: action === 'edit' ? selectedWine.price : null,
             drunkAt: action === 'edit' ? selectedWine.drunk_at : null,
             note: action === 'edit' ? selectedWine.note : '',
             cellarId: selectedWine.cellar_id ?? noCellarCode,
@@ -267,7 +267,7 @@ const WineDialog = (props: WineDialogProps) => {
             vintage: vintage,
             bought_at: boughtAt,
             bought_from: boughtFrom,
-            price_with_tax: priceWithTax,
+            price: priceWithTax,
             drunk_at: drunkAt,
             note: note,
             tag_texts: tagTexts,
@@ -533,7 +533,7 @@ const WineDialog = (props: WineDialogProps) => {
                     </Grid>
                     <Grid item xs={12}>
                         <TextField
-                            label="price_with_tax"
+                            label="price"
                             value={priceWithTax ?? ''}
                             onChange={event => {
                                 const value = event.target.value === '' ? null : Number(event.target.value);
