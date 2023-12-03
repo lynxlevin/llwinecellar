@@ -12,6 +12,7 @@ from llwinecellar.common.test_utils import (
     GrapeMasterFactory,
     UserFactory,
     WineFactory,
+    WineInBasketFactory,
     WineInRackFactory,
     WineTagFactory,
 )
@@ -19,6 +20,7 @@ from llwinecellar.common.test_utils import (
 
 class TestExportWinesAsCsv(TestCase):
     maxDiff = None
+    file_path = "exports/wines.csv"
 
     @classmethod
     def setUpTestData(cls):
@@ -31,6 +33,20 @@ class TestExportWinesAsCsv(TestCase):
         ]
         cls.tags = WineTagFactory.create_batch(5, user=cls.user)
 
+        cls.wines = [
+            WineInRackFactory(user=cls.user, cellar=cls.cellar, row=1, column=2),
+            WineInBasketFactory(user=cls.user, cellar=cls.cellar),
+            WineFactory(user=cls.user, country=None),
+            DrunkWineFactory(user=cls.user),
+        ]
+        CepageFactory(wine=cls.wines[0], grape=cls.grapes[1], percentage=60.0)
+        CepageFactory(wine=cls.wines[0], grape=cls.grapes[2], percentage=40.0)
+        cls.wines[0].tags.set(cls.tags[1::2])
+
+    @classmethod
+    def tearDownClass(cls):
+        os.remove(cls.file_path)
+
     """
     MYMEMO:
     - add with_header flag.
@@ -39,52 +55,30 @@ class TestExportWinesAsCsv(TestCase):
     """
 
     def test_export(self):
-        self.wines = [
-            WineInRackFactory(user=self.user, cellar=self.cellar, row=1, column=2),
-            WineFactory(user=self.user),
-            WineFactory(user=self.user, country=None),
-            DrunkWineFactory(user=self.user),
-        ]
-        CepageFactory(wine=self.wines[0], grape=self.grapes[1], percentage=60.0)
-        CepageFactory(wine=self.wines[0], grape=self.grapes[2], percentage=40.0)
-        self.wines[0].tags.set(self.tags[1::2])
-
-        file_path = "exports/wines.csv"
-
         call_command("export_wines_as_csv")
 
-        with open(file_path, "r", encoding="utf_8") as f:
-            reader = csv.reader(f)
-            exported_csv_rows = [row for row in reader]
+        exported_csv_rows = self._get_csv_rows()
 
         expected_csv_rows = [self._get_expected_row_fow_wine(wine) for wine in self.wines]
         self.assertEqual(expected_csv_rows, exported_csv_rows)
 
-        os.remove(file_path)
-
     def test_export_with_id(self):
-        self.wines = [
-            WineInRackFactory(user=self.user, cellar=self.cellar, row=1, column=2),
-            WineFactory(user=self.user),
-            WineFactory(user=self.user, country=None),
-            DrunkWineFactory(user=self.user),
-        ]
-        CepageFactory(wine=self.wines[0], grape=self.grapes[1], percentage=60.0)
-        CepageFactory(wine=self.wines[0], grape=self.grapes[2], percentage=40.0)
-        self.wines[0].tags.set(self.tags[1::2])
-
-        file_path = "exports/wines.csv"
-
         call_command("export_wines_as_csv", "--with-id")
 
-        with open(file_path, "r", encoding="utf_8") as f:
-            reader = csv.reader(f)
-            exported_csv_rows = [row for row in reader]
+        exported_csv_rows = self._get_csv_rows()
 
         expected_csv_rows = [self._get_expected_row_fow_wine(wine, with_id=True) for wine in self.wines]
         self.assertEqual(expected_csv_rows, exported_csv_rows)
 
-        os.remove(file_path)
+    """
+    Util Functions
+    """
+
+    def _get_csv_rows(self):
+        with open(self.file_path, "r", encoding="utf_8") as f:
+            reader = csv.reader(f)
+            exported_csv_rows = [row for row in reader]
+        return exported_csv_rows
 
     def _get_expected_row_fow_wine(self, wine, with_id=False):
         base_row = [
