@@ -41,7 +41,7 @@ class TestUpdateWine(TestCase):
             "vintage": 2019,
             "bought_at": "2023-05-07",
             "bought_from": "伊勢屋",
-            "price_with_tax": 13000,
+            "price": 13000,
             "drunk_at": None,
             "note": "テスト用のノート",
             "tag_texts": ["updated_tag1", "updated_tag2"],
@@ -82,7 +82,7 @@ class TestUpdateWine(TestCase):
         self.assertEqual(params["vintage"], wine.vintage)
         self.assertEqual(params["bought_at"], wine.bought_at.strftime("%Y-%m-%d"))
         self.assertEqual(params["bought_from"], wine.bought_from)
-        self.assertEqual(params["price_with_tax"], wine.price_with_tax)
+        self.assertEqual(params["price"], wine.price)
         self.assertEqual(params["drunk_at"], wine.drunk_at)
         self.assertEqual(params["note"], wine.note)
         for param_tag, wine_tag in zip(params["tag_texts"], wine.tags.all()):
@@ -124,7 +124,7 @@ class TestUpdateWine(TestCase):
         self.assertEqual(params["vintage"], wine.vintage)
         self.assertEqual(params["bought_at"], wine.bought_at.strftime("%Y-%m-%d"))
         self.assertEqual(params["bought_from"], wine.bought_from)
-        self.assertEqual(params["price_with_tax"], wine.price_with_tax)
+        self.assertEqual(params["price"], wine.price)
         self.assertEqual(params["drunk_at"], wine.drunk_at)
         self.assertEqual(params["note"], wine.note)
         for param_tag, wine_tag in zip(params["tag_texts"], wine.tags.all()):
