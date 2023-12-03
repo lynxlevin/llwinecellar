@@ -53,7 +53,7 @@ class Wine(models.Model):
     vintage = models.PositiveSmallIntegerField(blank=True, null=True)
     bought_at = models.DateField(blank=True, null=True)
     bought_from = models.CharField(blank=True, default="", max_length=64)
-    price_with_tax = models.PositiveIntegerField(blank=True, null=True)
+    price = models.PositiveIntegerField(blank=True, null=True)
     drunk_at = models.DateField(blank=True, null=True)
     note = models.TextField(blank=True, default="")
     tags = models.ManyToManyField("WineTag", through="WineTagRelation")
