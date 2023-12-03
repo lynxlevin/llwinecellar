@@ -1,3 +1,4 @@
+import csv
 import os
 
 from django.core.management import call_command
@@ -15,12 +16,11 @@ class TestExportWinesAsCsv(TestCase):
 
         call_command("export_wines_as_csv")
 
-        exported_text_lines = []
         with open(file_path, "r", encoding="utf_8") as f:
-            for line in f:
-                exported_text_lines.append(line)
+            reader = csv.reader(f)
+            exported_csv_rows = [row for row in reader]
 
-        expected_lines = ["abc,def\n", "ghi"]
-        self.assertEqual(expected_lines, exported_text_lines)
+        expected_csv_rows = [["abc", "def"], ["ghi"]]
+        self.assertEqual(expected_csv_rows, exported_csv_rows)
 
         os.remove(file_path)
