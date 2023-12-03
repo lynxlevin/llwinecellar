@@ -1,4 +1,5 @@
 import csv
+import json
 
 from django.core.management.base import BaseCommand
 
@@ -25,7 +26,12 @@ class Command(BaseCommand):
                 wine.region_3,
                 wine.region_4,
                 wine.region_5,
-                # wine.cepages,
+                json.dumps(
+                    [
+                        {"name": c.name, "abbreviation": c.abbreviation, "percentage": str(c.percentage)}
+                        for c in wine.cepages.all()
+                    ]
+                ),
                 wine.bought_at,
                 wine.bought_from,
                 wine.drunk_at,

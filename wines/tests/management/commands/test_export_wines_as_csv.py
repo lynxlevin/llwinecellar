@@ -1,13 +1,24 @@
 import csv
+import json
 import os
 
 from django.core.management import call_command
 from django.test import TestCase
 
-from llwinecellar.common.test_utils import CellarFactory, DrunkWineFactory, UserFactory, WineFactory, WineInRackFactory
+from llwinecellar.common.test_utils import (
+    CellarFactory,
+    CepageFactory,
+    DrunkWineFactory,
+    GrapeMasterFactory,
+    UserFactory,
+    WineFactory,
+    WineInRackFactory,
+)
 
 
 class TestExportWinesAsCsv(TestCase):
+    maxDiff = None
+
     @classmethod
     def setUpTestData(cls):
         cls.user = UserFactory()
@@ -18,10 +29,16 @@ class TestExportWinesAsCsv(TestCase):
             WineFactory(user=cls.user, country=None),
             DrunkWineFactory(user=cls.user),
         ]
+        cls.grapes = [
+            GrapeMasterFactory(user=cls.user, name="Cabernet Sauvignon", abbreviation="CS"),
+            GrapeMasterFactory(user=cls.user, name="Merlot", abbreviation="Mr"),
+        ]
+        CepageFactory(wine=cls.wines[0], grape=cls.grapes[0], percentage=60.0)
+        CepageFactory(wine=cls.wines[0], grape=cls.grapes[1], percentage=40.0)
 
     """
     MYMEMO:
-    - add tags and cepages, with_id flag for not refresh_all in import.
+    - add tags, with_id flag for not refresh_all in import.
     - add import command: refresh_all flag, with caution message.
     - バッチ実行して、古いものの削除機能付きでバッチ実行もいいかも
     """
@@ -50,7 +67,12 @@ class TestExportWinesAsCsv(TestCase):
                 wine.region_3,
                 wine.region_4,
                 wine.region_5,
-                # wine.cepages,
+                json.dumps(
+                    [
+                        {"name": c.name, "abbreviation": c.abbreviation, "percentage": str(c.percentage)}
+                        for c in wine.cepages.all()
+                    ]
+                ),
                 wine.bought_at.isoformat() if wine.bought_at else "",
                 wine.bought_from,
                 wine.drunk_at.isoformat() if wine.drunk_at else "",
