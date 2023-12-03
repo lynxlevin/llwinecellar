@@ -31,7 +31,7 @@ class CreateWine:
             vintage=data["vintage"],
             bought_at=data["bought_at"],
             bought_from=data["bought_from"],
-            price_with_tax=data["price_with_tax"],
+            price=data["price"],
             drunk_at=data["drunk_at"],
             note=data["note"],
             user_id=user.id,

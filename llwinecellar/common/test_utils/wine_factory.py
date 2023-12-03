@@ -27,7 +27,7 @@ class WineFactory(factory.django.DjangoModelFactory):
     vintage = 2019
     bought_at = factory.fuzzy.FuzzyDate(date(2022, 1, 1))
     bought_from = "Wine shop"
-    price_with_tax = 13200
+    price = 13200
     drunk_at = None
     note = "Good wine."
 

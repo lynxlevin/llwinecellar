@@ -47,7 +47,7 @@ class Command(BaseCommand):
                 vintage=int(vin) if (vin := next(li)) != "" else None,
                 bought_at=next(li),
                 bought_from=next(li),
-                price_with_tax=int(price) if (price := next(li)) != "" else None,
+                price=int(price) if (price := next(li)) != "" else None,
                 drunk_at=next(li),
                 note=next(li),
                 user_id=1,

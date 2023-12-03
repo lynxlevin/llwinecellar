@@ -20,7 +20,7 @@ const wineDataKeys = [
     'vintage',
     'bought_at',
     'bought_from',
-    'price_with_tax',
+    'price',
     'drunk_at',
     'note',
     'tag_texts',
@@ -44,7 +44,7 @@ export interface WineData {
     vintage: number | null;
     bought_at: string | null;
     bought_from: string;
-    price_with_tax: number | null;
+    price: number | null;
     drunk_at: string | null;
     note: string;
     tag_texts: string[];

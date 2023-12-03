@@ -50,7 +50,7 @@ X-CSRFToken: {{get_csrf.response.headers.X-CSRFToken}}
     "vintage": 2019,
     "bought_at": "2023-05-07",
     "bought_from": "伊勢屋",
-    "price_with_tax": 13000,
+    "price": 13000,
     "drunk_at": null,
     "note": "テスト用のノート",
     "tag_texts": []
@@ -85,7 +85,7 @@ X-CSRFToken: {{get_csrf.response.headers.X-CSRFToken}}
   "vintage": 2017,
   "bought_at": "2023-04-18",
   "bought_from": "エノテカオンライン",
-  "price_with_tax": 3080,
+  "price": 3080,
   "drunk_at": null,
   "note": "",
   "tag_texts": [
@@ -119,7 +119,7 @@ X-CSRFToken: {{get_csrf.response.headers.X-CSRFToken}}
   "vintage": 2017,
   "bought_at": "2023-04-18",
   "bought_from": "エノテカオンライン",
-  "price_with_tax": 3080,
+  "price": 3080,
   "drunk_at": null,
   "note": "",
   "tag_texts": [

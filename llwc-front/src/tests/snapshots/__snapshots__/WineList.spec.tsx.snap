@@ -22,8 +22,9 @@ exports[`WineList page 1`] = `
                 >
                   <img
                     alt="app_icon"
-                    src="icon.png?w=36&h=36&fit=crop&auto=format"
-                    srcset="icon.png?w=36&h=36&fit=crop&auto=format&dpr=32 32x"
+                    height="36"
+                    src="icon_295.png"
+                    width="36"
                   />
                 </a>
                 <div

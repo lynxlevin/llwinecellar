@@ -74,7 +74,7 @@ describe('WineDialog', () => {
             vintage: null,
             bought_at: getToday(),
             bought_from: '',
-            price_with_tax: null,
+            price: null,
             drunk_at: null,
             note: '',
             tag_texts: [],

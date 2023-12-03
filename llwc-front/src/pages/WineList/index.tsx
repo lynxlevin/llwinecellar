@@ -160,7 +160,7 @@ const WineListTableHead = (props: WineListTableHeadProps) => {
     };
 
     const toTitleCase = (text: WineDataKeys): string => {
-        if (text === 'price_with_tax') return 'Price';
+        if (text === 'price') return 'Price';
         return text
             .toLowerCase()
             .split('_')

@@ -139,7 +139,7 @@ const WineDialog = (props: WineDialogProps) => {
             cepages: action === 'edit' ? selectedWine.cepages : [],
             boughtAt: action === 'edit' ? selectedWine.bought_at : getLocaleISODateString(),
             boughtFrom: action === 'edit' ? selectedWine.bought_from : '',
-            priceWithTax: action === 'edit' ? selectedWine.price_with_tax : null,
+            price: action === 'edit' ? selectedWine.price : null,
             drunkAt: action === 'edit' ? selectedWine.drunk_at : null,
             note: action === 'edit' ? selectedWine.note : '',
             cellarId: selectedWine.cellar_id ?? noCellarCode,
@@ -163,7 +163,7 @@ const WineDialog = (props: WineDialogProps) => {
     const [cepages, setCepages] = useState<Cepage[]>(initialValues.cepages);
     const [boughtAt, setBoughtAt] = useState<string | null>(initialValues.boughtAt);
     const [boughtFrom, setBoughtFrom] = useState<string>(initialValues.boughtFrom);
-    const [priceWithTax, setPriceWithTax] = useState<number | null>(initialValues.priceWithTax);
+    const [price, setPrice] = useState<number | null>(initialValues.price);
     const [drunkAt, setDrunkAt] = useState<string | null>(initialValues.drunkAt);
     const [note, setNote] = useState<string>(initialValues.note);
     const [cellarId, setCellarId] = useState<string | null>(initialValues.cellarId);
@@ -191,7 +191,7 @@ const WineDialog = (props: WineDialogProps) => {
             setCepages(initialValues.cepages);
             setBoughtAt(initialValues.boughtAt);
             setBoughtFrom(initialValues.boughtFrom);
-            setPriceWithTax(initialValues.priceWithTax);
+            setPrice(initialValues.price);
             setDrunkAt(initialValues.drunkAt);
             setNote(initialValues.note);
             setCellarId(initialValues.cellarId);
@@ -267,7 +267,7 @@ const WineDialog = (props: WineDialogProps) => {
             vintage: vintage,
             bought_at: boughtAt,
             bought_from: boughtFrom,
-            price_with_tax: priceWithTax,
+            price: price,
             drunk_at: drunkAt,
             note: note,
             tag_texts: tagTexts,
@@ -533,11 +533,11 @@ const WineDialog = (props: WineDialogProps) => {
                     </Grid>
                     <Grid item xs={12}>
                         <TextField
-                            label="price_with_tax"
-                            value={priceWithTax ?? ''}
+                            label="price"
+                            value={price ?? ''}
                             onChange={event => {
                                 const value = event.target.value === '' ? null : Number(event.target.value);
-                                setPriceWithTax(value);
+                                setPrice(value);
                             }}
                             variant="standard"
                             fullWidth
