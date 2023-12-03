@@ -5,3 +5,4 @@ fixtures/
 django.log
 llwinecellar/static
 tmp
+exports/
