@@ -49,7 +49,6 @@ class TestExportWinesAsCsv(TestCase):
 
     """
     MYMEMO:
-    - add with_header flag.
     - add import command: refresh_all flag, with caution message.
     - バッチ実行して、古いものの削除機能付きでバッチ実行もいいかも
     """
@@ -68,6 +67,24 @@ class TestExportWinesAsCsv(TestCase):
         exported_csv_rows = self._get_csv_rows()
 
         expected_csv_rows = [self._get_expected_row_fow_wine(wine, with_id=True) for wine in self.wines]
+        self.assertEqual(expected_csv_rows, exported_csv_rows)
+
+    def test_export_with_header(self):
+        call_command("export_wines_as_csv", "--with-header")
+
+        exported_csv_rows = self._get_csv_rows()
+
+        expected_csv_rows = [self._get_expected_row_fow_wine(wine) for wine in self.wines]
+        expected_csv_rows.insert(0, self._get_header_row())
+        self.assertEqual(expected_csv_rows, exported_csv_rows)
+
+    def test_export_with_id_and_header(self):
+        call_command("export_wines_as_csv", "--with-id", "--with-header")
+
+        exported_csv_rows = self._get_csv_rows()
+
+        expected_csv_rows = [self._get_expected_row_fow_wine(wine, with_id=True) for wine in self.wines]
+        expected_csv_rows.insert(0, self._get_header_row(with_id=True))
         self.assertEqual(expected_csv_rows, exported_csv_rows)
 
     """
@@ -109,3 +126,28 @@ class TestExportWinesAsCsv(TestCase):
         if with_id:
             base_row.insert(0, str(wine.id))
         return base_row
+
+    def _get_header_row(self, with_id=False):
+        base_header_row = [
+            "cellar_name",
+            "position",
+            "tag_texts",
+            "name",
+            "producer",
+            "vintage",
+            "price",
+            "country",
+            "region_1",
+            "region_2",
+            "region_3",
+            "region_4",
+            "region_5",
+            "cepages",
+            "bought_at",
+            "bought_from",
+            "drunk_at",
+            "note",
+        ]
+        if with_id:
+            base_header_row.insert(0, "id")
+        return base_header_row
