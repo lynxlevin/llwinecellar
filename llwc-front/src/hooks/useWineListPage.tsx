@@ -91,7 +91,7 @@ const useWineListPage = () => {
         if (cepages.length === 0) return '';
         return cepages
             .map(c => {
-                if (c.abbreviation === null) return c.name;
+                if (c.abbreviation === '') return c.name;
                 return c.abbreviation;
             })
             .join(', ');
