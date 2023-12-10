@@ -1,4 +1,4 @@
-# WineRegion
+# GrapeMaster
 
 ###
 # @name get_csrf
@@ -17,5 +17,5 @@ X-CSRFToken: {{get_csrf.response.headers.X-CSRFToken}}
 
 ###
 # @name list
-GET {{endpoint}}/api/wine_regions/
+GET {{endpoint}}/api/grape_masters/
 
