@@ -85,7 +85,7 @@ class WineRegionsSerializer(serializers.Serializer):
 
 
 class GrapeMasterSerializer(serializers.Serializer):
-    id = serializers.UUIDField()
+    id = serializers.UUIDField(read_only=True)
     name = serializers.CharField()
     abbreviation = serializers.CharField(allow_blank=True)
 

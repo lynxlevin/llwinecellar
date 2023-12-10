@@ -5,7 +5,7 @@ from rest_framework import status
 
 from llwinecellar.common.test_utils import GrapeMasterFactory, UserFactory
 
-# from ..models import GrapeMaster
+from ..models import GrapeMaster
 
 logger = logging.getLogger(__name__)
 
@@ -38,6 +38,22 @@ class TestGrapeMasterViews(TestCase):
             "grape_masters": [{"id": str(g.id), "name": g.name, "abbreviation": g.abbreviation} for g in grapes],
         }
         self.assertDictEqual(expected, body)
+
+    def test_create(self):
+        # Arrange
+        params = {"name": "Cabernet Franc", "abbreviation": "CF"}
+
+        # Act
+        status_code, body = self._make_post_request(self.base_path, self.user, params)
+
+        # Assert
+        self.assertEqual(status.HTTP_201_CREATED, status_code)
+        id = body.pop("id")
+        self.assertDictEqual(params, body)
+
+        created_grape_master = GrapeMaster.objects.get_by_id(id)
+        self.assertEqual(params["name"], created_grape_master.name)
+        self.assertEqual(params["abbreviation"], created_grape_master.abbreviation)
 
     # def test_delete(self):
     #     # Arrange
@@ -97,6 +113,14 @@ class TestGrapeMasterViews(TestCase):
         client.force_login(user)
 
         response = client.get(path)
+
+        return (response.status_code, response.json())
+
+    def _make_post_request(self, path, user, params):
+        client = Client()
+        client.force_login(user)
+
+        response = client.post(path, params, content_type="application/json")
 
         return (response.status_code, response.json())
 
