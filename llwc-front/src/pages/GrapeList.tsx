@@ -17,6 +17,7 @@ import {
     Dialog,
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
+import VisibilityIcon from '@mui/icons-material/Visibility';
 import AppIcon from '../components/AppIcon';
 import { useEffect, useState } from 'react';
 import { GrapeMasterAPI, GrapeMasterItem } from '../apis/GrapeMasterAPI';
@@ -27,6 +28,7 @@ export const GrapeList = () => {
     const [abbreviation, setAbbreviation] = useState('');
     const [createErrorMessage, setCreateErrorMessage] = useState('');
     const [grapeIdToDelete, setGrapeIdToDelete] = useState('');
+    const [showDeleteButtons, setShowDeleteButtons] = useState(false);
 
     const getGrapeList = async () => {
         const res = await GrapeMasterAPI.list();
@@ -87,6 +89,9 @@ export const GrapeList = () => {
                     <Typography sx={{ flex: '1 1 10%' }} variant="h6" color="inherit" noWrap>
                         GrapeList
                     </Typography>
+                    <IconButton onClick={() => setShowDeleteButtons(prev => !prev)}>
+                        <VisibilityIcon />
+                    </IconButton>
                 </Toolbar>
             </AppBar>
             <Container maxWidth="md">
@@ -103,15 +108,17 @@ export const GrapeList = () => {
                                 <TableRow key={grape.id}>
                                     <TableCell>{grape.name}</TableCell>
                                     <TableCell>{grape.abbreviation}</TableCell>
-                                    <TableCell>
-                                        <IconButton
-                                            onClick={() => {
-                                                deleteGrape(grape.id);
-                                            }}
-                                        >
-                                            <DeleteIcon />
-                                        </IconButton>
-                                    </TableCell>
+                                    {showDeleteButtons && (
+                                        <TableCell>
+                                            <IconButton
+                                                onClick={() => {
+                                                    deleteGrape(grape.id);
+                                                }}
+                                            >
+                                                <DeleteIcon />
+                                            </IconButton>
+                                        </TableCell>
+                                    )}
                                 </TableRow>
                             ))}
                             <TableRow>
@@ -143,15 +150,17 @@ export const GrapeList = () => {
                     </Table>
                 </TableContainer>
             </Container>
-            <Dialog
-                open={grapeIdToDelete !== ''}
-                onClose={() => {
-                    setGrapeIdToDelete('');
-                }}
-            >
-                <Typography>This grape is assigned to wines. Do you really want to delete it?</Typography>
-                <Button onClick={forceDelete}>DELETE</Button>
-            </Dialog>
+            {showDeleteButtons && (
+                <Dialog
+                    open={grapeIdToDelete !== ''}
+                    onClose={() => {
+                        setGrapeIdToDelete('');
+                    }}
+                >
+                    <Typography>This grape is assigned to wines. Do you really want to delete it?</Typography>
+                    <Button onClick={forceDelete}>DELETE</Button>
+                </Dialog>
+            )}
         </>
     );
 };
