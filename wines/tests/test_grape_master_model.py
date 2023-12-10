@@ -28,3 +28,9 @@ class TestGrapeMasterModel(TestCase):
         expected = self.grapes
 
         self.assertListEqual(expected, list(result))
+
+    def test_get_by_use_id_and_name(self):
+        expected = self.grapes[0]
+        result = GrapeMaster.objects.get_by_user_id_and_name(self.user.id, expected.name)
+
+        self.assertEqual(expected.id, result.id)

@@ -19,3 +19,14 @@ X-CSRFToken: {{get_csrf.response.headers.X-CSRFToken}}
 # @name list
 GET {{endpoint}}/api/grape_masters/
 
+###
+# @name create
+POST {{endpoint}}/api/grape_masters/
+Content-Type: application/json
+X-CSRFToken: {{get_csrf.response.headers.X-CSRFToken}}
+
+{
+    "name": "Test grape",
+    "abbreviation": "TG"
+}
+

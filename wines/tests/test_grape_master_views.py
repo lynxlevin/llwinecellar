@@ -55,6 +55,18 @@ class TestGrapeMasterViews(TestCase):
         self.assertEqual(params["name"], created_grape_master.name)
         self.assertEqual(params["abbreviation"], created_grape_master.abbreviation)
 
+    def test_duplicate_name_cannot_be_created(self):
+        # Arrange
+        existing_grape = GrapeMasterFactory(name="Pinot Noir", abbreviation="PN", user=self.user)
+        params = {"name": existing_grape.name, "abbreviation": ""}
+
+        # Act
+        status_code, body = self._make_post_request(self.base_path, self.user, params)
+
+        # Assert
+        self.assertEqual(status.HTTP_400_BAD_REQUEST, status_code)
+        self.assertEqual(1, GrapeMaster.objects.count())
+
     # def test_delete(self):
     #     # Arrange
     #     tags = WineTagFactory.create_batch(10, user=self.user)

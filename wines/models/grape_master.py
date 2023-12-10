@@ -13,6 +13,12 @@ class GrapeMasterQuerySet(models.QuerySet["GrapeMaster"]):
         except GrapeMaster.DoesNotExist:
             return None
 
+    def get_by_user_id_and_name(self, user_id, name) -> Optional["GrapeMaster"]:
+        try:
+            return self.get(user_id=user_id, name=name)
+        except GrapeMaster.DoesNotExist:
+            return None
+
     def filter_eq_user_id(self, user_id) -> "GrapeMasterQuerySet":
         return self.filter(user_id=user_id)
 
