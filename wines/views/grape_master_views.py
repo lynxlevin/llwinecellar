@@ -8,8 +8,8 @@ from rest_framework.response import Response
 from llwinecellar.exception_handler import exception_handler_with_logging
 
 from ..models import GrapeMaster
-from ..serializers import GrapeMasterSerializer, GrapeMastersSerializer
-from ..use_cases import CreateGrapeMaster, ListGrapeMasters
+from ..serializers import DeleteGrapeMasterQuerySerializer, GrapeMasterSerializer, GrapeMastersSerializer
+from ..use_cases import CreateGrapeMaster, DeleteGrapeMaster, ListGrapeMasters
 
 logger = logging.getLogger(__name__)
 
@@ -41,5 +41,17 @@ class GrapeMasterViewSet(viewsets.GenericViewSet):
             serializer = GrapeMasterSerializer(grape_master)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
+        except Exception as exc:
+            return exception_handler_with_logging(exc)
+
+    def destroy(self, request, pk, use_case=DeleteGrapeMaster(), format=None):
+        try:
+            serializer = DeleteGrapeMasterQuerySerializer(data=request.query_params)
+            serializer.is_valid(raise_exception=True)
+
+            force_delete = serializer.validated_data["force_delete"]
+            use_case.execute(user=request.user, grape_master_id=pk, force_delete=force_delete)
+
+            return Response(status=status.HTTP_204_NO_CONTENT)
         except Exception as exc:
             return exception_handler_with_logging(exc)

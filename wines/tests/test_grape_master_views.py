@@ -3,9 +3,9 @@ import logging
 from django.test import Client, TestCase
 from rest_framework import status
 
-from llwinecellar.common.test_utils import GrapeMasterFactory, UserFactory
+from llwinecellar.common.test_utils import CepageFactory, GrapeMasterFactory, UserFactory, WineFactory
 
-from ..models import GrapeMaster
+from ..models import Cepage, GrapeMaster, Wine
 
 logger = logging.getLogger(__name__)
 
@@ -67,54 +67,73 @@ class TestGrapeMasterViews(TestCase):
         self.assertEqual(status.HTTP_400_BAD_REQUEST, status_code)
         self.assertEqual(1, GrapeMaster.objects.count())
 
-    # def test_delete(self):
-    #     # Arrange
-    #     tags = WineTagFactory.create_batch(10, user=self.user)
-    #     tag_to_delete = tags[0]
-    #     client = self._get_client(self.user)
+    def test_delete(self):
+        # Arrange
+        grape_to_delete = GrapeMasterFactory(user=self.user)
 
-    #     params = {"tag_text": tag_to_delete.text}
+        # Act
+        client = self._get_client(self.user)
+        response = client.delete(f"{self.base_path}{grape_to_delete.id}/", content_type="application/json")
 
-    #     # Act
-    #     response = client.delete(self.base_path, params, content_type="application/json")
+        # Assert
+        self.assertEqual(status.HTTP_204_NO_CONTENT, response.status_code)
 
-    #     # Assert
-    #     self.assertEqual(status.HTTP_204_NO_CONTENT, response.status_code)
+        self.assertEqual(0, GrapeMaster.objects.count())
+        self.assertIsNone(GrapeMaster.objects.get_by_id(grape_to_delete.id))
 
-    #     self.assertEqual(9, WineTag.objects.count())
-    #     self.assertIsNone(WineTag.objects.get_by_id(tag_to_delete.id))
+    def test_delete_cannot_delete_different_users_grape(self):
+        # Arrange
+        other_user_grape = GrapeMasterFactory()
 
-    # def test_delete__not_my_tag__404(self):
-    #     # Arrange
-    #     tags = WineTagFactory.create_batch(10)
-    #     tag_to_delete = tags[0]
-    #     client = self._get_client(self.user)
+        # Act
+        client = self._get_client(self.user)
+        response = client.delete(f"{self.base_path}{other_user_grape.id}/", content_type="application/json")
 
-    #     params = {"tag_text": tag_to_delete.text}
+        # Assert
+        self.assertEqual(status.HTTP_204_NO_CONTENT, response.status_code)
 
-    #     # Act
-    #     response = client.delete(self.base_path, params, content_type="application/json")
+        self.assertEqual(1, GrapeMaster.objects.count())
+        self.assertIsNotNone(GrapeMaster.objects.get_by_id(other_user_grape.id))
 
-    #     # Assert
-    #     self.assertEqual(status.HTTP_404_NOT_FOUND, response.status_code)
+    def test_delete_returns_alert_message_when_it_is_assigned_to_a_wine(self):
+        # Arrange
+        assigned_grape = GrapeMasterFactory(user=self.user)
+        wine = WineFactory(user=self.user)
+        _cepage = CepageFactory(wine=wine, grape=assigned_grape)
 
-    #     self.assertEqual(10, WineTag.objects.count())
-    #     self.assertIsNotNone(WineTag.objects.get_by_id(tag_to_delete.id))
+        # Act
+        client = self._get_client(self.user)
+        response = client.delete(f"{self.base_path}{assigned_grape.id}/", content_type="application/json")
 
-    # def test_delete__non_existent_tag__404(self):
-    #     # Arrange
-    #     _tags = WineTagFactory.create_batch(10)
-    #     client = self._get_client(self.user)
+        # Assert
+        self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
 
-    #     params = {"tag_text": "non_existent_tag"}
+        self.assertEqual(1, GrapeMaster.objects.count())
+        self.assertIsNotNone(GrapeMaster.objects.get_by_id(assigned_grape.id))
 
-    #     # Act
-    #     response = client.delete(self.base_path, params, content_type="application/json")
+    def test_delete_with_force_delete_query_grape_assigned_to_a_wine_can_be_deleted(self):
+        # Arrange
+        assigned_grape = GrapeMasterFactory(user=self.user)
+        wine = WineFactory(user=self.user)
+        cepage = CepageFactory(wine=wine, grape=assigned_grape)
 
-    #     # Assert
-    #     self.assertEqual(status.HTTP_404_NOT_FOUND, response.status_code)
+        # Act
+        client = self._get_client(self.user)
+        response = client.delete(
+            f"{self.base_path}{assigned_grape.id}/?force_delete=true", content_type="application/json"
+        )
 
-    #     self.assertEqual(10, WineTag.objects.count())
+        # Assert
+        self.assertEqual(status.HTTP_204_NO_CONTENT, response.status_code)
+
+        # grape_master and cepage should be deleted
+        self.assertEqual(0, GrapeMaster.objects.count())
+        self.assertIsNone(GrapeMaster.objects.get_by_id(assigned_grape.id))
+        self.assertEqual(0, Cepage.objects.count())
+        self.assertIsNone(Cepage.objects.get_by_id(cepage.id))
+        # wine should not be deleted
+        self.assertEqual(1, Wine.objects.count())
+        self.assertIsNotNone(Wine.objects.get_by_id(wine.id))
 
     """
     Utility functions

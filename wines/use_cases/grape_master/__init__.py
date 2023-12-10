@@ -1,2 +1,3 @@
 from .create_grape_master import CreateGrapeMaster
+from .delete_grape_master import DeleteGrapeMaster
 from .list_grape_masters import ListGrapeMasters

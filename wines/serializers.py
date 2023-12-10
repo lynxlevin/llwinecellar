@@ -92,3 +92,7 @@ class GrapeMasterSerializer(serializers.Serializer):
 
 class GrapeMastersSerializer(serializers.Serializer):
     grape_masters = GrapeMasterSerializer(many=True, read_only=True)
+
+
+class DeleteGrapeMasterQuerySerializer(serializers.Serializer):
+    force_delete = serializers.BooleanField(required=False, default=False)
