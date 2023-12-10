@@ -3,13 +3,14 @@ from django.urls import include, path
 from rest_framework import routers
 
 from cellars.views import cellar_views
-from wines.views import wine_region_views, wine_tag_views, wine_views
+from wines.views import GrapeMasterViewSet, WineRegionViewSet, WineTagViewSet, WineViewSet
 
 router = routers.DefaultRouter()
 router.register(r"cellars", cellar_views.CellarViewSet)
-router.register(r"wines", wine_views.WineViewSet)
-router.register(r"wine_tags", wine_tag_views.WineTagViewSet)
-router.register(r"wine_regions", wine_region_views.WineRegionViewSet)
+router.register(r"wines", WineViewSet)
+router.register(r"wine_tags", WineTagViewSet)
+router.register(r"wine_regions", WineRegionViewSet)
+router.register(r"grape_masters", GrapeMasterViewSet)
 
 urlpatterns = [
     path("api/", include(router.urls)),
