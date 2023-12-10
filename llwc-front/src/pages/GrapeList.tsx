@@ -101,6 +101,7 @@ export const GrapeList = () => {
                             <TableRow>
                                 <TableCell>Name</TableCell>
                                 <TableCell>Abbreviation</TableCell>
+                                <TableCell>{showDeleteButtons && 'Delete'}</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
@@ -108,8 +109,8 @@ export const GrapeList = () => {
                                 <TableRow key={grape.id}>
                                     <TableCell>{grape.name}</TableCell>
                                     <TableCell>{grape.abbreviation}</TableCell>
-                                    {showDeleteButtons && (
-                                        <TableCell>
+                                    <TableCell sx={{ padding: 0 }}>
+                                        {showDeleteButtons && (
                                             <IconButton
                                                 onClick={() => {
                                                     deleteGrape(grape.id);
@@ -117,8 +118,8 @@ export const GrapeList = () => {
                                             >
                                                 <DeleteIcon />
                                             </IconButton>
-                                        </TableCell>
-                                    )}
+                                        )}
+                                    </TableCell>
                                 </TableRow>
                             ))}
                             <TableRow>
