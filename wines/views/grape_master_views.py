@@ -8,7 +8,7 @@ from rest_framework.response import Response
 from llwinecellar.exception_handler import exception_handler_with_logging
 
 from ..models import GrapeMaster
-from ..serializers import WineRegionsSerializer
+from ..serializers import GrapeMastersSerializer
 from ..use_cases import ListGrapeMasters
 
 logger = logging.getLogger(__name__)
@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 class GrapeMasterViewSet(viewsets.GenericViewSet):
     queryset = GrapeMaster.objects.all()
-    # serializer_class = WineRegionsSerializer
+    serializer_class = GrapeMastersSerializer
     authentication_classes = [SessionAuthentication]
     permission_classes = [IsAuthenticated]
 
@@ -24,9 +24,8 @@ class GrapeMasterViewSet(viewsets.GenericViewSet):
         try:
             grape_masters = use_case.execute(user=request.user)
 
-            # serializer = self.get_serializer({"regions": wine_regions})
-            # return Response(serializer.data)
-            return Response({"grape_masters": grape_masters})
+            serializer = self.get_serializer({"grape_masters": grape_masters})
+            return Response(serializer.data)
 
         except Exception as exc:
             return exception_handler_with_logging(exc)

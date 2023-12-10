@@ -5,7 +5,7 @@ from rest_framework import status
 
 from llwinecellar.common.test_utils import GrapeMasterFactory, UserFactory
 
-from ..models import GrapeMaster
+# from ..models import GrapeMaster
 
 logger = logging.getLogger(__name__)
 
@@ -26,7 +26,7 @@ class TestGrapeMasterViews(TestCase):
             GrapeMasterFactory(name="Merlot", abbreviation="Mr", user=self.user),
             GrapeMasterFactory(name="Syrah", abbreviation=None, user=self.user),
         ]
-        _different_user_grape = GrapeMaster()
+        _different_user_grape = GrapeMasterFactory()
 
         # Act
         status_code, body = self._make_request(self.base_path, self.user)

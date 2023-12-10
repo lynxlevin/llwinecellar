@@ -82,3 +82,13 @@ class DeleteWineTagQuerySerializer(serializers.Serializer):
 
 class WineRegionsSerializer(serializers.Serializer):
     regions = serializers.ListField(allow_empty=True, child=serializers.CharField())
+
+
+class GrapeMasterSerializer(serializers.Serializer):
+    id = serializers.UUIDField()
+    name = serializers.CharField()
+    abbreviation = serializers.CharField(allow_blank=True)
+
+
+class GrapeMastersSerializer(serializers.Serializer):
+    grape_masters = GrapeMasterSerializer(many=True, read_only=True)

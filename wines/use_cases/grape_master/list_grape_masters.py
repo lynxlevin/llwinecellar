@@ -2,6 +2,8 @@ import logging
 
 from users.models import User
 
+from ...models import GrapeMaster
+
 logger = logging.getLogger(__name__)
 
 
@@ -12,4 +14,6 @@ class ListGrapeMasters:
     def execute(self, user: User):
         logger.info(self.__class__.__name__, extra={"user": user})
 
-        return [{}]
+        grape_masters = GrapeMaster.objects.filter(user=user).all()
+
+        return grape_masters
