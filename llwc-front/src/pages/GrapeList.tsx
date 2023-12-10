@@ -1,9 +1,19 @@
 import { Link } from 'react-router-dom';
-import { AppBar, Box, Container, Toolbar, Paper, Button, Typography } from '@mui/material';
+import { AppBar, Toolbar, Paper, Typography, TableContainer, Table, TableHead, TableRow, TableCell, TableBody } from '@mui/material';
 import AppIcon from '../components/AppIcon';
+import { useEffect, useState } from 'react';
+import { GrapeMasterAPI, GrapeMasterItem } from '../apis/GrapeMasterAPI';
 
 export const GrapeList = () => {
-    const grapeList = ['a', 'b'];
+    const [grapeList, setGrapeList] = useState<GrapeMasterItem[]>([]);
+
+    useEffect(() => {
+        const getGrapeList = async () => {
+            const res = await GrapeMasterAPI.list();
+            setGrapeList(res.data.grape_masters);
+        };
+        getGrapeList();
+    }, [setGrapeList]);
 
     return (
         <>
@@ -25,13 +35,24 @@ export const GrapeList = () => {
                     </Typography>
                 </Toolbar>
             </AppBar>
-            <Container component="main" maxWidth="sm" sx={{ mb: 4 }}>
-                <Paper variant="outlined" sx={{ my: { xs: 3, md: 6 }, p: { xs: 2, md: 3 } }}>
-                    {grapeList.map(grape => {
-                        return <>{grape}</>;
-                    })}
-                </Paper>
-            </Container>
+            <TableContainer component={Paper}>
+                <Table>
+                    <TableHead>
+                        <TableRow>
+                            <TableCell>Name</TableCell>
+                            <TableCell>Abbreviation</TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {grapeList.map(grape => (
+                            <TableRow key={grape.id}>
+                                <TableCell>{grape.name}</TableCell>
+                                <TableCell>{grape.abbreviation}</TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            </TableContainer>
         </>
     );
 };
