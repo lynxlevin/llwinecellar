@@ -28,4 +28,10 @@ export const GrapeMasterAPI = {
         const url = GrapeMasterAPI.BASE_URL;
         return await client.post(url, data, { headers: { 'content-type': 'application/json' } });
     },
+
+    delete: async (grapeId: string, forceDelete?: boolean): Promise<AxiosResponse<{}>> => {
+        let url = `${GrapeMasterAPI.BASE_URL}${grapeId}/`;
+        if (forceDelete) url += '?force_delete=true';
+        return await client.delete(url);
+    },
 };

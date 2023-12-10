@@ -12,8 +12,11 @@ import {
     TableCell,
     TableBody,
     Button,
+    IconButton,
     TextField,
+    Dialog,
 } from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete';
 import AppIcon from '../components/AppIcon';
 import { useEffect, useState } from 'react';
 import { GrapeMasterAPI, GrapeMasterItem } from '../apis/GrapeMasterAPI';
@@ -23,6 +26,7 @@ export const GrapeList = () => {
     const [name, setName] = useState('');
     const [abbreviation, setAbbreviation] = useState('');
     const [createErrorMessage, setCreateErrorMessage] = useState('');
+    const [grapeIdToDelete, setGrapeIdToDelete] = useState('');
 
     const getGrapeList = async () => {
         const res = await GrapeMasterAPI.list();
@@ -40,6 +44,25 @@ export const GrapeList = () => {
             .catch(err => {
                 setCreateErrorMessage(err.response.data);
             });
+    };
+
+    const deleteGrape = (grapeId: string) => {
+        GrapeMasterAPI.delete(grapeId)
+            .then(async () => {
+                await getGrapeList();
+            })
+            .catch(err => {
+                if (err.response.data[0] === 'Assigned grape, use force_delete.') {
+                    setGrapeIdToDelete(grapeId);
+                }
+            });
+    };
+
+    const forceDelete = () => {
+        GrapeMasterAPI.delete(grapeIdToDelete, true).then(async () => {
+            await getGrapeList();
+            setGrapeIdToDelete('');
+        });
     };
 
     useEffect(() => {
@@ -64,7 +87,6 @@ export const GrapeList = () => {
                     <Typography sx={{ flex: '1 1 10%' }} variant="h6" color="inherit" noWrap>
                         GrapeList
                     </Typography>
-                    {/* <IconButton onClick={addGrape}>+</IconButton> */}
                 </Toolbar>
             </AppBar>
             <Container maxWidth="md">
@@ -81,6 +103,15 @@ export const GrapeList = () => {
                                 <TableRow key={grape.id}>
                                     <TableCell>{grape.name}</TableCell>
                                     <TableCell>{grape.abbreviation}</TableCell>
+                                    <TableCell>
+                                        <IconButton
+                                            onClick={() => {
+                                                deleteGrape(grape.id);
+                                            }}
+                                        >
+                                            <DeleteIcon />
+                                        </IconButton>
+                                    </TableCell>
                                 </TableRow>
                             ))}
                             <TableRow>
@@ -112,6 +143,15 @@ export const GrapeList = () => {
                     </Table>
                 </TableContainer>
             </Container>
+            <Dialog
+                open={grapeIdToDelete !== ''}
+                onClose={() => {
+                    setGrapeIdToDelete('');
+                }}
+            >
+                <Typography>This grape is assigned to wines. Do you really want to delete it?</Typography>
+                <Button onClick={forceDelete}>DELETE</Button>
+            </Dialog>
         </>
     );
 };
