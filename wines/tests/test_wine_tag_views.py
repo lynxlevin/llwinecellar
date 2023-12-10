@@ -1,5 +1,4 @@
 import logging
-import uuid
 
 from django.test import Client, TestCase
 from rest_framework import status
