@@ -1,0 +1,39 @@
+# GrapeMaster
+
+###
+# @name get_csrf
+GET {{endpoint}}/user/csrf/
+
+###
+# @name login
+POST {{endpoint}}/user/login/
+Content-Type: application/json
+X-CSRFToken: {{get_csrf.response.headers.X-CSRFToken}}
+
+{
+  "email": "{{email}}",
+  "password": "{{password}}"
+}
+
+###
+# @name list
+GET {{endpoint}}/api/grape_masters/
+
+###
+# @name create
+POST {{endpoint}}/api/grape_masters/
+Content-Type: application/json
+X-CSRFToken: {{get_csrf.response.headers.X-CSRFToken}}
+
+{
+    "name": "Test Grape",
+    "abbreviation": "TG"
+}
+
+###
+@id=a42eaf19-e686-4604-bd68-b3228265636b
+
+###
+# @name delete
+DELETE {{endpoint}}/api/grape_masters/{{id}}/
+X-CSRFToken: {{get_csrf.response.headers.X-CSRFToken}}

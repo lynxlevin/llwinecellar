@@ -9,6 +9,7 @@ import { WineContext, WineData, WineListQuery } from './contexts/wine-context';
 import { WineTagContext } from './contexts/wine-tag-context';
 import { WineRegionContext } from './contexts/wine-region-context';
 import { Settings } from './pages/Settings';
+import { GrapeList } from './pages/GrapeList';
 
 function App() {
     const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
@@ -35,12 +36,15 @@ function App() {
                                                 <Link to="/wine-list">Wine List</Link>
                                                 <p></p>
                                                 <Link to="/settings">Settings</Link>
+                                                <p></p>
+                                                <Link to="/grape-list">GrapeList</Link>
                                             </>
                                         }
                                     />
                                     <Route path="/login" element={<Login />} />
                                     <Route path="/wine-list" element={<WineList />} />
                                     <Route path="/settings" element={<Settings />} />
+                                    <Route path="/grape-list" element={<GrapeList />} />
                                 </Routes>
                             </WineRegionContext.Provider>
                         </WineTagContext.Provider>
