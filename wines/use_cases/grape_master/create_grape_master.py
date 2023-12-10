@@ -17,7 +17,7 @@ class CreateGrapeMaster:
         logger.info(self.__class__.__name__, extra={"user": user, "data": data})
 
         if GrapeMaster.objects.get_by_user_id_and_name(user.id, data.get("name")) is not None:
-            raise ValidationError(detail="This grape master with this name already exists.")
+            raise ValidationError(detail="Grape master with this name already exists.")
 
         grape_master = GrapeMaster.objects.create(**data, user=user)
 
