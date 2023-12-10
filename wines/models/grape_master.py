@@ -13,6 +13,9 @@ class GrapeMasterQuerySet(models.QuerySet["GrapeMaster"]):
         except GrapeMaster.DoesNotExist:
             return None
 
+    def filter_eq_user_id(self, user_id) -> "GrapeMasterQuerySet":
+        return self.filter(user_id=user_id)
+
 
 class GrapeMaster(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)

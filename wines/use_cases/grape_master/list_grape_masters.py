@@ -14,6 +14,6 @@ class ListGrapeMasters:
     def execute(self, user: User):
         logger.info(self.__class__.__name__, extra={"user": user})
 
-        grape_masters = GrapeMaster.objects.filter(user=user).all()
+        grape_masters = GrapeMaster.objects.filter_eq_user_id(user.id).all()
 
         return grape_masters
