@@ -1,3 +1,4 @@
+import { GrapeMaster } from '../contexts/grape-master-context';
 import client from './axios';
 import { AxiosResponse } from 'axios';
 
@@ -6,14 +7,8 @@ interface GrapeMasterRequestBody {
     abbreviation: string | null;
 }
 
-export interface GrapeMasterItem {
-    id: string;
-    name: string;
-    abbreviation: string | null;
-}
-
 interface GrapeMasterListResponse {
-    grape_masters: GrapeMasterItem[];
+    grape_masters: GrapeMaster[];
 }
 
 export const GrapeMasterAPI = {
@@ -24,7 +19,7 @@ export const GrapeMasterAPI = {
         return await client.get(url);
     },
 
-    create: async (data: GrapeMasterRequestBody): Promise<AxiosResponse<GrapeMasterItem>> => {
+    create: async (data: GrapeMasterRequestBody): Promise<AxiosResponse<GrapeMaster>> => {
         const url = GrapeMasterAPI.BASE_URL;
         return await client.post(url, data, { headers: { 'content-type': 'application/json' } });
     },
