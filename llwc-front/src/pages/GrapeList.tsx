@@ -24,12 +24,14 @@ import { GrapeMasterAPI } from '../apis/GrapeMasterAPI';
 import { UserContext } from '../contexts/user-context';
 import { GrapeMasterContext } from '../contexts/grape-master-context';
 import useGrapeMasterAPI from '../hooks/useGrapeMasterAPI';
+import useUserAPI from '../hooks/useUserAPI';
 
 export const GrapeList = () => {
     const userContext = useContext(UserContext);
     const grapeMasterContext = useContext(GrapeMasterContext);
 
     const { getGrapeMasterList } = useGrapeMasterAPI();
+    useUserAPI();
 
     const [name, setName] = useState('');
     const [abbreviation, setAbbreviation] = useState('');
