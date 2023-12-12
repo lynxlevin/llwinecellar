@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 import {
     AppBar,
     Container,
@@ -19,11 +19,15 @@ import {
 import DeleteIcon from '@mui/icons-material/Delete';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import AppIcon from '../components/AppIcon';
-import { useEffect, useState } from 'react';
-import { GrapeMasterAPI, GrapeMasterItem } from '../apis/GrapeMasterAPI';
+import { useContext, useEffect, useState } from 'react';
+import { GrapeMasterAPI } from '../apis/GrapeMasterAPI';
+import { UserContext } from '../contexts/user-context';
+import { GrapeMaster } from '../contexts/grape-master-context';
 
 export const GrapeList = () => {
-    const [grapeList, setGrapeList] = useState<GrapeMasterItem[]>([]);
+    const userContext = useContext(UserContext);
+
+    const [grapeList, setGrapeList] = useState<GrapeMaster[]>([]);
     const [name, setName] = useState('');
     const [abbreviation, setAbbreviation] = useState('');
     const [createErrorMessage, setCreateErrorMessage] = useState('');
@@ -71,6 +75,9 @@ export const GrapeList = () => {
         getGrapeList();
     }, [setGrapeList]);
 
+    if (userContext.isLoggedIn === false) {
+        return <Navigate to="/login" />;
+    }
     return (
         <>
             <AppBar
