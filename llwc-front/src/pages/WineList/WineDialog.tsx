@@ -266,7 +266,7 @@ const WineDialog = (props: WineDialogProps) => {
             region_3: region3,
             region_4: region4,
             region_5: region5,
-            cepages: cepages,
+            cepages: cepages.sort((a, b) => Number(b.percentage)! - Number(a.percentage)!),
             vintage: vintage,
             bought_at: boughtAt,
             bought_from: boughtFrom,
@@ -484,7 +484,7 @@ const WineDialog = (props: WineDialogProps) => {
                         />
                         {/* MYMEMO(後日): consider using _.throttle or _.debounce on all onChanges */}
                     </Grid>
-                    {/* <Grid item xs={10}>
+                    <Grid item xs={10}>
                         <TextField
                             label="cepages"
                             error={Boolean(validationErrors.cepages)}
@@ -511,7 +511,7 @@ const WineDialog = (props: WineDialogProps) => {
                     </Grid>
                     <Grid item xs={2}>
                         <Button onClick={addToCepagesInput}>Add</Button>
-                    </Grid> */}
+                    </Grid>
                     <Grid item xs={12}>
                         <FormControl>
                             <InputLabel id="cepages-select-label" shrink>
@@ -556,6 +556,22 @@ const WineDialog = (props: WineDialogProps) => {
                             Log
                         </Button>
                     </Grid>
+                    {cepages.map((cepage, i) => (
+                        <Grid item xs={12} key={i}>
+                            <InputLabel id={`cepage-percentage-input-${i}`}>{cepage.name}</InputLabel>
+                            <TextField
+                                value={cepage.percentage}
+                                onChange={event => {
+                                    setCepages(cur => {
+                                        return cur.map(c => {
+                                            if (c.name === cepage.name) return { ...c, percentage: event.target.value };
+                                            return c;
+                                        });
+                                    });
+                                }}
+                            />
+                        </Grid>
+                    ))}
                     <Grid item xs={6}>
                         <TextField
                             label="bought_at"
