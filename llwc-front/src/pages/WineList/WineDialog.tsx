@@ -18,6 +18,7 @@ import {
     Chip,
     FormControlLabel,
     Checkbox,
+    SelectChangeEvent,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { TransitionProps } from '@mui/material/transitions';
@@ -31,6 +32,7 @@ import { WineRegionContext } from '../../contexts/wine-region-context';
 import useWineTagAPI from '../../hooks/useWineTagAPI';
 import { WineDialogAction } from '../../hooks/useWineListPage';
 import useWineRegionAPI from '../../hooks/useWineRegionAPI';
+import { GrapeMasterContext } from '../../contexts/grape-master-context';
 
 const countries = [
     'France',
@@ -112,6 +114,7 @@ const WineDialog = (props: WineDialogProps) => {
     const cellarContext = useContext(CellarContext);
     const wineTagContext = useContext(WineTagContext);
     const wineRegionContext = useContext(WineRegionContext);
+    const grapeMasterContext = useContext(GrapeMasterContext);
 
     const { getWineList } = useWineAPI();
     const { getWineTagList } = useWineTagAPI();
@@ -481,7 +484,7 @@ const WineDialog = (props: WineDialogProps) => {
                         />
                         {/* MYMEMO(後日): consider using _.throttle or _.debounce on all onChanges */}
                     </Grid>
-                    <Grid item xs={10}>
+                    {/* <Grid item xs={10}>
                         <TextField
                             label="cepages"
                             error={Boolean(validationErrors.cepages)}
@@ -508,6 +511,50 @@ const WineDialog = (props: WineDialogProps) => {
                     </Grid>
                     <Grid item xs={2}>
                         <Button onClick={addToCepagesInput}>Add</Button>
+                    </Grid> */}
+                    <Grid item xs={12}>
+                        <FormControl>
+                            <InputLabel id="cepages-select-label" shrink>
+                                cepages
+                            </InputLabel>
+                            <Select
+                                labelId="cepages-select-label"
+                                label="cepages"
+                                multiple
+                                value={cepages.map(cepage => cepage.name)}
+                                onChange={(event: SelectChangeEvent<string[]>) => {
+                                    const {
+                                        target: { value },
+                                    } = event;
+                                    const grapes = typeof value === 'string' ? value.split(',') : value;
+                                    setCepages(cur =>
+                                        grapes.map((grape: string) => {
+                                            const exists = cur.find(c => c.name === grape);
+                                            if (exists) return exists;
+                                            const abbreviation = grapeMasterContext.grapeMasterList.find(
+                                                grapeMaster => grapeMaster.name === grape,
+                                            )!.abbreviation;
+                                            return { name: grape, abbreviation, percentage: '0.0' };
+                                        }),
+                                    );
+                                }}
+                            >
+                                {grapeMasterContext.grapeMasterList.map(grape => (
+                                    <MenuItem key={grape.id} value={grape.name}>
+                                        {grape.name}({grape.abbreviation})
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
+                    </Grid>
+                    <Grid item xs={2}>
+                        <Button
+                            onClick={() => {
+                                console.log(cepages);
+                            }}
+                        >
+                            Log
+                        </Button>
                     </Grid>
                     <Grid item xs={6}>
                         <TextField
