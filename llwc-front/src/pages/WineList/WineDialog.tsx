@@ -19,6 +19,7 @@ import {
     FormControlLabel,
     Checkbox,
     SelectChangeEvent,
+    Box,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { TransitionProps } from '@mui/material/transitions';
@@ -370,7 +371,7 @@ const WineDialog = (props: WineDialogProps) => {
                             fullWidth
                         />
                     </Grid>
-                    <Grid item xs={10}>
+                    <Grid item xs={9}>
                         <TextField
                             label="producer"
                             value={producer}
@@ -381,7 +382,7 @@ const WineDialog = (props: WineDialogProps) => {
                             fullWidth
                         />
                     </Grid>
-                    <Grid item xs={2}>
+                    <Grid item xs={3}>
                         <TextField
                             label="vintage"
                             value={vintage ?? ''}
@@ -392,6 +393,62 @@ const WineDialog = (props: WineDialogProps) => {
                             variant="standard"
                             fullWidth
                         />
+                    </Grid>
+                    <Grid item xs={6}>
+                        <TextField
+                            label="bought_at"
+                            value={boughtAt ?? ''}
+                            onChange={event => {
+                                setBoughtAt(event.target.value || null);
+                            }}
+                            variant="standard"
+                            fullWidth
+                        />
+                    </Grid>
+                    <Grid item xs={6}>
+                        <TextField
+                            label="bought_from"
+                            value={boughtFrom}
+                            onChange={event => {
+                                setBoughtFrom(event.target.value);
+                            }}
+                            variant="standard"
+                            fullWidth
+                        />
+                    </Grid>
+                    <Grid item xs={12}>
+                        <TextField
+                            label="price"
+                            value={price ?? ''}
+                            onChange={event => {
+                                const value = event.target.value === '' ? null : Number(event.target.value);
+                                setPrice(value);
+                            }}
+                            variant="standard"
+                            fullWidth
+                        />
+                    </Grid>
+                    <Grid item xs={12}>
+                        <Autocomplete
+                            options={wineRegionContext.wineRegionList}
+                            value={getWineRegionValue()}
+                            renderTags={(value: readonly string[], getTagProps) =>
+                                value.map((option: string, index: number) => <Chip variant="outlined" label={option} {...getTagProps({ index })} />)
+                            }
+                            renderInput={params => <TextField {...params} label="wine_region" />}
+                            onChange={(event: any, newValue: string | null) => {
+                                if (newValue) {
+                                    const [_country, _region1, _region2, _region3, _region4, _region5] = newValue.split('>');
+                                    setCountry(_country);
+                                    setRegion1(_region1 ?? '');
+                                    setRegion2(_region2 ?? '');
+                                    setRegion3(_region3 ?? '');
+                                    setRegion4(_region4 ?? '');
+                                    setRegion5(_region5 ?? '');
+                                }
+                            }}
+                        />
+                        {/* MYMEMO(後日): consider using _.throttle or _.debounce on all onChanges */}
                     </Grid>
                     <Grid item xs={6}>
                         <Autocomplete
@@ -462,29 +519,7 @@ const WineDialog = (props: WineDialogProps) => {
                             fullWidth
                         />
                     </Grid>
-                    <Grid item xs={12}>
-                        <Autocomplete
-                            options={wineRegionContext.wineRegionList}
-                            value={getWineRegionValue()}
-                            renderTags={(value: readonly string[], getTagProps) =>
-                                value.map((option: string, index: number) => <Chip variant="outlined" label={option} {...getTagProps({ index })} />)
-                            }
-                            renderInput={params => <TextField {...params} label="wine_region" />}
-                            onChange={(event: any, newValue: string | null) => {
-                                if (newValue) {
-                                    const [_country, _region1, _region2, _region3, _region4, _region5] = newValue.split('>');
-                                    setCountry(_country);
-                                    setRegion1(_region1 ?? '');
-                                    setRegion2(_region2 ?? '');
-                                    setRegion3(_region3 ?? '');
-                                    setRegion4(_region4 ?? '');
-                                    setRegion5(_region5 ?? '');
-                                }
-                            }}
-                        />
-                        {/* MYMEMO(後日): consider using _.throttle or _.debounce on all onChanges */}
-                    </Grid>
-                    <Grid item xs={10}>
+                    {/* <Grid item xs={10}>
                         <TextField
                             label="cepages"
                             error={Boolean(validationErrors.cepages)}
@@ -511,9 +546,9 @@ const WineDialog = (props: WineDialogProps) => {
                     </Grid>
                     <Grid item xs={2}>
                         <Button onClick={addToCepagesInput}>Add</Button>
-                    </Grid>
+                    </Grid> */}
                     <Grid item xs={12}>
-                        <FormControl>
+                        <FormControl sx={{ width: '100%' }}>
                             <InputLabel id="cepages-select-label" shrink>
                                 cepages
                             </InputLabel>
@@ -538,6 +573,13 @@ const WineDialog = (props: WineDialogProps) => {
                                         }),
                                     );
                                 }}
+                                renderValue={selected => (
+                                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                                        {selected.map(value => (
+                                            <Chip key={value} label={value} />
+                                        ))}
+                                    </Box>
+                                )}
                             >
                                 {grapeMasterContext.grapeMasterList.map(grape => (
                                     <MenuItem key={grape.id} value={grape.name}>
@@ -547,17 +589,8 @@ const WineDialog = (props: WineDialogProps) => {
                             </Select>
                         </FormControl>
                     </Grid>
-                    <Grid item xs={2}>
-                        <Button
-                            onClick={() => {
-                                console.log(cepages);
-                            }}
-                        >
-                            Log
-                        </Button>
-                    </Grid>
                     {cepages.map((cepage, i) => (
-                        <Grid item xs={12} key={i}>
+                        <Grid item xs={6} key={i}>
                             <InputLabel id={`cepage-percentage-input-${i}`}>{cepage.name}</InputLabel>
                             <TextField
                                 value={cepage.percentage}
@@ -572,41 +605,8 @@ const WineDialog = (props: WineDialogProps) => {
                             />
                         </Grid>
                     ))}
-                    <Grid item xs={6}>
-                        <TextField
-                            label="bought_at"
-                            value={boughtAt ?? ''}
-                            onChange={event => {
-                                setBoughtAt(event.target.value || null);
-                            }}
-                            variant="standard"
-                            fullWidth
-                        />
-                    </Grid>
-                    <Grid item xs={6}>
-                        <TextField
-                            label="bought_from"
-                            value={boughtFrom}
-                            onChange={event => {
-                                setBoughtFrom(event.target.value);
-                            }}
-                            variant="standard"
-                            fullWidth
-                        />
-                    </Grid>
-                    <Grid item xs={12}>
-                        <TextField
-                            label="price"
-                            value={price ?? ''}
-                            onChange={event => {
-                                const value = event.target.value === '' ? null : Number(event.target.value);
-                                setPrice(value);
-                            }}
-                            variant="standard"
-                            fullWidth
-                        />
-                    </Grid>
-                    <Grid item xs={10}>
+                    {cepages.length % 2 !== 0 && <Grid item xs={6} />}
+                    <Grid item xs={8}>
                         <TextField
                             label="drunk_at"
                             value={drunkAt ?? ''}
@@ -617,8 +617,10 @@ const WineDialog = (props: WineDialogProps) => {
                             fullWidth
                         />
                     </Grid>
-                    <Grid item xs={2}>
-                        <Button onClick={fillDrunkAtAndMoveOutOfCellar}>Drink</Button>
+                    <Grid item xs={4} sx={{ textAlign: 'center' }}>
+                        <Button variant="contained" sx={{ marginTop: '10px' }} onClick={fillDrunkAtAndMoveOutOfCellar}>
+                            Drink
+                        </Button>
                     </Grid>
                     <Grid item xs={12}>
                         <TextField
