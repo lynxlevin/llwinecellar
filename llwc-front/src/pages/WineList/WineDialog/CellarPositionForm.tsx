@@ -33,7 +33,7 @@ const CellarPositionForm = (props: CellarPositionFormProps) => {
 
     return (
         <>
-            <Grid item xs={10}>
+            <Grid item xs={9}>
                 <FormControl>
                     <InputLabel id="cellar-id-input-label" shrink>
                         cellar
@@ -57,7 +57,7 @@ const CellarPositionForm = (props: CellarPositionFormProps) => {
                 </FormControl>
             </Grid>
             {action === 'edit' && (
-                <Grid item xs={2}>
+                <Grid item xs={3}>
                     <FormControlLabel
                         label="don't move"
                         control={
