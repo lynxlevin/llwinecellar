@@ -33,7 +33,7 @@ import { WineDataKeys } from '../../contexts/wine-context';
 import useUserAPI from '../../hooks/useUserAPI';
 import { CellarContext } from '../../contexts/cellar-context';
 import { UserContext } from '../../contexts/user-context';
-import WineDialog from './WineDialog';
+import WineDialog from './WineDialog/WineDialog';
 import { WineContext } from '../../contexts/wine-context';
 import AppIcon from '../../components/AppIcon';
 import Loading from '../Loading';
