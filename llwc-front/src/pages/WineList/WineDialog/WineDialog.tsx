@@ -1,82 +1,18 @@
 import React, { useEffect, useState, useContext, useMemo } from 'react';
-import {
-    AppBar,
-    Button,
-    Container,
-    Dialog,
-    Grid,
-    IconButton,
-    Slide,
-    TextField,
-    Toolbar,
-    Typography,
-    FormControl,
-    InputLabel,
-    Select,
-    MenuItem,
-    Autocomplete,
-    Chip,
-    FormControlLabel,
-    Checkbox,
-} from '@mui/material';
+import { AppBar, Button, Container, Dialog, Grid, IconButton, Slide, TextField, Toolbar, Typography, Autocomplete, Chip } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { TransitionProps } from '@mui/material/transitions';
-import { CellarContext } from '../../contexts/cellar-context';
-import { Cepage, WineData } from '../../contexts/wine-context';
-import { WineRequestBody, WineAPI } from '../../apis/WineAPI';
-import useWineAPI from '../../hooks/useWineAPI';
+import { Cepage, WineData } from '../../../contexts/wine-context';
+import { WineRequestBody, WineAPI } from '../../../apis/WineAPI';
+import useWineAPI from '../../../hooks/useWineAPI';
 import { AxiosError } from 'axios';
-import { WineTagContext } from '../../contexts/wine-tag-context';
-import { WineRegionContext } from '../../contexts/wine-region-context';
-import useWineTagAPI from '../../hooks/useWineTagAPI';
-import { WineDialogAction } from '../../hooks/useWineListPage';
-import useWineRegionAPI from '../../hooks/useWineRegionAPI';
-
-const countries = [
-    'France',
-    'Italy',
-    'Germany',
-    'Luxembourg',
-    'Spain',
-    'Portugal',
-    'Switzerland',
-    'Austria',
-    'England',
-    'Hungary',
-    'Bulgaria',
-    'Slovenia',
-    'Croatia',
-    'Bosnia Herzegovina',
-    'Macedonia',
-    'Serbia',
-    'Montenegro',
-    'Czech Republic',
-    'Slovak Republic',
-    'Romania',
-    'Malta',
-    'Greece',
-    'Japan',
-    'Armenia',
-    'Georgia',
-    'Moldova',
-    'Russia',
-    'Ukraine',
-    'America',
-    'Mexico',
-    'Canada',
-    'Chile',
-    'Argentina',
-    'Brazil',
-    'Uruguay',
-    'Australia',
-    'New Zealand',
-    'Cyprus',
-    'Israel',
-    'Lebanon',
-    'Turkey',
-    'North Africa',
-    'South Africa',
-] as const;
+import { WineTagContext } from '../../../contexts/wine-tag-context';
+import useWineTagAPI from '../../../hooks/useWineTagAPI';
+import { WineDialogAction } from '../../../hooks/useWineListPage';
+import useWineRegionAPI from '../../../hooks/useWineRegionAPI';
+import CepagesForm from './CepagesForm';
+import RegionForm from './RegionForm';
+import CellarPositionForm from './CellarPositionForm';
 
 const Transition = React.forwardRef(function Transition(
     props: TransitionProps & {
@@ -94,13 +30,13 @@ interface WineDialogProps {
     action: WineDialogAction;
 }
 
-interface ValidationErrorsType {
+export interface ValidationErrorsType {
     name?: string;
     cepages?: string;
     position?: string;
 }
 
-interface apiErrorsType {
+export interface apiErrorsType {
     country?: string;
     cellar_id?: string;
     position?: string;
@@ -109,9 +45,7 @@ interface apiErrorsType {
 const WineDialog = (props: WineDialogProps) => {
     const { isOpen, handleClose, selectedWine, action } = props;
 
-    const cellarContext = useContext(CellarContext);
     const wineTagContext = useContext(WineTagContext);
-    const wineRegionContext = useContext(WineRegionContext);
 
     const { getWineList } = useWineAPI();
     const { getWineTagList } = useWineTagAPI();
@@ -169,8 +103,6 @@ const WineDialog = (props: WineDialogProps) => {
     const [cellarId, setCellarId] = useState<string | null>(initialValues.cellarId);
     const [position, setPosition] = useState<string | null>(initialValues.position);
 
-    const [cepagesInput, setCepagesInput] = useState<string>(JSON.stringify(initialValues.cepages));
-
     const [validationErrors, setValidationErrors] = useState<ValidationErrorsType>(initialValues.validationErrors);
     const [apiErrors, setApiErrors] = useState<apiErrorsType>(initialValues.apiErrors);
 
@@ -196,32 +128,11 @@ const WineDialog = (props: WineDialogProps) => {
             setNote(initialValues.note);
             setCellarId(initialValues.cellarId);
             setPosition(initialValues.position);
-            setCepagesInput(JSON.stringify(initialValues.cepages));
             setValidationErrors(initialValues.validationErrors);
             setApiErrors(initialValues.apiErrors);
             setDontMove(initialValues.dontMove);
         }
     }, [initialValues, isOpen]);
-
-    const getWineRegionValue = () => {
-        if (country === null) return null;
-
-        let regionValue = country;
-        if (region1) regionValue += `>${region1}`;
-        if (region2) regionValue += `>${region2}`;
-        if (region3) regionValue += `>${region3}`;
-        if (region4) regionValue += `>${region4}`;
-        if (region5) regionValue += `>${region5}`;
-
-        return regionValue;
-    };
-
-    const addToCepagesInput = () => {
-        // MYMEMO: no validation when there's emptyCepage in cepages
-        const emptyCepage: Cepage = { name: '', abbreviation: '', percentage: '100.0' };
-        const cepages_ = JSON.parse(cepagesInput);
-        setCepagesInput(JSON.stringify([...cepages_, emptyCepage]));
-    };
 
     const fillDrunkAtAndMoveOutOfCellar = () => {
         if (!drunkAt) setDrunkAt(getLocaleISODateString());
@@ -232,6 +143,13 @@ const WineDialog = (props: WineDialogProps) => {
     const addValidationError = (error: ValidationErrorsType) => {
         setValidationErrors(current => {
             return { ...current, ...error };
+        });
+    };
+
+    const removeValidationError = (key: keyof ValidationErrorsType) => {
+        setValidationErrors(current => {
+            delete current[key];
+            return current;
         });
     };
 
@@ -263,7 +181,7 @@ const WineDialog = (props: WineDialogProps) => {
             region_3: region3,
             region_4: region4,
             region_5: region5,
-            cepages: cepages,
+            cepages: cepages.sort((a, b) => Number(b.percentage)! - Number(a.percentage)!),
             vintage: vintage,
             bought_at: boughtAt,
             bought_from: boughtFrom,
@@ -356,10 +274,7 @@ const WineDialog = (props: WineDialogProps) => {
                                 if (event.target.value.length === 0) {
                                     addValidationError({ name: 'Name cannot be empty.' });
                                 } else {
-                                    setValidationErrors(current => {
-                                        const { name, ...rest } = current;
-                                        return rest;
-                                    });
+                                    removeValidationError('name');
                                 }
                                 setName(event.target.value);
                             }}
@@ -367,7 +282,7 @@ const WineDialog = (props: WineDialogProps) => {
                             fullWidth
                         />
                     </Grid>
-                    <Grid item xs={10}>
+                    <Grid item xs={9}>
                         <TextField
                             label="producer"
                             value={producer}
@@ -378,7 +293,7 @@ const WineDialog = (props: WineDialogProps) => {
                             fullWidth
                         />
                     </Grid>
-                    <Grid item xs={2}>
+                    <Grid item xs={3}>
                         <TextField
                             label="vintage"
                             value={vintage ?? ''}
@@ -389,125 +304,6 @@ const WineDialog = (props: WineDialogProps) => {
                             variant="standard"
                             fullWidth
                         />
-                    </Grid>
-                    <Grid item xs={6}>
-                        <Autocomplete
-                            options={countries}
-                            value={country}
-                            renderTags={(value: readonly string[], getTagProps) =>
-                                value.map((option: string, index: number) => <Chip variant="outlined" label={option} {...getTagProps({ index })} />)
-                            }
-                            renderInput={params => <TextField {...params} label="country" />}
-                            onChange={(event: any, newValue: string | null) => {
-                                setCountry(newValue);
-                            }}
-                        />
-                        {/* MYMEMO(後日): consider using _.throttle or _.debounce on all onChanges */}
-                    </Grid>
-                    <Grid item xs={6}>
-                        <TextField
-                            label="region_1"
-                            value={region1}
-                            onChange={event => {
-                                setRegion1(event.target.value);
-                            }}
-                            variant="standard"
-                            fullWidth
-                        />
-                    </Grid>
-                    <Grid item xs={6}>
-                        <TextField
-                            label="region_2"
-                            value={region2}
-                            onChange={event => {
-                                setRegion2(event.target.value);
-                            }}
-                            variant="standard"
-                            fullWidth
-                        />
-                    </Grid>
-                    <Grid item xs={6}>
-                        <TextField
-                            label="region_3"
-                            value={region3}
-                            onChange={event => {
-                                setRegion3(event.target.value);
-                            }}
-                            variant="standard"
-                            fullWidth
-                        />
-                    </Grid>
-                    <Grid item xs={6}>
-                        <TextField
-                            label="region_4"
-                            value={region4}
-                            onChange={event => {
-                                setRegion4(event.target.value);
-                            }}
-                            variant="standard"
-                            fullWidth
-                        />
-                    </Grid>
-                    <Grid item xs={6}>
-                        <TextField
-                            label="region_5"
-                            value={region5}
-                            onChange={event => {
-                                setRegion5(event.target.value);
-                            }}
-                            variant="standard"
-                            fullWidth
-                        />
-                    </Grid>
-                    <Grid item xs={12}>
-                        <Autocomplete
-                            options={wineRegionContext.wineRegionList}
-                            value={getWineRegionValue()}
-                            renderTags={(value: readonly string[], getTagProps) =>
-                                value.map((option: string, index: number) => <Chip variant="outlined" label={option} {...getTagProps({ index })} />)
-                            }
-                            renderInput={params => <TextField {...params} label="wine_region" />}
-                            onChange={(event: any, newValue: string | null) => {
-                                if (newValue) {
-                                    const [_country, _region1, _region2, _region3, _region4, _region5] = newValue.split('>');
-                                    setCountry(_country);
-                                    setRegion1(_region1 ?? '');
-                                    setRegion2(_region2 ?? '');
-                                    setRegion3(_region3 ?? '');
-                                    setRegion4(_region4 ?? '');
-                                    setRegion5(_region5 ?? '');
-                                }
-                            }}
-                        />
-                        {/* MYMEMO(後日): consider using _.throttle or _.debounce on all onChanges */}
-                    </Grid>
-                    <Grid item xs={10}>
-                        <TextField
-                            label="cepages"
-                            error={Boolean(validationErrors.cepages)}
-                            helperText={validationErrors.cepages ? validationErrors.cepages : ''}
-                            value={cepagesInput}
-                            // MYMEMO(後日): show grape_master somewhere
-                            onChange={event => {
-                                setCepagesInput(event.target.value);
-                                try {
-                                    setCepages(JSON.parse(event.target.value));
-                                    setValidationErrors(current => {
-                                        const { cepages, ...rest } = current;
-                                        return rest;
-                                    });
-                                } catch (error) {
-                                    if (error instanceof SyntaxError) {
-                                        addValidationError({ cepages: (error as SyntaxError).message });
-                                    }
-                                }
-                            }}
-                            variant="standard"
-                            fullWidth
-                        />
-                    </Grid>
-                    <Grid item xs={2}>
-                        <Button onClick={addToCepagesInput}>Add</Button>
                     </Grid>
                     <Grid item xs={6}>
                         <TextField
@@ -543,7 +339,22 @@ const WineDialog = (props: WineDialogProps) => {
                             fullWidth
                         />
                     </Grid>
-                    <Grid item xs={10}>
+                    <RegionForm
+                        country={country}
+                        region1={region1}
+                        region2={region2}
+                        region3={region3}
+                        region4={region4}
+                        region5={region5}
+                        setCountry={setCountry}
+                        setRegion1={setRegion1}
+                        setRegion2={setRegion2}
+                        setRegion3={setRegion3}
+                        setRegion4={setRegion4}
+                        setRegion5={setRegion5}
+                    />
+                    <CepagesForm cepages={cepages} setCepages={setCepages} />
+                    <Grid item xs={8}>
                         <TextField
                             label="drunk_at"
                             value={drunkAt ?? ''}
@@ -554,8 +365,10 @@ const WineDialog = (props: WineDialogProps) => {
                             fullWidth
                         />
                     </Grid>
-                    <Grid item xs={2}>
-                        <Button onClick={fillDrunkAtAndMoveOutOfCellar}>Drink</Button>
+                    <Grid item xs={4} sx={{ textAlign: 'center' }}>
+                        <Button variant="contained" sx={{ marginTop: '10px' }} onClick={fillDrunkAtAndMoveOutOfCellar}>
+                            Drink
+                        </Button>
                     </Grid>
                     <Grid item xs={12}>
                         <TextField
@@ -569,66 +382,18 @@ const WineDialog = (props: WineDialogProps) => {
                             multiline
                         />
                     </Grid>
-                    <Grid item xs={10}>
-                        <FormControl>
-                            <InputLabel id="cellar-id-input-label" shrink>
-                                cellar
-                            </InputLabel>
-                            <Select
-                                labelId="cellar-id-input-label"
-                                label="cellar"
-                                value={cellarId}
-                                onChange={event => {
-                                    setCellarId(event.target.value);
-                                }}
-                                disabled={dontMove}
-                            >
-                                {cellarContext.cellarList.map(cellar => (
-                                    <MenuItem key={cellar.id} value={cellar.id}>
-                                        {cellar.name}
-                                    </MenuItem>
-                                ))}
-                                <MenuItem value={noCellarCode}>{noCellarCode}</MenuItem>
-                            </Select>
-                        </FormControl>
-                    </Grid>
-                    {action === 'edit' && (
-                        <Grid item xs={2}>
-                            <FormControlLabel
-                                label="don't move"
-                                control={
-                                    <Checkbox
-                                        checked={dontMove}
-                                        onChange={event => {
-                                            setDontMove(event.target.checked);
-                                        }}
-                                    />
-                                }
-                            />
-                        </Grid>
-                    )}
-                    <Grid item xs={12}>
-                        {/* MYMEMO(後日): make this a select */}
-                        <TextField
-                            label="position"
-                            value={position ?? ''}
-                            onChange={event => {
-                                if (cellarId === noCellarCode || event.target.value !== '') {
-                                    setValidationErrors(current => {
-                                        const { position, ...rest } = current;
-                                        return rest;
-                                    });
-                                }
-                                setPosition(event.target.value || null);
-                            }}
-                            disabled={cellarId === noCellarCode || dontMove}
-                            error={Boolean(apiErrors.position) || Boolean(validationErrors.position)}
-                            helperText={apiErrors.position || validationErrors.position}
-                            variant="standard"
-                            fullWidth
-                            multiline
-                        />
-                    </Grid>
+                    <CellarPositionForm
+                        cellarId={cellarId}
+                        position={position}
+                        validationErrors={validationErrors}
+                        apiErrors={apiErrors}
+                        dontMove={dontMove}
+                        setCellarId={setCellarId}
+                        setPosition={setPosition}
+                        setValidationErrors={setValidationErrors}
+                        setDontMove={setDontMove}
+                        action={action}
+                    />
                 </Grid>
             </Container>
         </Dialog>

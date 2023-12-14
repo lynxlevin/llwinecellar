@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 import {
     AppBar,
     Container,
@@ -19,21 +19,25 @@ import {
 import DeleteIcon from '@mui/icons-material/Delete';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import AppIcon from '../components/AppIcon';
-import { useEffect, useState } from 'react';
-import { GrapeMasterAPI, GrapeMasterItem } from '../apis/GrapeMasterAPI';
+import { useContext, useState } from 'react';
+import { GrapeMasterAPI } from '../apis/GrapeMasterAPI';
+import { UserContext } from '../contexts/user-context';
+import { GrapeMasterContext } from '../contexts/grape-master-context';
+import useGrapeMasterAPI from '../hooks/useGrapeMasterAPI';
+import useUserAPI from '../hooks/useUserAPI';
 
 export const GrapeList = () => {
-    const [grapeList, setGrapeList] = useState<GrapeMasterItem[]>([]);
+    const userContext = useContext(UserContext);
+    const grapeMasterContext = useContext(GrapeMasterContext);
+
+    const { getGrapeMasterList } = useGrapeMasterAPI();
+    useUserAPI();
+
     const [name, setName] = useState('');
     const [abbreviation, setAbbreviation] = useState('');
     const [createErrorMessage, setCreateErrorMessage] = useState('');
     const [grapeIdToDelete, setGrapeIdToDelete] = useState('');
     const [showDeleteButtons, setShowDeleteButtons] = useState(false);
-
-    const getGrapeList = async () => {
-        const res = await GrapeMasterAPI.list();
-        setGrapeList(res.data.grape_masters);
-    };
 
     const addGrape = () => {
         setCreateErrorMessage('');
@@ -41,7 +45,7 @@ export const GrapeList = () => {
             .then(async () => {
                 setName('');
                 setAbbreviation('');
-                await getGrapeList();
+                await getGrapeMasterList();
             })
             .catch(err => {
                 setCreateErrorMessage(err.response.data);
@@ -51,7 +55,7 @@ export const GrapeList = () => {
     const deleteGrape = (grapeId: string) => {
         GrapeMasterAPI.delete(grapeId)
             .then(async () => {
-                await getGrapeList();
+                await getGrapeMasterList();
             })
             .catch(err => {
                 if (err.response.data[0] === 'Assigned grape, use force_delete.') {
@@ -62,15 +66,14 @@ export const GrapeList = () => {
 
     const forceDelete = () => {
         GrapeMasterAPI.delete(grapeIdToDelete, true).then(async () => {
-            await getGrapeList();
+            await getGrapeMasterList();
             setGrapeIdToDelete('');
         });
     };
 
-    useEffect(() => {
-        getGrapeList();
-    }, [setGrapeList]);
-
+    if (userContext.isLoggedIn === false) {
+        return <Navigate to="/login" />;
+    }
     return (
         <>
             <AppBar
@@ -105,7 +108,7 @@ export const GrapeList = () => {
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {grapeList.map(grape => (
+                            {grapeMasterContext.grapeMasterList.map(grape => (
                                 <TableRow key={grape.id}>
                                     <TableCell>{grape.name}</TableCell>
                                     <TableCell>{grape.abbreviation}</TableCell>

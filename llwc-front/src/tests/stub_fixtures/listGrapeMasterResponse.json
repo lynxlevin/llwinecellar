@@ -1,0 +1,24 @@
+{
+    "grape_masters": [
+        {
+            "id": "grape000-0000-0000-0000-000000000000",
+            "name": "Pinot Noir",
+            "abbreviation": "PN"
+        },
+        {
+            "id": "grape000-0000-0000-0000-000000000000",
+            "name": "Syrah",
+            "abbreviation": ""
+        },
+        {
+            "id": "grape000-0000-0000-0000-000000000000",
+            "name": "Merlot",
+            "abbreviation": "Mr"
+        },
+        {
+            "id": "grape000-0000-0000-0000-000000000000",
+            "name": "Cabernet Sauvignon",
+            "abbreviation": "CS"
+        }
+    ]
+}

@@ -8,6 +8,7 @@ import { BrowserRouter } from 'react-router-dom';
 import listCellarResponse from './stub_fixtures/listCellarResponse.json';
 import listWineTagResponse from './stub_fixtures/listWineTagResponse.json';
 import listWineRegionResponse from './stub_fixtures/listWineRegionResponse.json';
+import listGrapeMasterResponse from './stub_fixtures/listGrapeMasterResponse.json';
 import listWineResponse from './stub_fixtures/listWineResponse.json';
 
 // Mui testing reference: https://jskim1991.medium.com/react-dont-give-up-on-testing-when-using-material-ui-with-react-ff737969eec7
@@ -35,6 +36,9 @@ const server = setupServer(
     }),
     rest.get('/api/wine_regions/', (req, res, ctx) => {
         return res(ctx.json(listWineRegionResponse));
+    }),
+    rest.get('/api/grape_masters/', (req, res, ctx) => {
+        return res(ctx.json(listGrapeMasterResponse));
     }),
     rest.get('/api/wines/', (req, res, ctx) => {
         return res(ctx.json(listWineResponse));
