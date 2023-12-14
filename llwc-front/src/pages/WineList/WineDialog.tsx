@@ -173,8 +173,6 @@ const WineDialog = (props: WineDialogProps) => {
     const [cellarId, setCellarId] = useState<string | null>(initialValues.cellarId);
     const [position, setPosition] = useState<string | null>(initialValues.position);
 
-    const [cepagesInput, setCepagesInput] = useState<string>(JSON.stringify(initialValues.cepages));
-
     const [validationErrors, setValidationErrors] = useState<ValidationErrorsType>(initialValues.validationErrors);
     const [apiErrors, setApiErrors] = useState<apiErrorsType>(initialValues.apiErrors);
 
@@ -200,7 +198,6 @@ const WineDialog = (props: WineDialogProps) => {
             setNote(initialValues.note);
             setCellarId(initialValues.cellarId);
             setPosition(initialValues.position);
-            setCepagesInput(JSON.stringify(initialValues.cepages));
             setValidationErrors(initialValues.validationErrors);
             setApiErrors(initialValues.apiErrors);
             setDontMove(initialValues.dontMove);
@@ -218,13 +215,6 @@ const WineDialog = (props: WineDialogProps) => {
         if (region5) regionValue += `>${region5}`;
 
         return regionValue;
-    };
-
-    const addToCepagesInput = () => {
-        // MYMEMO: no validation when there's emptyCepage in cepages
-        const emptyCepage: Cepage = { name: '', abbreviation: '', percentage: '100.0' };
-        const cepages_ = JSON.parse(cepagesInput);
-        setCepagesInput(JSON.stringify([...cepages_, emptyCepage]));
     };
 
     const fillDrunkAtAndMoveOutOfCellar = () => {
@@ -519,34 +509,6 @@ const WineDialog = (props: WineDialogProps) => {
                             fullWidth
                         />
                     </Grid>
-                    {/* <Grid item xs={10}>
-                        <TextField
-                            label="cepages"
-                            error={Boolean(validationErrors.cepages)}
-                            helperText={validationErrors.cepages ? validationErrors.cepages : ''}
-                            value={cepagesInput}
-                            // MYMEMO(後日): show grape_master somewhere
-                            onChange={event => {
-                                setCepagesInput(event.target.value);
-                                try {
-                                    setCepages(JSON.parse(event.target.value));
-                                    setValidationErrors(current => {
-                                        const { cepages, ...rest } = current;
-                                        return rest;
-                                    });
-                                } catch (error) {
-                                    if (error instanceof SyntaxError) {
-                                        addValidationError({ cepages: (error as SyntaxError).message });
-                                    }
-                                }
-                            }}
-                            variant="standard"
-                            fullWidth
-                        />
-                    </Grid>
-                    <Grid item xs={2}>
-                        <Button onClick={addToCepagesInput}>Add</Button>
-                    </Grid> */}
                     <Grid item xs={12}>
                         <FormControl sx={{ width: '100%' }}>
                             <InputLabel id="cepages-select-label" shrink>
@@ -569,7 +531,7 @@ const WineDialog = (props: WineDialogProps) => {
                                             const abbreviation = grapeMasterContext.grapeMasterList.find(
                                                 grapeMaster => grapeMaster.name === grape,
                                             )!.abbreviation;
-                                            return { name: grape, abbreviation, percentage: '0.0' };
+                                            return { name: grape, abbreviation, percentage: '0' };
                                         }),
                                     );
                                 }}
@@ -594,6 +556,7 @@ const WineDialog = (props: WineDialogProps) => {
                             <InputLabel id={`cepage-percentage-input-${i}`}>{cepage.name}</InputLabel>
                             <TextField
                                 value={cepage.percentage}
+                                type="number"
                                 onChange={event => {
                                     setCepages(cur => {
                                         return cur.map(c => {
