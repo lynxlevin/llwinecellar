@@ -229,6 +229,13 @@ const WineDialog = (props: WineDialogProps) => {
         });
     };
 
+    const removeValidationError = (key: keyof ValidationErrorsType) => {
+        setValidationErrors(current => {
+            delete current[key];
+            return current;
+        });
+    };
+
     const validateOnSave = (): boolean => {
         setApiErrors({});
         let isValid = true;
@@ -350,10 +357,7 @@ const WineDialog = (props: WineDialogProps) => {
                                 if (event.target.value.length === 0) {
                                     addValidationError({ name: 'Name cannot be empty.' });
                                 } else {
-                                    setValidationErrors(current => {
-                                        const { name, ...rest } = current;
-                                        return rest;
-                                    });
+                                    removeValidationError('name');
                                 }
                                 setName(event.target.value);
                             }}
@@ -642,10 +646,7 @@ const WineDialog = (props: WineDialogProps) => {
                             value={position ?? ''}
                             onChange={event => {
                                 if (cellarId === noCellarCode || event.target.value !== '') {
-                                    setValidationErrors(current => {
-                                        const { position, ...rest } = current;
-                                        return rest;
-                                    });
+                                    removeValidationError('position');
                                 }
                                 setPosition(event.target.value || null);
                             }}
