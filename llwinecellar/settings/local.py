@@ -64,5 +64,9 @@ LOGGING = {
             "handlers": ["file"],
             "level": "DEBUG",
         },
+        "wine_memos": {
+            "handlers": ["file"],
+            "level": "DEBUG",
+        },
     },
 }
