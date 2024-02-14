@@ -1,7 +1,4 @@
 __pycache__/
 .env
-todos.md
 fixtures/
 django.log
-llwinecellar/static
-tmp
