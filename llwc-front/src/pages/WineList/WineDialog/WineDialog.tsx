@@ -84,7 +84,7 @@ const WineDialog = (props: WineDialogProps) => {
         };
     }, [action, selectedWine]);
 
-    const [tagTexts, setTagTexts] = useState<string[]>(initialValues.tagTexts);
+    const [tagTexts, setTagTexts] = useState<string[]>(initialValues.tagTexts); // deep copy できてなさそう
     const [name, setName] = useState<string>(initialValues.name);
     const [producer, setProducer] = useState<string>(initialValues.producer);
     const [vintage, setVintage] = useState<number | null>(initialValues.vintage);
@@ -94,7 +94,7 @@ const WineDialog = (props: WineDialogProps) => {
     const [region3, setRegion3] = useState<string>(initialValues.region3);
     const [region4, setRegion4] = useState<string>(initialValues.region4);
     const [region5, setRegion5] = useState<string>(initialValues.region5);
-    const [cepages, setCepages] = useState<Cepage[]>(initialValues.cepages);
+    const [cepages, setCepages] = useState<Cepage[]>(initialValues.cepages); // List of objects だから、中身のobjectはdeep copy できてないかも
     const [boughtAt, setBoughtAt] = useState<string | null>(initialValues.boughtAt);
     const [boughtFrom, setBoughtFrom] = useState<string>(initialValues.boughtFrom);
     const [price, setPrice] = useState<number | null>(initialValues.price);
