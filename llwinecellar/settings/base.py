@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     "users.apps.UsersConfig",
     "wines.apps.WinesConfig",
     "cellars.apps.CellarsConfig",
+    "wine_memos.apps.WineMemosConfig",
 ]
 
 MIDDLEWARE = [

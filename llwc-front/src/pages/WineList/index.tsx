@@ -110,7 +110,7 @@ const WineListToolbar = (props: WineListToolbarProps) => {
             <Typography sx={{ flex: '1 1 10%' }} variant="h6" id="tableTitle" component="div">
                 {pageTitle}
             </Typography>
-            <IconButton onClick={toggleListMode}>{drunkOnly ? <BookIcon /> : <WarehouseIcon />}</IconButton>
+            <IconButton onClick={toggleListMode}>{drunkOnly ? <WarehouseIcon /> : <BookIcon />}</IconButton>
             <IconButton onClick={openMenu}>
                 <MenuIcon />
             </IconButton>

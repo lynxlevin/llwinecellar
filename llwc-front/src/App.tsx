@@ -11,6 +11,7 @@ import { WineRegionContext } from './contexts/wine-region-context';
 import { GrapeMaster, GrapeMasterContext } from './contexts/grape-master-context';
 import { Settings } from './pages/Settings';
 import { GrapeList } from './pages/GrapeList';
+import WineMemos from './pages/WineMemos';
 
 function App() {
     const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
@@ -46,6 +47,7 @@ function App() {
                                         />
                                         <Route path="/login" element={<Login />} />
                                         <Route path="/wine-list" element={<WineList />} />
+                                        <Route path="/wine-memos" element={<WineMemos />} />
                                         <Route path="/settings" element={<Settings />} />
                                         <Route path="/grape-list" element={<GrapeList />} />
                                     </Routes>
