@@ -1,6 +1,6 @@
 import styled from '@emotion/styled';
 import EditIcon from '@mui/icons-material/Edit';
-import { Card, CardContent, Grid, IconButton, Typography } from '@mui/material';
+import { Card, CardContent, Grid, IconButton, TextField, Typography } from '@mui/material';
 import { memo, useState } from 'react';
 import EditDiaryDialog from './EditWineMemoDialog';
 import { IWineMemo } from '../../apis/WineMemoAPI';
@@ -25,7 +25,8 @@ const WineMemo = (props: WineMemoProps) => {
                             <EditIcon />
                         </IconButton>
                     </div>
-                    <Typography className='memo-description'>{wineMemo.entry}</Typography>
+                    <TextField value={wineMemo.entry} multiline maxRows={12} fullWidth disabled sx={{"& .MuiInputBase-input.Mui-disabled": {WebkitTextFillColor: "rgba(0, 0, 0, 0.87)"}}} />
+                    {/* <Typography className='memo-description'>{wineMemo.entry}</Typography> */}
                 </CardContent>
             </Card>
             {isEditWineMemoDialogOpen && (
@@ -62,11 +63,6 @@ const StyledGrid = styled(Grid)`
         position: absolute;
         top: -8px;
         right: -7px;
-    }
-
-    .memo-description {
-        text-align: start;
-        white-space: pre-wrap;
     }
 `;
 

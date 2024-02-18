@@ -29,8 +29,8 @@ const WineMemoForm = (props: WineMemoFormProps) => {
 
     return (
         <>
-            <FormGroup sx={{ mt: 3 }}>
-                <TextField value={title} onChange={event => setTitle(event.target.value)} label='タイトル' multiline minRows={1} />
+            <FormGroup sx={{ mt: 3, px: 2 }}>
+                <TextField value={title} onChange={event => setTitle(event.target.value)} label='タイトル' multiline minRows={1} sx={{mb: 2}} />
                 <TextField value={entry} onChange={event => setEntry(event.target.value)} label='内容' multiline minRows={5} />
             </FormGroup>
             <Button variant='contained' onClick={handleSubmit} sx={{ mt: 2, mb: 2 }}>

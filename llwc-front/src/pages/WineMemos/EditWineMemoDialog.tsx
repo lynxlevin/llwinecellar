@@ -39,7 +39,7 @@ const EditWineMemoDialog = (props: EditWineMemoDialogProps) => {
     return (
         <Dialog open={true} onClose={onClose} fullWidth>
             <DialogContent>
-                <TextField value={title} onChange={event => setTitle(event.target.value)} label='タイトル' multiline fullWidth minRows={1} />
+                <TextField value={title} onChange={event => setTitle(event.target.value)} label='タイトル' multiline fullWidth minRows={1} sx={{mb:2}} />
                 <TextField value={entry} onChange={event => setEntry(event.target.value)} label='内容' multiline fullWidth minRows={5} />
             </DialogContent>
             <DialogActions sx={{ justifyContent: 'center', py: 2 }}>

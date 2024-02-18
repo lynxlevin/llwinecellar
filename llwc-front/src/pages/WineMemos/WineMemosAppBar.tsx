@@ -29,7 +29,7 @@ const WineMemosAppBar = (props: WineMemosAppBarProps) => {
     };
 
     return (
-        <AppBar position='fixed' sx={{ bgcolor: 'primary.light' }}>
+        <AppBar position='fixed' sx={{ bgcolor: 'white' }}>
             <Toolbar>
                 <Link to="/">
                     <AppIcon height={36} />

@@ -34,7 +34,7 @@ const WineMemos = () => {
         <>
             <WineMemosAppBar handleLogout={handleLogout} />
             <main>
-                <Box sx={{pt: 8}}>
+                <Box sx={{pt: 8, px: 1}}>
                     <WineMemoForm setWineMemos={setWineMemos} />
                     <Container sx={{ pt: 2, pb: 4 }} maxWidth='md'>
                         <Grid container spacing={4}>
