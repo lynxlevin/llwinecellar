@@ -36,7 +36,7 @@ const WineMemos = () => {
             <main>
                 <Box sx={{pt: 8, px: 1}}>
                     <WineMemoForm setWineMemos={setWineMemos} />
-                    <Container sx={{ pt: 2, pb: 4 }} maxWidth='md'>
+                    <Container sx={{ pt: 2, pb: 4 }} maxWidth='lg'>
                         <Grid container spacing={4}>
                             {wineMemos.map(wineMemo => (
                                 <Diary key={wineMemo.id} wineMemo={wineMemo} setWineMemos={setWineMemos} />

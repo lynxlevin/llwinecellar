@@ -16,7 +16,7 @@ const WineMemo = (props: WineMemoProps) => {
     const [isEditWineMemoDialogOpen, setIsEditWineMemoDialogOpen] = useState(false);
 
     return (
-        <StyledGrid item xs={12} sm={6} md={4}>
+        <StyledGrid item xs={12} md={6}>
             <Card className='card'>
                 <CardContent>
                     <div className='relative-div'>
