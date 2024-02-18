@@ -81,7 +81,20 @@ class TestWineMemoViews(TestCase):
         self.assertEqual(params["title"], wine_memo.title)
         self.assertEqual(params["entry"], wine_memo.entry)
 
-    # def test_update__404_on_wrong_user_wine_memo(self):
+    def test_update__404_on_wrong_user_wine_memo(self):
+        """
+        Put /api/wine_memos/{wine_memo_id}/
+        """
+        wine_memo = WineMemoFactory(title="List to buy")
+
+        params = {
+            "title": "Dream wine list",
+            "entry": "Le Chambertin",
+        }
+
+        status_code, _ = self._make_request("put", f"{self.base_path}{wine_memo.id}/", self.user, params)
+
+        self.assertEqual(status.HTTP_404_NOT_FOUND, status_code)
 
 
     """

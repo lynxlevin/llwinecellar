@@ -1,6 +1,8 @@
 import logging
 from typing import TYPE_CHECKING
 
+from rest_framework import exceptions
+
 from ..models import WineMemo
 
 if TYPE_CHECKING:
@@ -21,7 +23,10 @@ class UpdateWineMemo:
         title = data["title"]
         entry = data["entry"]
 
-        wine_memo = WineMemo.objects.get_by_id(id)
+        wine_memo = WineMemo.objects.filter_eq_user_id(user.id).get_by_id(id)
+
+        if not wine_memo:
+            raise exceptions.NotFound()
 
         wine_memo.title = title
         wine_memo.entry = entry
