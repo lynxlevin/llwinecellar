@@ -35,14 +35,19 @@ function App() {
                                         <Route
                                             path="/"
                                             element={
-                                                <>
-                                                    <p></p>
+                                                <div style={{ fontSize: '24px' }}>
+                                                    <br />
                                                     <Link to="/wine-list">Wine List</Link>
-                                                    <p></p>
+                                                    <br />
+                                                    <br />
+                                                    <Link to="/wine-memos">WineMemo</Link>
+                                                    <br />
+                                                    <br />
                                                     <Link to="/settings">Settings</Link>
-                                                    <p></p>
+                                                    <br />
+                                                    <br />
                                                     <Link to="/grape-list">GrapeList</Link>
-                                                </>
+                                                </div>
                                             }
                                         />
                                         <Route path="/login" element={<Login />} />

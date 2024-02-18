@@ -24,8 +24,9 @@ import {
 // import FilterListIcon from '@mui/icons-material/FilterList';
 import MenuIcon from '@mui/icons-material/Menu';
 import LogoutIcon from '@mui/icons-material/Logout';
+import NoteIcon from '@mui/icons-material/Note';
 import SettingsIcon from '@mui/icons-material/Settings';
-import BookIcon from '@mui/icons-material/Book';
+import DescriptionIcon from '@mui/icons-material/Description';
 import WarehouseIcon from '@mui/icons-material/Warehouse';
 import { visuallyHidden } from '@mui/utils';
 import useWineListPage, { COLUMN_ORDER, Order } from '../../hooks/useWineListPage';
@@ -110,7 +111,7 @@ const WineListToolbar = (props: WineListToolbarProps) => {
             <Typography sx={{ flex: '1 1 10%' }} variant="h6" id="tableTitle" component="div">
                 {pageTitle}
             </Typography>
-            <IconButton onClick={toggleListMode}>{drunkOnly ? <WarehouseIcon /> : <BookIcon />}</IconButton>
+            <IconButton onClick={toggleListMode}>{drunkOnly ? <WarehouseIcon /> : <DescriptionIcon />}</IconButton>
             <IconButton onClick={openMenu}>
                 <MenuIcon />
             </IconButton>
@@ -130,6 +131,12 @@ const WineListToolbar = (props: WineListToolbarProps) => {
                             ))}
                             <MenuItem value="NOT_IN_CELLAR">NOT_IN_CELLAR</MenuItem>
                         </Select>
+                    </MenuItem>
+                    <MenuItem>
+                        <NoteIcon />
+                        <Link to="/wine-memos" style={{ color: 'rgba(0, 0, 0, 0.87)', textDecorationLine: 'none' }}>
+                            Memos
+                        </Link>
                     </MenuItem>
                     <MenuItem>
                         <SettingsIcon />
