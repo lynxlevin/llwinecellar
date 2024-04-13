@@ -1,3 +1,5 @@
+import os
+
 from django.contrib import admin
 from django.urls import include, path
 from rest_framework import routers
@@ -21,3 +23,10 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     # path("login", index_view, name="index"),
 ]
+
+env = os.getenv("DJANGO_ENV")
+if env == "local":
+    from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+
+    urlpatterns += [path("silk/", include("silk.urls", namespace="silk"))]
+    urlpatterns += staticfiles_urlpatterns()
