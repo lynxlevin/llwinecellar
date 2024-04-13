@@ -47,7 +47,7 @@ class ListWine:
         if (out_of_cellars := queries.get("out_of_cellars")) is not None:
             qs = qs.filter_eq_cellarspace__isnull(out_of_cellars)
 
-        wines = qs.order_by("created_at").all()
+        wines = qs.prefetch_tags().prefetch_cepages().order_by("created_at").all()
 
         if cellar_id and not is_drunk:
             empty_racks = (
