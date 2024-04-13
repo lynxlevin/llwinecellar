@@ -20,7 +20,6 @@ router.register(r"wine_memos", WineMemoViewSet)
 urlpatterns = [
     path("api/", include(router.urls)),
     path("user/", include("users.urls")),
-    path("admin/", admin.site.urls),
     # path("login", index_view, name="index"),
 ]
 
