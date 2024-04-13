@@ -2,3 +2,4 @@ __pycache__/
 .env
 fixtures/
 django.log
+static/

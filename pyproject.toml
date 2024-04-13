@@ -17,6 +17,7 @@ gunicorn = "^21.2.0"
 
 [tool.poetry.dev-dependencies]
 factory-boy = "^3.2.1"
+django-silk = "^5.1.0"
 
 
 [tool.black]

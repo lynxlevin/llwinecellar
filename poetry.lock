@@ -10,6 +10,18 @@ python-versions = ">=3.7"
 tests = ["pytest", "pytest-asyncio", "mypy (>=0.800)"]
 
 [[package]]
+name = "autopep8"
+version = "2.1.0"
+description = "A tool that automatically formats Python code to conform to the PEP 8 style guide"
+category = "dev"
+optional = false
+python-versions = ">=3.8"
+
+[package.dependencies]
+pycodestyle = ">=2.11.0"
+tomli = {version = "*", markers = "python_version < \"3.11\""}
+
+[[package]]
 name = "certifi"
 version = "2023.5.7"
 description = "Python package for providing Mozilla's CA Bundle."
@@ -56,6 +68,20 @@ docs = ["furo (>=2021.8.17b43,<2021.9.0)", "sphinx (>=3.5.0)", "sphinx-notfound-
 testing = ["coverage[toml] (>=5.0a4)", "pytest (>=4.6.11)"]
 
 [[package]]
+name = "django-silk"
+version = "5.1.0"
+description = "Silky smooth profiling for the Django Framework"
+category = "dev"
+optional = false
+python-versions = ">=3.8"
+
+[package.dependencies]
+autopep8 = "*"
+Django = ">=3.2"
+gprof2dot = ">=2017.09.19"
+sqlparse = "*"
+
+[[package]]
 name = "djangorestframework"
 version = "3.14.0"
 description = "Web APIs for Django, made easy."
@@ -92,6 +118,14 @@ python-versions = ">=3.7"
 
 [package.dependencies]
 python-dateutil = ">=2.4"
+
+[[package]]
+name = "gprof2dot"
+version = "2022.7.29"
+description = "Generate a dot graph from the output of several profilers."
+category = "dev"
+optional = false
+python-versions = ">=2.7"
 
 [[package]]
 name = "gunicorn"
@@ -159,6 +193,14 @@ description = "psycopg2 - Python-PostgreSQL Database Adapter"
 category = "main"
 optional = false
 python-versions = ">=3.6"
+
+[[package]]
+name = "pycodestyle"
+version = "2.11.1"
+description = "Python style guide checker"
+category = "dev"
+optional = false
+python-versions = ">=3.8"
 
 [[package]]
 name = "python-dateutil"
@@ -267,10 +309,11 @@ zstd = ["zstandard (>=0.18.0)"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "f8edfab2bfa16e870099b25ebc2edee59b92b973fb4662a2cbe24078f658c8de"
+content-hash = "64d01efc1e2b0179760a0e8d6231b72fd937e1dc1eb01fe8564285b4e74d52a8"
 
 [metadata.files]
 asgiref = []
+autopep8 = []
 certifi = []
 charset-normalizer = []
 django = []
@@ -278,15 +321,18 @@ django-environ = [
     {file = "django-environ-0.9.0.tar.gz", hash = "sha256:bff5381533056328c9ac02f71790bd5bf1cea81b1beeb648f28b81c9e83e0a21"},
     {file = "django_environ-0.9.0-py2.py3-none-any.whl", hash = "sha256:f21a5ef8cc603da1870bbf9a09b7e5577ab5f6da451b843dbcc721a7bca6b3d9"},
 ]
+django-silk = []
 djangorestframework = []
 factory-boy = []
 faker = []
+gprof2dot = []
 gunicorn = []
 idna = []
 mypy = []
 mypy-extensions = []
 packaging = []
 psycopg2 = []
+pycodestyle = []
 python-dateutil = []
 pytz = []
 requests = []
