@@ -27,8 +27,14 @@ const useWineAPI = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [wineContext.wineListQuery]);
 
+    const listWinesByName = async (name: string) => {
+        const res = await WineAPI.listByName(name);
+        return res.data.wines;
+    }
+
     return {
         getWineList,
+        listWinesByName
     };
 };
 
