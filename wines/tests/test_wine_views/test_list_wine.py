@@ -3,7 +3,9 @@ import logging
 from django.test import Client, TestCase
 from rest_framework import status
 
-from llwinecellar.common.test_utils import CellarFactory, DrunkWineFactory, UserFactory, WineFactory, WineInRackFactory
+from llwinecellar.common.test_utils import (CellarFactory, DrunkWineFactory,
+                                            UserFactory, WineFactory,
+                                            WineInRackFactory)
 
 logger = logging.getLogger(__name__)
 
@@ -129,6 +131,24 @@ class TestListWine(TestCase):
 
         expected = [*wines_not_in_cellar, *wines_drunk]
         self._assert_listed_wines_equal_expected(expected, body["wines"])
+
+    def test_by_name(self):
+        # Arrange
+        _wines_in_cellar = [WineInRackFactory(row=1, column=1, cellar=self.cellar, user=self.user)]
+        _wines_not_in_cellar = [WineFactory(user=self.user)]
+        _wines_drunk = [DrunkWineFactory(user=self.user)]
+        _wines_different_user = [WineFactory()]
+        wines_same_name = [WineFactory(name="target wine", user=self.user), DrunkWineFactory(name="target wine", user=self.user), WineInRackFactory(name="target wine", row=1, column=1, cellar=self.cellar, user=self.user)]
+
+        # Act
+        status_code, body = self._make_request(f"{self.base_path}?name=target wine", self.user)
+
+        # Assert
+        self.assertEqual(status.HTTP_200_OK, status_code)
+
+        expected = wines_same_name
+        self._assert_listed_wines_equal_expected(expected, body["wines"])
+
 
     """
     Utility functions
