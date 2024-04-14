@@ -24,6 +24,10 @@ GET {{endpoint}}/api/wines/
 GET {{endpoint}}/api/wines/?cellar_id=aa38eecc-7e8d-42c0-90a0-ad39ba584734
 
 ###
+# @name list_by_name
+GET {{endpoint}}/api/wines/?name=Sarah's Vineyard Pinot Noir
+
+###
 # @name list_is_drunk
 GET {{endpoint}}/api/wines/?is_drunk=true
 
