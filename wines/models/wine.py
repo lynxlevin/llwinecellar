@@ -19,6 +19,9 @@ class WineQuerySet(models.QuerySet["Wine"]):
     def filter_eq_user_id(self, user_id) -> "WineQuerySet":
         return self.filter(user_id=user_id)
 
+    def filter_eq_name(self, name: str) -> "WineQuerySet":
+        return self.filter(name=name)
+
     def filter_eq_cellar_id(self, cellar_id) -> "WineQuerySet":
         return self.filter(cellarspace__cellar_id=cellar_id)
 

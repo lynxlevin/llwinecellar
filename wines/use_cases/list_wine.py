@@ -41,6 +41,9 @@ class ListWine:
         if cellar_id := queries.get("cellar_id"):
             qs = qs.filter_eq_cellar_id(cellar_id)
 
+        if name := queries.get("name"):
+            qs = qs.filter_eq_name(name)
+
         if (is_drunk := queries.get("is_drunk")) is not None:
             qs = qs.filter_is_drunk(is_drunk)
 
