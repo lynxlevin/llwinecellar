@@ -60,6 +60,7 @@ class ListWineQuerySerializer(serializers.Serializer):
     is_drunk = serializers.BooleanField(required=False)
     out_of_cellars = serializers.BooleanField(required=False)
     name = serializers.CharField(max_length=256, required=False)
+    producer = serializers.CharField(max_length=128, required=False)
 
 
 class MoveWineSerializer(serializers.Serializer):

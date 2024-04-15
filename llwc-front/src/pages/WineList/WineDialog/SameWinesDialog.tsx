@@ -1,31 +1,42 @@
 import { useState } from 'react';
-import { Button, Container, Dialog, Grid, IconButton, Slide, TextField, Toolbar, Typography, Autocomplete, Chip, Card, CardContent, Paper, Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
+import { Button, Container, Dialog, Grid, IconButton, Slide, TextField, Toolbar, Typography, Autocomplete, Chip, Card, CardContent, Paper, Accordion, AccordionSummary, AccordionDetails, FormGroup, FormControlLabel, Switch, Stack } from '@mui/material';
 import { WineData } from '../../../contexts/wine-context';
 import useWineAPI from '../../../hooks/useWineAPI';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { FindSameWinesQuery } from '../../../apis/WineAPI';
 
 
 interface SameWinesDialogProps {
     name: string;
+    producer: string;
 }
 
 const SameWinesDialog = (props: SameWinesDialogProps) => {
-    const { name } = props;
+    const { name, producer } = props;
     const [sameWines, setSameWines] = useState<WineData[]>([])
-    const { listWinesByName } = useWineAPI();
+    const [searchKeys, setSearchKeys] = useState<{name: boolean, producer: boolean}>({name: true, producer: false});
+    const { findSameWines } = useWineAPI();
 
-    const findSameWinesByName = async () => {
-        const sameWines = await listWinesByName(name);
+    const search = async () => {
+        if (!Object.values(searchKeys).some(key => key)) return;
+        const query: FindSameWinesQuery = {is_drunk: true};
+        if (searchKeys.name) query["name"] = name;
+        if (searchKeys.producer) query["producer"] = producer;
+        const sameWines = await findSameWines(query);
         setSameWines(sameWines);
     }
 
     return (
         <>
-            <Button variant="contained" sx={{ marginTop: '10px' }} onClick={findSameWinesByName}>
-                Find same
-            </Button>
+            <Stack direction="row">
+                <Button variant="contained" sx={{ marginTop: '10px' }} onClick={search}>
+                    Find same
+                </Button>
+                <FormControlLabel labelPlacement='bottom' label='by name' control={<Switch checked={searchKeys.name} onChange={event => {setSearchKeys(prev => { return {...prev, name: event.target.checked}})}} />} />
+                <FormControlLabel labelPlacement='bottom' label='by producer' control={<Switch checked={searchKeys.producer} onChange={event => {setSearchKeys(prev => { return {...prev, producer: event.target.checked}})}} />} />
+            </Stack>
             <Dialog fullWidth scroll="paper" onClose={() => setSameWines([])} open={sameWines.length !== 0}>
-                <Container maxWidth="md" sx={{ padding: 2, pr: 1, pl: 1 }}>
+                <Container sx={{ padding: 2, pr: 1, pl: 1 }}>
                     {sameWines.map(wine => {
                         return (
                             <Paper elevation={3} key={wine.id} sx={{m: 1, mb: 2}}>

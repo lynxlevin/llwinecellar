@@ -250,7 +250,7 @@ const WineDialog = (props: WineDialogProps) => {
             <Container maxWidth="md" sx={{ marginTop: 3, marginBottom: 3 }}>
                 <Grid container spacing={2}>
                     <Grid item xs={12}>
-                        <SameWinesDialog name={name} />
+                        <SameWinesDialog name={name} producer={producer} />
                     </Grid>
                     <Grid item xs={12}>
                         <Autocomplete

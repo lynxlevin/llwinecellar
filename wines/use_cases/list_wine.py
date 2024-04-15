@@ -44,6 +44,9 @@ class ListWine:
         if name := queries.get("name"):
             qs = qs.filter_eq_name(name)
 
+        if producer := queries.get("producer"):
+            qs = qs.filter_eq_producer(producer)
+
         if (is_drunk := queries.get("is_drunk")) is not None:
             qs = qs.filter_is_drunk(is_drunk)
 
