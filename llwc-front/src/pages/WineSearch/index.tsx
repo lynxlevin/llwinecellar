@@ -18,8 +18,9 @@ import {
     ListItemText,
     IconButton,
     Paper,
+    Tooltip,
 } from '@mui/material';
-// import FilterListIcon from '@mui/icons-material/FilterList';
+import FilterListIcon from '@mui/icons-material/FilterList';
 import MenuIcon from '@mui/icons-material/Menu';
 import LogoutIcon from '@mui/icons-material/Logout';
 import NoteIcon from '@mui/icons-material/Note';
@@ -34,15 +35,17 @@ import WineDialog from './WineDialog/WineDialog';
 import { WineContext } from '../../contexts/wine-context';
 import AppIcon from '../../components/AppIcon';
 import Loading from '../Loading';
+import WineSearchDialog from './WineSearchDialog';
 
 // Originally copied from https://mui.com/material-ui/react-table/#sorting-amp-selecting
 
 interface WineSearchToolbarProps {
+    openWineSearchDialog: () => void;
     handleLogout: () => Promise<void>;
 }
 
 const WineSearchToolbar = (props: WineSearchToolbarProps) => {
-    const { handleLogout } = props;
+    const { openWineSearchDialog, handleLogout } = props;
 
     const wineContext = useContext(WineContext);
 
@@ -84,11 +87,11 @@ const WineSearchToolbar = (props: WineSearchToolbarProps) => {
             <IconButton onClick={openMenu}>
                 <MenuIcon />
             </IconButton>
-            {/* <Tooltip title="Filter list">
-                <IconButton>
+            <Tooltip title="Filter list">
+                <IconButton onClick={openWineSearchDialog}>
                     <FilterListIcon />
                 </IconButton>
-            </Tooltip> */}
+            </Tooltip>
             <Menu open={isMenuOpen} anchorEl={menuAnchor} onClose={closeMenu}>
                 <MenuList>
                     <MenuItem>
@@ -177,8 +180,11 @@ export const WineSearch = () => {
         visibleRows,
         selectedWine,
         wineDialogState,
+        wineSearchDialogState,
         handleClickRow,
         closeWineDialog,
+        closeWineSearchDialog,
+        openWineSearchDialog,
         emptyRows,
         rowsPerPage,
         page,
@@ -204,7 +210,7 @@ export const WineSearch = () => {
             <Box sx={{ width: '100%' }}>
                 <Paper sx={{ width: '100%' }}>
                     <div ref={toolbarRef}>
-                        <WineSearchToolbar handleLogout={handleLogout} />
+                        <WineSearchToolbar openWineSearchDialog={openWineSearchDialog} handleLogout={handleLogout} />
                     </div>
                     <TableContainer sx={{ maxHeight: tableHeight }}>
                         <Table stickyHeader sx={{ minWidth: 750 }} aria-labelledby="tableTitle" size="small">
@@ -278,6 +284,10 @@ export const WineSearch = () => {
                     action={wineDialogState.action}
                 ></WineDialog>
             )}
+            <WineSearchDialog
+                isOpen={wineSearchDialogState.open}
+                handleClose={closeWineSearchDialog}
+            />
         </div>
     );
 };
