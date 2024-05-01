@@ -8,7 +8,7 @@ import useWineAPI from '../../../hooks/useWineAPI';
 import { AxiosError } from 'axios';
 import { WineTagContext } from '../../../contexts/wine-tag-context';
 import useWineTagAPI from '../../../hooks/useWineTagAPI';
-import { WineDialogAction } from '../../../hooks/useWineListPage';
+import { WineDialogAction } from '../../../hooks/useWineSearchPage';
 import useWineRegionAPI from '../../../hooks/useWineRegionAPI';
 import CepagesForm from './CepagesForm';
 import RegionForm from './RegionForm';

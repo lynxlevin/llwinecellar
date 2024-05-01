@@ -43,7 +43,7 @@ export const COLUMN_ORDER: { default: WineDataKeys[]; drunk: WineDataKeys[] } = 
     ],
 };
 
-const useWineListPage = () => {
+const useWineSearchPage = () => {
     const userContext = useContext(UserContext);
     const wineContext = useContext(WineContext);
 
@@ -176,4 +176,4 @@ const useWineListPage = () => {
     };
 };
 
-export default useWineListPage;
+export default useWineSearchPage;
