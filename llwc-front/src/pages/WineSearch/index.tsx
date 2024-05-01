@@ -12,12 +12,10 @@ import {
     TableSortLabel,
     Toolbar,
     Typography,
-    Select,
     Menu,
     MenuList,
     MenuItem,
     ListItemText,
-    SelectChangeEvent,
     IconButton,
     Paper,
 } from '@mui/material';
@@ -26,14 +24,11 @@ import MenuIcon from '@mui/icons-material/Menu';
 import LogoutIcon from '@mui/icons-material/Logout';
 import NoteIcon from '@mui/icons-material/Note';
 import SettingsIcon from '@mui/icons-material/Settings';
-import DescriptionIcon from '@mui/icons-material/Description';
-import WarehouseIcon from '@mui/icons-material/Warehouse';
 import SecurityUpdateGoodIcon from '@mui/icons-material/SecurityUpdateGood';
 import { visuallyHidden } from '@mui/utils';
 import useWineSearchPage, { COLUMN_ORDER, Order } from '../../hooks/useWineSearchPage';
 import { WineDataKeys } from '../../contexts/wine-context';
 import useUserAPI from '../../hooks/useUserAPI';
-import { CellarContext } from '../../contexts/cellar-context';
 import { UserContext } from '../../contexts/user-context';
 import WineDialog from './WineDialog/WineDialog';
 import { WineContext } from '../../contexts/wine-context';
@@ -43,24 +38,19 @@ import Loading from '../Loading';
 // Originally copied from https://mui.com/material-ui/react-table/#sorting-amp-selecting
 
 interface WineSearchToolbarProps {
-    setSortOrder: React.Dispatch<React.SetStateAction<{ key: WineDataKeys; order: Order }>>;
-    setOrderedColumn: React.Dispatch<React.SetStateAction<WineDataKeys[]>>;
     handleLogout: () => Promise<void>;
 }
 
 const WineSearchToolbar = (props: WineSearchToolbarProps) => {
-    const { setSortOrder, setOrderedColumn, handleLogout } = props;
+    const { handleLogout } = props;
 
-    const cellarContext = useContext(CellarContext);
     const wineContext = useContext(WineContext);
 
-    const [drunkOnly, setDrunkOnly] = useState(false);
     const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null);
     const isMenuOpen = Boolean(menuAnchor);
 
     const pageTitle = useMemo(() => {
         let title = 'Wines';
-        if (drunkOnly) return 'Drunk' + title;
 
         if (wineContext.wineListQuery.cellarId !== 'NOT_IN_CELLAR') {
             const cellarCapacity = wineContext.wineList.length;
@@ -68,28 +58,7 @@ const WineSearchToolbar = (props: WineSearchToolbarProps) => {
             title += ` (${winesInCellarCount}/${cellarCapacity})`;
         }
         return title;
-    }, [wineContext.wineListQuery.cellarId, drunkOnly, wineContext.wineList]);
-
-    const toggleListMode = () => {
-        const checked = !drunkOnly;
-        setDrunkOnly(checked);
-        if (checked) {
-            wineContext.setWineListQuery({ isDrunk: true, cellarId: '' });
-            setSortOrder({ key: 'drunk_at', order: 'desc' });
-            setOrderedColumn(COLUMN_ORDER.drunk);
-        } else {
-            wineContext.setWineListQuery({ isDrunk: false, cellarId: cellarContext.cellarList[0].id });
-            setSortOrder({ key: 'position', order: 'asc' });
-            setOrderedColumn(COLUMN_ORDER.default);
-        }
-    };
-
-    const handleCellarSelect = (event: SelectChangeEvent) => {
-        wineContext.setWineListQuery(curr => {
-            return { ...curr, cellarId: event.target.value };
-        });
-        closeMenu();
-    };
+    }, [wineContext.wineListQuery.cellarId, wineContext.wineList]);
 
     const openMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
         setMenuAnchor(event.currentTarget);
@@ -112,7 +81,6 @@ const WineSearchToolbar = (props: WineSearchToolbarProps) => {
             <Typography sx={{ flex: '1 1 10%' }} variant="h6" id="tableTitle" component="div">
                 {pageTitle}
             </Typography>
-            <IconButton onClick={toggleListMode}>{drunkOnly ? <WarehouseIcon /> : <DescriptionIcon />}</IconButton>
             <IconButton onClick={openMenu}>
                 <MenuIcon />
             </IconButton>
@@ -123,16 +91,6 @@ const WineSearchToolbar = (props: WineSearchToolbarProps) => {
             </Tooltip> */}
             <Menu open={isMenuOpen} anchorEl={menuAnchor} onClose={closeMenu}>
                 <MenuList>
-                    <MenuItem>
-                        <Select id="cellar-select" value={wineContext.wineListQuery.cellarId} onChange={handleCellarSelect}>
-                            {cellarContext.cellarList.map(cellar => (
-                                <MenuItem key={cellar.id} value={cellar.id}>
-                                    {cellar.name}
-                                </MenuItem>
-                            ))}
-                            <MenuItem value="NOT_IN_CELLAR">NOT_IN_CELLAR</MenuItem>
-                        </Select>
-                    </MenuItem>
                     <MenuItem>
                         <NoteIcon />
                         <Link to="/wine-memos" style={{ color: 'rgba(0, 0, 0, 0.87)', textDecorationLine: 'none' }}>
@@ -160,13 +118,12 @@ const WineSearchToolbar = (props: WineSearchToolbarProps) => {
 };
 
 interface WineSearchTableHeadProps {
-    orderedColumn: WineDataKeys[];
     onRequestSort: (event: React.MouseEvent<unknown>, property: WineDataKeys) => void;
     sortOrder: { key: WineDataKeys; order: Order };
 }
 
 const WineSearchTableHead = (props: WineSearchTableHeadProps) => {
-    const { orderedColumn, sortOrder, onRequestSort } = props;
+    const { sortOrder, onRequestSort } = props;
     const createSortHandler = (property: WineDataKeys) => (event: React.MouseEvent<unknown>) => {
         onRequestSort(event, property);
     };
@@ -186,7 +143,7 @@ const WineSearchTableHead = (props: WineSearchTableHeadProps) => {
     return (
         <TableHead>
             <TableRow>
-                {orderedColumn.map(column => (
+                {COLUMN_ORDER.map(column => (
                     <TableCell key={column} align="left" padding="normal" sortDirection={sortOrder.key === column ? sortOrder.order : false}>
                         <TableSortLabel
                             active={sortOrder.key === column}
@@ -214,10 +171,7 @@ export const WineSearch = () => {
     // MYMEMO(後日): 全ページでこれだけするのは違和感
     const { handleLogout } = useUserAPI();
     const {
-        orderedColumn,
-        setOrderedColumn,
         sortOrder,
-        setSortOrder,
         handleRequestSort,
         rowsCount,
         visibleRows,
@@ -250,11 +204,11 @@ export const WineSearch = () => {
             <Box sx={{ width: '100%' }}>
                 <Paper sx={{ width: '100%' }}>
                     <div ref={toolbarRef}>
-                        <WineSearchToolbar setSortOrder={setSortOrder} setOrderedColumn={setOrderedColumn} handleLogout={handleLogout} />
+                        <WineSearchToolbar handleLogout={handleLogout} />
                     </div>
                     <TableContainer sx={{ maxHeight: tableHeight }}>
                         <Table stickyHeader sx={{ minWidth: 750 }} aria-labelledby="tableTitle" size="small">
-                            <WineSearchTableHead orderedColumn={orderedColumn} sortOrder={sortOrder} onRequestSort={handleRequestSort} />
+                            <WineSearchTableHead sortOrder={sortOrder} onRequestSort={handleRequestSort} />
                             <TableBody>
                                 {visibleRows.map((row, index) => {
                                     const labelId = `enhanced-table-checkbox-${index}`;
@@ -275,7 +229,7 @@ export const WineSearch = () => {
                                             sx={row.name === '' ? { cursor: 'pointer', backgroundColor: 'rgba(0, 0, 0, 0.2)' } : { cursor: 'pointer' }}
                                         >
                                             {/* MYMEMO(後日): make cepages look like tags */}
-                                            {orderedColumn.map(column => {
+                                            {COLUMN_ORDER.map(column => {
                                                 let content = rowData[column as WineDataKeys];
                                                 if (column === 'name') {
                                                     return (

@@ -6,42 +6,24 @@ import useWineAPI from './useWineAPI';
 export type Order = 'asc' | 'desc';
 export type WineDialogAction = 'create' | 'edit';
 
-export const COLUMN_ORDER: { default: WineDataKeys[]; drunk: WineDataKeys[] } = {
-    default: [
-        'position',
-        'tag_texts',
-        'name',
-        'producer',
-        'vintage',
-        'price',
-        'country',
-        'region_1',
-        'region_2',
-        'region_3',
-        'region_4',
-        'region_5',
-        'cepages',
-        'bought_at',
-        'bought_from',
-    ],
-    drunk: [
-        'drunk_at',
-        'tag_texts',
-        'name',
-        'producer',
-        'vintage',
-        'price',
-        'country',
-        'region_1',
-        'region_2',
-        'region_3',
-        'region_4',
-        'region_5',
-        'cepages',
-        'bought_at',
-        'bought_from',
-    ],
-};
+export const COLUMN_ORDER: WineDataKeys[] = [
+    'position',
+    'tag_texts',
+    'name',
+    'producer',
+    'vintage',
+    'price',
+    'drunk_at',
+    'country',
+    'region_1',
+    'region_2',
+    'region_3',
+    'region_4',
+    'region_5',
+    'cepages',
+    'bought_at',
+    'bought_from',
+]
 
 const useWineSearchPage = () => {
     const userContext = useContext(UserContext);
@@ -54,7 +36,6 @@ const useWineSearchPage = () => {
     const [rowsPerPage, setRowsPerPage] = useState(100);
     const [selectedWine, setSelectedWine] = useState<WineData>();
     const [wineDialogState, setWineDialogState] = useState<{ open: boolean; action: WineDialogAction }>({ open: false, action: 'create' });
-    const [orderedColumn, setOrderedColumn] = useState<WineDataKeys[]>(COLUMN_ORDER.default);
     const [isLoading, setIsLoading] = useState(true);
 
     // Avoid a layout jump when reaching the last page with empty rows.
@@ -155,10 +136,7 @@ const useWineSearchPage = () => {
     }, [getWineList, userContext.isLoggedIn, wineContext.wineListQuery.cellarId]);
 
     return {
-        orderedColumn,
-        setOrderedColumn,
         sortOrder,
-        setSortOrder,
         handleRequestSort,
         rowsCount: wineContext.wineList.length,
         visibleRows,
