@@ -2,6 +2,7 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import MenuIcon from '@mui/icons-material/Menu';
 import WarehouseIcon from '@mui/icons-material/Warehouse';
 import SettingsIcon from '@mui/icons-material/Settings';
+import SecurityUpdateGoodIcon from '@mui/icons-material/SecurityUpdateGood';
 import { AppBar, IconButton, ListItemText, Menu, MenuItem, MenuList, Toolbar } from '@mui/material';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -54,6 +55,10 @@ const WineMemosAppBar = (props: WineMemosAppBarProps) => {
                             <Link to="/settings" style={{ color: 'rgba(0, 0, 0, 0.87)', textDecorationLine: 'none' }}>
                                 Settings
                             </Link>
+                        </MenuItem>
+                        <MenuItem onClick={() => {window.location.reload();}}>
+                            <SecurityUpdateGoodIcon />
+                            バージョンアップ
                         </MenuItem>
                         <MenuItem onClick={handleLogout}>
                             <LogoutIcon />

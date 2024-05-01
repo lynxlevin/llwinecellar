@@ -28,6 +28,7 @@ import NoteIcon from '@mui/icons-material/Note';
 import SettingsIcon from '@mui/icons-material/Settings';
 import DescriptionIcon from '@mui/icons-material/Description';
 import WarehouseIcon from '@mui/icons-material/Warehouse';
+import SecurityUpdateGoodIcon from '@mui/icons-material/SecurityUpdateGood';
 import { visuallyHidden } from '@mui/utils';
 import useWineListPage, { COLUMN_ORDER, Order } from '../../hooks/useWineListPage';
 import { WineDataKeys } from '../../contexts/wine-context';
@@ -143,6 +144,10 @@ const WineListToolbar = (props: WineListToolbarProps) => {
                         <Link to="/settings" style={{ color: 'rgba(0, 0, 0, 0.87)', textDecorationLine: 'none' }}>
                             Settings
                         </Link>
+                    </MenuItem>
+                    <MenuItem onClick={() => {window.location.reload();}}>
+                        <SecurityUpdateGoodIcon />
+                        バージョンアップ
                     </MenuItem>
                     <MenuItem onClick={handleLogout}>
                         <LogoutIcon />
