@@ -1,8 +1,7 @@
 import { useState } from 'react';
-import { Button, Container, Dialog, Grid, IconButton, Slide, TextField, Toolbar, Typography, Autocomplete, Chip, Card, CardContent, Paper, Accordion, AccordionSummary, AccordionDetails, FormGroup, FormControlLabel, Switch, Stack } from '@mui/material';
+import { Button, Container, Dialog, Typography, Paper, FormControlLabel, Switch, Stack } from '@mui/material';
 import { WineData } from '../../../contexts/wine-context';
 import useWineAPI from '../../../hooks/useWineAPI';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { FindSameWinesQuery } from '../../../apis/WineAPI';
 
 
