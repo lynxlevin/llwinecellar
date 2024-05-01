@@ -30,7 +30,7 @@ import DescriptionIcon from '@mui/icons-material/Description';
 import WarehouseIcon from '@mui/icons-material/Warehouse';
 import SecurityUpdateGoodIcon from '@mui/icons-material/SecurityUpdateGood';
 import { visuallyHidden } from '@mui/utils';
-import useWineListPage, { COLUMN_ORDER, Order } from '../../hooks/useWineListPage';
+import useWineSearchPage, { COLUMN_ORDER, Order } from '../../hooks/useWineSearchPage';
 import { WineDataKeys } from '../../contexts/wine-context';
 import useUserAPI from '../../hooks/useUserAPI';
 import { CellarContext } from '../../contexts/cellar-context';
@@ -42,13 +42,13 @@ import Loading from '../Loading';
 
 // Originally copied from https://mui.com/material-ui/react-table/#sorting-amp-selecting
 
-interface WineListToolbarProps {
+interface WineSearchToolbarProps {
     setSortOrder: React.Dispatch<React.SetStateAction<{ key: WineDataKeys; order: Order }>>;
     setOrderedColumn: React.Dispatch<React.SetStateAction<WineDataKeys[]>>;
     handleLogout: () => Promise<void>;
 }
 
-const WineListToolbar = (props: WineListToolbarProps) => {
+const WineSearchToolbar = (props: WineSearchToolbarProps) => {
     const { setSortOrder, setOrderedColumn, handleLogout } = props;
 
     const cellarContext = useContext(CellarContext);
@@ -159,13 +159,13 @@ const WineListToolbar = (props: WineListToolbarProps) => {
     );
 };
 
-interface WineListTableHeadProps {
+interface WineSearchTableHeadProps {
     orderedColumn: WineDataKeys[];
     onRequestSort: (event: React.MouseEvent<unknown>, property: WineDataKeys) => void;
     sortOrder: { key: WineDataKeys; order: Order };
 }
 
-const WineListTableHead = (props: WineListTableHeadProps) => {
+const WineSearchTableHead = (props: WineSearchTableHeadProps) => {
     const { orderedColumn, sortOrder, onRequestSort } = props;
     const createSortHandler = (property: WineDataKeys) => (event: React.MouseEvent<unknown>) => {
         onRequestSort(event, property);
@@ -207,7 +207,7 @@ const WineListTableHead = (props: WineListTableHeadProps) => {
     );
 };
 
-export const WineList = () => {
+export const WineSearch = () => {
     const userContext = useContext(UserContext);
     const toolbarRef = useRef<HTMLDivElement>(null);
     const paginationRef = useRef<HTMLDivElement>(null);
@@ -232,7 +232,7 @@ export const WineList = () => {
         handleChangeRowsPerPage,
         getCepageAbbreviations,
         isLoading,
-    } = useWineListPage();
+    } = useWineSearchPage();
 
     const tableHeight =
         toolbarRef.current && paginationRef.current
@@ -250,11 +250,11 @@ export const WineList = () => {
             <Box sx={{ width: '100%' }}>
                 <Paper sx={{ width: '100%' }}>
                     <div ref={toolbarRef}>
-                        <WineListToolbar setSortOrder={setSortOrder} setOrderedColumn={setOrderedColumn} handleLogout={handleLogout} />
+                        <WineSearchToolbar setSortOrder={setSortOrder} setOrderedColumn={setOrderedColumn} handleLogout={handleLogout} />
                     </div>
                     <TableContainer sx={{ maxHeight: tableHeight }}>
                         <Table stickyHeader sx={{ minWidth: 750 }} aria-labelledby="tableTitle" size="small">
-                            <WineListTableHead orderedColumn={orderedColumn} sortOrder={sortOrder} onRequestSort={handleRequestSort} />
+                            <WineSearchTableHead orderedColumn={orderedColumn} sortOrder={sortOrder} onRequestSort={handleRequestSort} />
                             <TableBody>
                                 {visibleRows.map((row, index) => {
                                     const labelId = `enhanced-table-checkbox-${index}`;
