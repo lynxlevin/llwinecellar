@@ -3,6 +3,7 @@ import './App.css';
 import { Link, Routes, Route } from 'react-router-dom';
 import Login from './pages/Login';
 import { WineList } from './pages/WineList';
+import { WineSearch } from './pages/WineSearch';
 import { CellarContext, type Cellar } from './contexts/cellar-context';
 import { UserContext } from './contexts/user-context';
 import { WineContext, WineData, WineListQuery } from './contexts/wine-context';
@@ -40,6 +41,9 @@ function App() {
                                                     <Link to="/wine-list">Wine List</Link>
                                                     <br />
                                                     <br />
+                                                    <Link to="/wine-search">Wine Search</Link>
+                                                    <br />
+                                                    <br />
                                                     <Link to="/wine-memos">WineMemo</Link>
                                                     <br />
                                                     <br />
@@ -52,6 +56,7 @@ function App() {
                                         />
                                         <Route path="/login" element={<Login />} />
                                         <Route path="/wine-list" element={<WineList />} />
+                                        <Route path="/wine-search" element={<WineSearch />} />
                                         <Route path="/wine-memos" element={<WineMemos />} />
                                         <Route path="/settings" element={<Settings />} />
                                         <Route path="/grape-list" element={<GrapeList />} />
