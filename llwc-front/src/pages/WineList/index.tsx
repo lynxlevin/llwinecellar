@@ -236,7 +236,7 @@ export const WineList = () => {
 
     const tableHeight =
         toolbarRef.current && paginationRef.current
-            ? `${window.innerHeight - toolbarRef.current!.clientHeight - paginationRef.current!.clientHeight - 16}px`
+            ? `${window.innerHeight - toolbarRef.current!.clientHeight - paginationRef.current!.clientHeight}px`
             : '70vh';
 
     if (userContext.isLoggedIn === false) {
@@ -248,7 +248,7 @@ export const WineList = () => {
     return (
         <div>
             <Box sx={{ width: '100%' }}>
-                <Paper sx={{ width: '100%', mb: 2 }}>
+                <Paper sx={{ width: '100%' }}>
                     <div ref={toolbarRef}>
                         <WineListToolbar setSortOrder={setSortOrder} setOrderedColumn={setOrderedColumn} handleLogout={handleLogout} />
                     </div>
