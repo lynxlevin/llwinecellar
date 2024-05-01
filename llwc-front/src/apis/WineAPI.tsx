@@ -6,6 +6,12 @@ interface WineListResponse {
     wines: WineData[];
 }
 
+export interface FindSameWinesQuery {
+    is_drunk: boolean;
+    name?: string;
+    producer?: string;
+}
+
 export interface WineRequestBody {
     name: string;
     producer: string;
@@ -34,8 +40,8 @@ export const WineAPI = {
         const url = `${WineAPI.BASE_URL}?${new URLSearchParams(Object.entries(query)).toString()}`;
         return await client.get(url);
     },
-    listByName: async (name: string): Promise<AxiosResponse<WineListResponse>> => {
-        const url = `${WineAPI.BASE_URL}?is_drunk=true&name=${name}`;
+    findSameWines: async (query: FindSameWinesQuery): Promise<AxiosResponse<WineListResponse>> => {
+        const url = `${WineAPI.BASE_URL}?${new URLSearchParams(Object.entries(query)).toString()}`;
         return await client.get(url);
     },
     create: async (data: WineRequestBody): Promise<AxiosResponse<WineData>> => {

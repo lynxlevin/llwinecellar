@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext, useMemo } from 'react';
-import { AppBar, Button, Container, Dialog, Grid, IconButton, Slide, TextField, Toolbar, Typography, Autocomplete, Chip, Card, CardContent, Paper } from '@mui/material';
+import { AppBar, Button, Container, Dialog, Grid, IconButton, Slide, TextField, Toolbar, Typography, Autocomplete, Chip } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { TransitionProps } from '@mui/material/transitions';
 import { Cepage, WineData } from '../../../contexts/wine-context';
@@ -13,6 +13,7 @@ import useWineRegionAPI from '../../../hooks/useWineRegionAPI';
 import CepagesForm from './CepagesForm';
 import RegionForm from './RegionForm';
 import CellarPositionForm from './CellarPositionForm';
+import SameWinesDialog from './SameWinesDialog';
 
 const Transition = React.forwardRef(function Transition(
     props: TransitionProps & {
@@ -47,7 +48,7 @@ const WineDialog = (props: WineDialogProps) => {
 
     const wineTagContext = useContext(WineTagContext);
 
-    const { getWineList, listWinesByName } = useWineAPI();
+    const { getWineList } = useWineAPI();
     const { getWineTagList } = useWineTagAPI();
     const { getWineRegionList } = useWineRegionAPI();
 
@@ -108,8 +109,6 @@ const WineDialog = (props: WineDialogProps) => {
 
     const [dontMove, setDontMove] = useState<boolean>(initialValues.dontMove);
 
-    const [sameWines, setSameWines] = useState<WineData[]>([])
-
     useEffect(() => {
         if (isOpen) {
             setTagTexts(initialValues.tagTexts);
@@ -135,11 +134,6 @@ const WineDialog = (props: WineDialogProps) => {
             setDontMove(initialValues.dontMove);
         }
     }, [initialValues, isOpen]);
-
-    const findSameWinesByName = async () => {
-        const sameWines = await listWinesByName(name);
-        setSameWines(sameWines);
-    }
 
     const fillDrunkAtAndMoveOutOfCellar = () => {
         if (!drunkAt) setDrunkAt(getLocaleISODateString());
@@ -256,47 +250,7 @@ const WineDialog = (props: WineDialogProps) => {
             <Container maxWidth="md" sx={{ marginTop: 3, marginBottom: 3 }}>
                 <Grid container spacing={2}>
                     <Grid item xs={12}>
-                        <Button variant="contained" sx={{ marginTop: '10px' }} onClick={findSameWinesByName}>
-                            Find same
-                        </Button>
-                        <Dialog scroll="paper" onClose={() => setSameWines([])} open={sameWines.length !== 0}>
-                            {sameWines.map(wine => {
-                                return (
-                                    <Paper elevation={3} key={wine.id} sx={{m: 1, mb: 2}}>
-                                        <Typography>
-                                            tag_texts: {wine.tag_texts.join(', ')}
-                                        </Typography>
-                                        <Typography>
-                                            name: {wine.name}
-                                        </Typography>
-                                        <Typography>
-                                            producer: {wine.producer}
-                                        </Typography>
-                                        <Typography>
-                                            vintage: {wine.vintage}
-                                        </Typography>
-                                        <Typography>
-                                            bought_at: {wine.bought_at}
-                                        </Typography>
-                                        <Typography>
-                                            bought_from: {wine.bought_from}
-                                        </Typography>
-                                        <Typography>
-                                            price: {wine.price}
-                                        </Typography>
-                                        <Typography>
-                                            cepages: {wine.cepages.map(cepage => cepage.abbreviation).join(', ')}
-                                        </Typography>
-                                        <Typography>
-                                            drunk_at: {wine.drunk_at}
-                                        </Typography>
-                                        <Typography>
-                                            note: {wine.note}
-                                        </Typography>
-                                    </Paper>
-                                )
-                            })}
-                        </Dialog>
+                        <SameWinesDialog name={name} producer={producer} />
                     </Grid>
                     <Grid item xs={12}>
                         <Autocomplete

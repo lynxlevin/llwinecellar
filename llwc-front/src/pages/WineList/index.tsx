@@ -28,6 +28,7 @@ import NoteIcon from '@mui/icons-material/Note';
 import SettingsIcon from '@mui/icons-material/Settings';
 import DescriptionIcon from '@mui/icons-material/Description';
 import WarehouseIcon from '@mui/icons-material/Warehouse';
+import SecurityUpdateGoodIcon from '@mui/icons-material/SecurityUpdateGood';
 import { visuallyHidden } from '@mui/utils';
 import useWineListPage, { COLUMN_ORDER, Order } from '../../hooks/useWineListPage';
 import { WineDataKeys } from '../../contexts/wine-context';
@@ -144,6 +145,10 @@ const WineListToolbar = (props: WineListToolbarProps) => {
                             Settings
                         </Link>
                     </MenuItem>
+                    <MenuItem onClick={() => {window.location.reload();}}>
+                        <SecurityUpdateGoodIcon />
+                        バージョンアップ
+                    </MenuItem>
                     <MenuItem onClick={handleLogout}>
                         <LogoutIcon />
                         <ListItemText>Log out</ListItemText>
@@ -231,7 +236,7 @@ export const WineList = () => {
 
     const tableHeight =
         toolbarRef.current && paginationRef.current
-            ? `${window.innerHeight - toolbarRef.current!.clientHeight - paginationRef.current!.clientHeight - 16}px`
+            ? `${window.innerHeight - toolbarRef.current!.clientHeight - paginationRef.current!.clientHeight}px`
             : '70vh';
 
     if (userContext.isLoggedIn === false) {
@@ -243,7 +248,7 @@ export const WineList = () => {
     return (
         <div>
             <Box sx={{ width: '100%' }}>
-                <Paper sx={{ width: '100%', mb: 2 }}>
+                <Paper sx={{ width: '100%' }}>
                     <div ref={toolbarRef}>
                         <WineListToolbar setSortOrder={setSortOrder} setOrderedColumn={setOrderedColumn} handleLogout={handleLogout} />
                     </div>

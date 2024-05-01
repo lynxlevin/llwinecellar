@@ -22,6 +22,9 @@ class WineQuerySet(models.QuerySet["Wine"]):
     def filter_eq_name(self, name: str) -> "WineQuerySet":
         return self.filter(name=name)
 
+    def filter_eq_producer(self, producer: str) -> "WineQuerySet":
+        return self.filter(producer=producer)
+
     def filter_eq_cellar_id(self, cellar_id) -> "WineQuerySet":
         return self.filter(cellarspace__cellar_id=cellar_id)
 
