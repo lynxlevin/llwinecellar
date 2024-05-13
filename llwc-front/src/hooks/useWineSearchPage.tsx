@@ -1,7 +1,6 @@
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
-import { UserContext } from '../contexts/user-context';
 import { Cepage, WineContext, WineData, WineDataKeys } from '../contexts/wine-context';
-import useWineAPI from './useWineAPI';
+import { WineAPI } from '../apis/WineAPI';
 
 export type Order = 'asc' | 'desc';
 export type WineDialogAction = 'create' | 'edit';
@@ -26,10 +25,7 @@ export const COLUMN_ORDER: WineDataKeys[] = [
 ]
 
 const useWineSearchPage = () => {
-    const userContext = useContext(UserContext);
     const wineContext = useContext(WineContext);
-
-    const { getWineList } = useWineAPI();
 
     const [sortOrder, setSortOrder] = useState<{ key: WineDataKeys; order: Order }>({ key: 'position', order: 'asc' });
     const [page, setPage] = useState(0);
@@ -141,12 +137,16 @@ const useWineSearchPage = () => {
         return wineContext.wineList.sort(getComparator(sortOrder.order, sortOrder.key)).slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
     }, [getComparator, page, rowsPerPage, sortOrder, wineContext.wineList]);
 
+
     useEffect(() => {
-        if (userContext.isLoggedIn === true && wineContext.wineListQuery.cellarId !== undefined) {
-            getWineList();
+        if (wineContext.wineListQuery.cellarId === undefined) return;
+        setIsLoading(true);
+        WineAPI.list({cellar_id: wineContext.wineListQuery.cellarId, show_drunk: false, show_stock: true}).then(res => {
+            wineContext.setWineList(res.data.wines);
             setIsLoading(false);
-        }
-    }, [getWineList, userContext.isLoggedIn, wineContext.wineListQuery.cellarId]);
+        });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [wineContext.wineListQuery.cellarId])
 
     return {
         sortOrder,

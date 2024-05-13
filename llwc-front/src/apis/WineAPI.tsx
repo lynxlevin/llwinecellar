@@ -6,6 +6,17 @@ interface WineListResponse {
     wines: WineData[];
 }
 
+export interface ListWineQuery {
+    cellar_id?: string;
+    name?: string;
+    producer?: string;
+    name_or_producer?: string;
+    is_drunk?: boolean;
+    out_of_cellars?: boolean;
+    show_drunk?: boolean;
+    show_stock?: boolean;
+}
+
 export interface FindSameWinesQuery {
     is_drunk: boolean;
     name?: string;
@@ -36,7 +47,7 @@ export interface WineRequestBody {
 export const WineAPI = {
     BASE_URL: '/api/wines/',
 
-    list: async (query: Object): Promise<AxiosResponse<WineListResponse>> => {
+    list: async (query: ListWineQuery): Promise<AxiosResponse<WineListResponse>> => {
         const url = `${WineAPI.BASE_URL}?${new URLSearchParams(Object.entries(query)).toString()}`;
         return await client.get(url);
     },

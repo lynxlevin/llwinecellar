@@ -1,11 +1,26 @@
 import logging
 import uuid
+from typing import TYPE_CHECKING, TypedDict
 
 from cellars.enums import CellarSpaceType
 from cellars.models import CellarSpace
 from users.models import User
 
 from ..models import Wine
+
+if TYPE_CHECKING:
+    from uuid import UUID
+
+    class ListWineQuery(TypedDict, total=False):
+        cellar_id: "UUID"
+        name: str
+        producer: str
+        name_or_producer: str
+        is_drunk: bool
+        out_of_cellars: bool
+        show_drunk: bool
+        show_stock: bool
+
 
 logger = logging.getLogger(__name__)
 
@@ -33,7 +48,7 @@ class ListWine:
             "tag_texts": [],
         }
 
-    def execute(self, user: User, queries: dict):
+    def execute(self, user: User, queries: "ListWineQuery"):
         logger.info(self.__class__.__name__, extra={"user": user, "queries": queries})
 
         qs = Wine.objects.filter_eq_user_id(user.id).select_cellarspace()
@@ -47,8 +62,18 @@ class ListWine:
         if producer := queries.get("producer"):
             qs = qs.filter_eq_producer(producer)
 
+        if name_or_producer := queries.get("name_or_producer"):
+            qs = qs.filter_eq_name_or_producer(name_or_producer)
+
         if (is_drunk := queries.get("is_drunk")) is not None:
             qs = qs.filter_is_drunk(is_drunk)
+
+        show_drunk = queries.get("show_drunk")
+        show_stock = queries.get("show_stock")
+        if show_drunk and not show_stock:
+            qs = qs.filter_is_drunk(True)
+        elif show_stock and not show_drunk:
+            qs = qs.filter_is_drunk(False)
 
         if (out_of_cellars := queries.get("out_of_cellars")) is not None:
             qs = qs.filter_eq_cellarspace__isnull(out_of_cellars)

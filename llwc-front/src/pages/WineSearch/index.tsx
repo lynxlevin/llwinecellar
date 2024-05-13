@@ -84,14 +84,14 @@ const WineSearchToolbar = (props: WineSearchToolbarProps) => {
             <Typography sx={{ flex: '1 1 10%' }} variant="h6" id="tableTitle" component="div">
                 {pageTitle}
             </Typography>
-            <IconButton onClick={openMenu}>
-                <MenuIcon />
-            </IconButton>
             <Tooltip title="Filter list">
                 <IconButton onClick={openWineSearchDialog}>
                     <FilterListIcon />
                 </IconButton>
             </Tooltip>
+            <IconButton onClick={openMenu}>
+                <MenuIcon />
+            </IconButton>
             <Menu open={isMenuOpen} anchorEl={menuAnchor} onClose={closeMenu}>
                 <MenuList>
                     <MenuItem>

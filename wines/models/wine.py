@@ -2,6 +2,7 @@ import uuid
 from typing import Optional, Union
 
 from django.db import models
+from django.db.models import Q
 
 from cellars.enums import CellarSpaceType
 from users.models import User
@@ -24,6 +25,11 @@ class WineQuerySet(models.QuerySet["Wine"]):
 
     def filter_eq_producer(self, producer: str) -> "WineQuerySet":
         return self.filter(producer=producer)
+
+    def filter_eq_name_or_producer(self, name_or_producer: str) -> "WineQuerySet":
+        return self.filter(
+            Q(name__unaccent__icontains=name_or_producer) | Q(producer__unaccent__icontains=name_or_producer)
+        )
 
     def filter_eq_cellar_id(self, cellar_id) -> "WineQuerySet":
         return self.filter(cellarspace__cellar_id=cellar_id)
