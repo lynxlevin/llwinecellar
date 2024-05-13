@@ -7,16 +7,13 @@ from rest_framework.response import Response
 
 from llwinecellar.exception_handler import exception_handler_with_logging
 
-from ..models import WineMemo
-from ..serializers import (WineMemoRequestSerializer, WineMemoSerializer,
-                           WineMemosSerializer)
+from ..serializers import WineMemoRequestSerializer, WineMemoSerializer, WineMemosSerializer
 from ..use_cases import CreateWineMemo, ListWineMemo, UpdateWineMemo
 
 logger = logging.getLogger(__name__)
 
 
 class WineMemoViewSet(viewsets.GenericViewSet):
-    queryset = WineMemo.objects.all()
     serializer_class = WineMemoSerializer
     authentication_classes = [SessionAuthentication]
     permission_classes = [IsAuthenticated]

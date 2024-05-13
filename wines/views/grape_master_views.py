@@ -7,7 +7,6 @@ from rest_framework.response import Response
 
 from llwinecellar.exception_handler import exception_handler_with_logging
 
-from ..models import GrapeMaster
 from ..serializers import DeleteGrapeMasterQuerySerializer, GrapeMasterSerializer, GrapeMastersSerializer
 from ..use_cases import CreateGrapeMaster, DeleteGrapeMaster, ListGrapeMasters
 
@@ -15,7 +14,6 @@ logger = logging.getLogger(__name__)
 
 
 class GrapeMasterViewSet(viewsets.GenericViewSet):
-    queryset = GrapeMaster.objects.all()
     serializer_class = GrapeMastersSerializer
     authentication_classes = [SessionAuthentication]
     permission_classes = [IsAuthenticated]

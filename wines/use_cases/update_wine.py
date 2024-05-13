@@ -19,9 +19,9 @@ class UpdateWine:
     def execute(self, user: User, wine_id: str, data: dict):
         logger.info(self.__class__.__name__, extra={"user": user, "wine_id": wine_id, "data": data})
 
-        wine = Wine.objects.select_cellarspace().get_by_id(wine_id)
+        wine = Wine.objects.filter_eq_user_id(user.id).select_cellarspace().get_by_id(wine_id)
 
-        if wine.user != user:
+        if wine is None:
             raise exceptions.NotFound()
 
         wine.name = data["name"]

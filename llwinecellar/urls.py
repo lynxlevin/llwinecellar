@@ -1,21 +1,19 @@
 import os
 
-from django.contrib import admin
 from django.urls import include, path
 from rest_framework import routers
 
 from cellars.views import cellar_views
 from wine_memos.views import WineMemoViewSet
-from wines.views import (GrapeMasterViewSet, WineRegionViewSet, WineTagViewSet,
-                         WineViewSet)
+from wines.views import GrapeMasterViewSet, WineRegionViewSet, WineTagViewSet, WineViewSet
 
 router = routers.DefaultRouter()
-router.register(r"cellars", cellar_views.CellarViewSet)
-router.register(r"wines", WineViewSet)
-router.register(r"wine_tags", WineTagViewSet)
-router.register(r"wine_regions", WineRegionViewSet)
-router.register(r"grape_masters", GrapeMasterViewSet)
-router.register(r"wine_memos", WineMemoViewSet)
+router.register(r"cellars", cellar_views.CellarViewSet, basename="cellar")
+router.register(r"wines", WineViewSet, basename="wine")
+router.register(r"wine_tags", WineTagViewSet, basename="wine_tag")
+router.register(r"wine_regions", WineRegionViewSet, basename="wine_region")
+router.register(r"grape_masters", GrapeMasterViewSet, basename="grape_master")
+router.register(r"wine_memos", WineMemoViewSet, basename="wine_memo")
 
 urlpatterns = [
     path("api/", include(router.urls)),

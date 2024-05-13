@@ -7,7 +7,6 @@ from rest_framework.response import Response
 
 from llwinecellar.exception_handler import exception_handler_with_logging
 
-from ..models import Wine
 from ..serializers import WineRegionsSerializer
 from ..use_cases import ListWineRegions
 
@@ -15,7 +14,6 @@ logger = logging.getLogger(__name__)
 
 
 class WineRegionViewSet(viewsets.GenericViewSet):
-    queryset = Wine.objects.all()
     serializer_class = WineRegionsSerializer
     authentication_classes = [SessionAuthentication]
     permission_classes = [IsAuthenticated]

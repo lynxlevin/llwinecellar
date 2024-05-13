@@ -8,7 +8,6 @@ from rest_framework.response import Response
 
 from llwinecellar.exception_handler import exception_handler_with_logging
 
-from ..models import WineTag
 from ..serializers import DeleteWineTagQuerySerializer, WineTagsSerializer
 from ..use_cases import DeleteWineTag, ListWineTags
 
@@ -16,7 +15,6 @@ logger = logging.getLogger(__name__)
 
 
 class WineTagViewSet(viewsets.GenericViewSet):
-    queryset = WineTag.objects.all()
     serializer_class = WineTagsSerializer
     authentication_classes = [SessionAuthentication]
     permission_classes = [IsAuthenticated]

@@ -8,7 +8,6 @@ from rest_framework.response import Response
 
 from llwinecellar.exception_handler import exception_handler_with_logging
 
-from ..models import Wine
 from ..serializers import (
     ListWineQuerySerializer,
     MoveWineResponseSerializer,
@@ -23,7 +22,6 @@ logger = logging.getLogger(__name__)
 
 
 class WineViewSet(viewsets.GenericViewSet):
-    queryset = Wine.objects.all()
     serializer_class = WineSerializer
     authentication_classes = [SessionAuthentication]
     permission_classes = [IsAuthenticated]

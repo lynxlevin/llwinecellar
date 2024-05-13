@@ -7,7 +7,6 @@ from rest_framework.response import Response
 
 from llwinecellar.exception_handler import exception_handler_with_logging
 
-from ..models import Cellar
 from ..serializers import CellarSerializer, CellarsSerializer
 from ..use_cases import CreateCellar, ListCellars
 
@@ -15,7 +14,6 @@ logger = logging.getLogger(__name__)
 
 
 class CellarViewSet(viewsets.GenericViewSet):
-    queryset = Cellar.objects.all()
     serializer_class = CellarSerializer
     authentication_classes = [SessionAuthentication]
     permission_classes = [IsAuthenticated]

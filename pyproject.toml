@@ -19,19 +19,6 @@ gunicorn = "^21.2.0"
 factory-boy = "^3.2.1"
 django-silk = "^5.1.0"
 
-
-[tool.black]
-line-length = 120
-target-version = ['py36']
-exclude = '''
-/(
-    \.git
-    | \.mypy_cache
-    | \.venv
-    | \.vscode
-)/
-'''
-
 [tool.ruff]
 # https://beta.ruff.rs/docs/settings/
 select = ["E", "F", "I"]
