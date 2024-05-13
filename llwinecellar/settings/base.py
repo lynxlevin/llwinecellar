@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
+    "django.contrib.postgres",
     "rest_framework",
     "users.apps.UsersConfig",
     "wines.apps.WinesConfig",
