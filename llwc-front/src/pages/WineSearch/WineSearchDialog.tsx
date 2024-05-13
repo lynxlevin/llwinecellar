@@ -45,18 +45,11 @@ const WineSearchDialog = (props: WineSearchDialogProps) => {
 
 
     const resetQueries = () => {
+        setCellarId('-');
         setNameOrProducer('');
-        setCellarId(wineContext.wineListQuery.cellarId);
         setShowStock(true);
         setShowDrunk(true);
     }
-
-    const resetSearch = async () => {
-        const res = await WineAPI.list({});
-        wineContext.setWineList(res.data.wines);
-        resetQueries();
-        handleClose();
-    };
 
     return (
         <Dialog fullScreen open={isOpen} onClose={handleClose} TransitionComponent={Transition}>
@@ -69,7 +62,7 @@ const WineSearchDialog = (props: WineSearchDialogProps) => {
                     <Button color='inherit' variant='outlined' onClick={handleSearch}>
                         Search
                     </Button>
-                    <Button color='inherit' onClick={resetSearch}>
+                    <Button color='inherit' onClick={resetQueries}>
                         Reset
                     </Button>
                 </Toolbar>
