@@ -65,6 +65,13 @@ class ListWineQuerySerializer(serializers.Serializer):
     show_drunk = serializers.BooleanField(required=False)
     show_stock = serializers.BooleanField(required=False)
 
+    country = serializers.ChoiceField(required=False, choices=Country.choices_for_serializer())
+    region_1 = serializers.CharField(required=False, max_length=128)
+    region_2 = serializers.CharField(required=False, max_length=128)
+    region_3 = serializers.CharField(required=False, max_length=128)
+    region_4 = serializers.CharField(required=False, max_length=128)
+    region_5 = serializers.CharField(required=False, max_length=128)
+
 
 class MoveWineSerializer(serializers.Serializer):
     id = serializers.UUIDField(read_only=True)

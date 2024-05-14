@@ -20,6 +20,12 @@ if TYPE_CHECKING:
         out_of_cellars: bool
         show_drunk: bool
         show_stock: bool
+        country: str
+        region_1: str
+        region_2: str
+        region_3: str
+        region_4: str
+        region_5: str
 
 
 logger = logging.getLogger(__name__)
@@ -64,6 +70,24 @@ class ListWine:
 
         if name_or_producer := queries.get("name_or_producer"):
             qs = qs.filter_eq_name_or_producer(name_or_producer)
+
+        if country := queries.get("country"):
+            qs = qs.filter_eq_country(country)
+
+        if region_1 := queries.get("region_1"):
+            qs = qs.filter(region_1__unaccent=region_1)
+
+        if region_2 := queries.get("region_2"):
+            qs = qs.filter(region_2__unaccent=region_2)
+
+        if region_3 := queries.get("region_3"):
+            qs = qs.filter(region_3__unaccent=region_3)
+
+        if region_4 := queries.get("region_4"):
+            qs = qs.filter(region_4__unaccent=region_4)
+
+        if region_5 := queries.get("region_5"):
+            qs = qs.filter(region_5__unaccent=region_5)
 
         if (is_drunk := queries.get("is_drunk")) is not None:
             qs = qs.filter_is_drunk(is_drunk)

@@ -5,6 +5,8 @@ import { TransitionProps } from '@mui/material/transitions';
 import { ListWineQuery, WineAPI } from '../../apis/WineAPI';
 import { WineContext } from '../../contexts/wine-context';
 import { CellarContext } from '../../contexts/cellar-context';
+import { WineRegionsObject } from './WineDialog/WineDialog';
+import RegionForm from './WineDialog/RegionForm';
 
 const Transition = React.forwardRef(function Transition(
     props: TransitionProps & {
@@ -25,19 +27,34 @@ const WineSearchDialog = (props: WineSearchDialogProps) => {
     const wineContext = useContext(WineContext);
     const cellarContext = useContext(CellarContext);
 
-    const [nameOrProducer, setNameOrProducer] = useState<string>('');
     const [cellarId, setCellarId] = useState<string | undefined>(wineContext.wineListQuery.cellarId);
     const [showStock, setShowStock] = useState<boolean>(true);
     const [showDrunk, setShowDrunk] = useState<boolean>(false);
+    const [nameOrProducer, setNameOrProducer] = useState<string>('');
+    const [regions, setRegions] = useState<WineRegionsObject>({
+        country: null,
+        region1: '',
+        region2: '',
+        region3: '',
+        region4: '',
+        region5: '',
+    })
 
     const handleSearch = async () => {
         const query: ListWineQuery = {
             show_stock: showStock,
             show_drunk: showDrunk,
         };
-        if (nameOrProducer) query.name_or_producer = nameOrProducer;
         if (cellarId !== '-' && cellarId !== 'NOT_IN_CELLAR') query.cellar_id = cellarId;
         if (cellarId === 'NOT_IN_CELLAR') query.out_of_cellars = true;
+        if (nameOrProducer) query.name_or_producer = nameOrProducer;
+        if (regions.country) query.country = regions.country;
+        // MYMEMO: maybe normalizing is not needed.
+        if (regions.region1 !== '') query.region_1 = regions.region1.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+        if (regions.region2 !== '') query.region_2 = regions.region2.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+        if (regions.region3 !== '') query.region_3 = regions.region3.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+        if (regions.region4 !== '') query.region_4 = regions.region4.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+        if (regions.region5 !== '') query.region_5 = regions.region5.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
         const res = await WineAPI.list(query);
         wineContext.setWineList(res.data.wines);
         handleClose();
@@ -46,9 +63,17 @@ const WineSearchDialog = (props: WineSearchDialogProps) => {
 
     const resetQueries = () => {
         setCellarId('-');
-        setNameOrProducer('');
         setShowStock(true);
         setShowDrunk(true);
+        setNameOrProducer('');
+        setRegions({
+            country: null,
+            region1: '',
+            region2: '',
+            region3: '',
+            region4: '',
+            region5: '',
+        })
     }
 
     return (
@@ -97,6 +122,11 @@ const WineSearchDialog = (props: WineSearchDialogProps) => {
                             fullWidth
                         />
                     </Grid>
+                    <RegionForm
+                        regions={regions}
+                        setRegions={setRegions}
+                        freeSolo={false}  // MYMEMO: This is a workaround for region form not updating on resetQueries. But without freeSolo, warning shows on WineDialog when entering new regions.
+                    />
                     {/* <Grid item xs={3}>
                         <TextField
                             label="vintage"

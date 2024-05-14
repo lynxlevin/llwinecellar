@@ -53,10 +53,11 @@ interface RegionFormProps {
     regions: WineRegionsObject;
     setRegions: React.Dispatch<React.SetStateAction<WineRegionsObject>>;
     showDetails?: boolean;
+    freeSolo?: boolean;
 }
 
 const RegionForm = (props: RegionFormProps) => {
-    const { regions, setRegions, showDetails=false } = props;
+    const { regions, setRegions, showDetails=false, freeSolo=true } = props;
 
     const wineRegionContext = useContext(WineRegionContext);
 
@@ -78,7 +79,7 @@ const RegionForm = (props: RegionFormProps) => {
             <Grid item xs={12}>
                 <Autocomplete
                     options={wineRegionContext.wineRegionList}
-                    freeSolo
+                    freeSolo={freeSolo}
                     value={getWineRegionValue()}
                     renderTags={(value: readonly string[], getTagProps) =>
                         value.map((option: string, index: number) => <Chip variant="outlined" label={option} {...getTagProps({ index })} />)

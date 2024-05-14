@@ -31,6 +31,9 @@ class WineQuerySet(models.QuerySet["Wine"]):
             Q(name__unaccent__icontains=name_or_producer) | Q(producer__unaccent__icontains=name_or_producer)
         )
 
+    def filter_eq_country(self, country_capital: str) -> "WineQuerySet":
+        return self.filter(_country=Country.from_label(country_capital).value)
+
     def filter_eq_cellar_id(self, cellar_id) -> "WineQuerySet":
         return self.filter(cellarspace__cellar_id=cellar_id)
 

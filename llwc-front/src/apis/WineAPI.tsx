@@ -15,6 +15,12 @@ export interface ListWineQuery {
     out_of_cellars?: boolean;
     show_drunk?: boolean;
     show_stock?: boolean;
+    country?: string;
+    region_1?: string;
+    region_2?: string;
+    region_3?: string;
+    region_4?: string;
+    region_5?: string;
 }
 
 export interface FindSameWinesQuery {
