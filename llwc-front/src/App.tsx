@@ -3,7 +3,7 @@ import './App.css';
 import { Link, Routes, Route } from 'react-router-dom';
 import Login from './pages/Login';
 import { WineList } from './pages/WineList';
-import { WineSearch } from './pages/WineSearch';
+import { WineSearch } from './pages/WineSearch/WineSearch';
 import { CellarContext, type Cellar } from './contexts/cellar-context';
 import { UserContext } from './contexts/user-context';
 import { WineContext, WineData, WineListQuery } from './contexts/wine-context';
