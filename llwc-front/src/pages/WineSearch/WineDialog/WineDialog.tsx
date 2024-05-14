@@ -31,6 +31,15 @@ interface WineDialogProps {
     action: WineDialogAction;
 }
 
+export interface WineRegionsObject {
+    country: string | null;
+    region1: string;
+    region2: string;
+    region3: string;
+    region4: string;
+    region5: string;
+}
+
 export interface ValidationErrorsType {
     name?: string;
     cepages?: string;
@@ -65,12 +74,14 @@ const WineDialog = (props: WineDialogProps) => {
             name: action === 'edit' ? selectedWine.name : '',
             producer: action === 'edit' ? selectedWine.producer : '',
             vintage: action === 'edit' ? selectedWine.vintage : null,
-            country: action === 'edit' ? selectedWine.country : null,
-            region1: action === 'edit' ? selectedWine.region_1 : '',
-            region2: action === 'edit' ? selectedWine.region_2 : '',
-            region3: action === 'edit' ? selectedWine.region_3 : '',
-            region4: action === 'edit' ? selectedWine.region_4 : '',
-            region5: action === 'edit' ? selectedWine.region_5 : '',
+            regions: {
+                country: action === 'edit' ? selectedWine.country : null,
+                region1: action === 'edit' ? selectedWine.region_1 : '',
+                region2: action === 'edit' ? selectedWine.region_2 : '',
+                region3: action === 'edit' ? selectedWine.region_3 : '',
+                region4: action === 'edit' ? selectedWine.region_4 : '',
+                region5: action === 'edit' ? selectedWine.region_5 : '',
+            },
             cepages: action === 'edit' ? selectedWine.cepages : [],
             boughtAt: action === 'edit' ? selectedWine.bought_at : getLocaleISODateString(),
             boughtFrom: action === 'edit' ? selectedWine.bought_from : '',
@@ -89,12 +100,7 @@ const WineDialog = (props: WineDialogProps) => {
     const [name, setName] = useState<string>(initialValues.name);
     const [producer, setProducer] = useState<string>(initialValues.producer);
     const [vintage, setVintage] = useState<number | null>(initialValues.vintage);
-    const [country, setCountry] = useState<string | null>(initialValues.country);
-    const [region1, setRegion1] = useState<string>(initialValues.region1);
-    const [region2, setRegion2] = useState<string>(initialValues.region2);
-    const [region3, setRegion3] = useState<string>(initialValues.region3);
-    const [region4, setRegion4] = useState<string>(initialValues.region4);
-    const [region5, setRegion5] = useState<string>(initialValues.region5);
+    const [regions, setRegions] = useState<WineRegionsObject>(initialValues.regions)
     const [cepages, setCepages] = useState<Cepage[]>(initialValues.cepages); // List of objects だから、中身のobjectはdeep copy できてないかも
     const [boughtAt, setBoughtAt] = useState<string | null>(initialValues.boughtAt);
     const [boughtFrom, setBoughtFrom] = useState<string>(initialValues.boughtFrom);
@@ -115,12 +121,7 @@ const WineDialog = (props: WineDialogProps) => {
             setName(initialValues.name);
             setProducer(initialValues.producer);
             setVintage(initialValues.vintage);
-            setCountry(initialValues.country);
-            setRegion1(initialValues.region1);
-            setRegion2(initialValues.region2);
-            setRegion3(initialValues.region3);
-            setRegion4(initialValues.region4);
-            setRegion5(initialValues.region5);
+            setRegions(initialValues.regions)
             setCepages(initialValues.cepages);
             setBoughtAt(initialValues.boughtAt);
             setBoughtFrom(initialValues.boughtFrom);
@@ -176,12 +177,12 @@ const WineDialog = (props: WineDialogProps) => {
         const data: WineRequestBody = {
             name: name,
             producer: producer,
-            country: country,
-            region_1: region1,
-            region_2: region2,
-            region_3: region3,
-            region_4: region4,
-            region_5: region5,
+            country: regions.country,
+            region_1: regions.region1,
+            region_2: regions.region2,
+            region_3: regions.region3,
+            region_4: regions.region4,
+            region_5: regions.region5,
             cepages: cepages.sort((a, b) => Number(b.percentage)! - Number(a.percentage)!),
             vintage: vintage,
             bought_at: boughtAt,
@@ -344,18 +345,9 @@ const WineDialog = (props: WineDialogProps) => {
                         />
                     </Grid>
                     <RegionForm
-                        country={country}
-                        region1={region1}
-                        region2={region2}
-                        region3={region3}
-                        region4={region4}
-                        region5={region5}
-                        setCountry={setCountry}
-                        setRegion1={setRegion1}
-                        setRegion2={setRegion2}
-                        setRegion3={setRegion3}
-                        setRegion4={setRegion4}
-                        setRegion5={setRegion5}
+                        regions={regions}
+                        setRegions={setRegions}
+                        showDetails
                     />
                     <CepagesForm cepages={cepages} setCepages={setCepages} />
                     <Grid item xs={8}>

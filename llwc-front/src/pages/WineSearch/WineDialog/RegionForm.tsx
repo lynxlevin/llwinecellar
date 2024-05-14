@@ -1,6 +1,7 @@
 import React, { useContext } from 'react';
 import { Grid, TextField, Autocomplete, Chip } from '@mui/material';
 import { WineRegionContext } from '../../../contexts/wine-region-context';
+import { WineRegionsObject } from './WineDialog';
 
 const countries = [
     'France',
@@ -49,34 +50,25 @@ const countries = [
 ] as const;
 
 interface RegionFormProps {
-    country: string | null;
-    region1: string;
-    region2: string;
-    region3: string;
-    region4: string;
-    region5: string;
-    setCountry: React.Dispatch<React.SetStateAction<string | null>>;
-    setRegion1: React.Dispatch<React.SetStateAction<string>>;
-    setRegion2: React.Dispatch<React.SetStateAction<string>>;
-    setRegion3: React.Dispatch<React.SetStateAction<string>>;
-    setRegion4: React.Dispatch<React.SetStateAction<string>>;
-    setRegion5: React.Dispatch<React.SetStateAction<string>>;
+    regions: WineRegionsObject;
+    setRegions: React.Dispatch<React.SetStateAction<WineRegionsObject>>;
+    showDetails?: boolean;
 }
 
 const RegionForm = (props: RegionFormProps) => {
-    const { country, region1, region2, region3, region4, region5, setCountry, setRegion1, setRegion2, setRegion3, setRegion4, setRegion5 } = props;
+    const { regions, setRegions, showDetails=false } = props;
 
     const wineRegionContext = useContext(WineRegionContext);
 
     const getWineRegionValue = () => {
-        if (country === null) return null;
+        if (regions.country === null) return null;
 
-        let regionValue = country;
-        if (region1) regionValue += `>${region1}`;
-        if (region2) regionValue += `>${region2}`;
-        if (region3) regionValue += `>${region3}`;
-        if (region4) regionValue += `>${region4}`;
-        if (region5) regionValue += `>${region5}`;
+        let regionValue = regions.country;
+        if (regions.region1) regionValue += `>${regions.region1}`;
+        if (regions.region2) regionValue += `>${regions.region2}`;
+        if (regions.region3) regionValue += `>${regions.region3}`;
+        if (regions.region4) regionValue += `>${regions.region4}`;
+        if (regions.region5) regionValue += `>${regions.region5}`;
 
         return regionValue;
     };
@@ -86,6 +78,7 @@ const RegionForm = (props: RegionFormProps) => {
             <Grid item xs={12}>
                 <Autocomplete
                     options={wineRegionContext.wineRegionList}
+                    freeSolo
                     value={getWineRegionValue()}
                     renderTags={(value: readonly string[], getTagProps) =>
                         value.map((option: string, index: number) => <Chip variant="outlined" label={option} {...getTagProps({ index })} />)
@@ -93,87 +86,93 @@ const RegionForm = (props: RegionFormProps) => {
                     renderInput={params => <TextField {...params} label="wine_region" />}
                     onChange={(event: any, newValue: string | null) => {
                         if (newValue) {
-                            const [_country, _region1, _region2, _region3, _region4, _region5] = newValue.split('>');
-                            setCountry(_country);
-                            setRegion1(_region1 ?? '');
-                            setRegion2(_region2 ?? '');
-                            setRegion3(_region3 ?? '');
-                            setRegion4(_region4 ?? '');
-                            setRegion5(_region5 ?? '');
+                            const [country, region1, region2, region3, region4, region5] = newValue.split('>');
+                            setRegions({
+                                country,
+                                region1: region1 ?? '',
+                                region2: region2 ?? '',
+                                region3: region3 ?? '',
+                                region4: region4 ?? '',
+                                region5: region5 ?? '',
+                            });
                         }
                     }}
                 />
                 {/* MYMEMO(後日): consider using _.throttle or _.debounce on all onChanges */}
             </Grid>
-            <Grid item xs={6}>
-                <Autocomplete
-                    options={countries}
-                    value={country}
-                    renderTags={(value: readonly string[], getTagProps) =>
-                        value.map((option: string, index: number) => <Chip variant="outlined" label={option} {...getTagProps({ index })} />)
-                    }
-                    renderInput={params => <TextField {...params} label="country" />}
-                    onChange={(event: any, newValue: string | null) => {
-                        setCountry(newValue);
-                    }}
-                />
-                {/* MYMEMO(後日): consider using _.throttle or _.debounce on all onChanges */}
-            </Grid>
-            <Grid item xs={6}>
-                <TextField
-                    label="region_1"
-                    value={region1}
-                    onChange={event => {
-                        setRegion1(event.target.value);
-                    }}
-                    variant="standard"
-                    fullWidth
-                />
-            </Grid>
-            <Grid item xs={6}>
-                <TextField
-                    label="region_2"
-                    value={region2}
-                    onChange={event => {
-                        setRegion2(event.target.value);
-                    }}
-                    variant="standard"
-                    fullWidth
-                />
-            </Grid>
-            <Grid item xs={6}>
-                <TextField
-                    label="region_3"
-                    value={region3}
-                    onChange={event => {
-                        setRegion3(event.target.value);
-                    }}
-                    variant="standard"
-                    fullWidth
-                />
-            </Grid>
-            <Grid item xs={6}>
-                <TextField
-                    label="region_4"
-                    value={region4}
-                    onChange={event => {
-                        setRegion4(event.target.value);
-                    }}
-                    variant="standard"
-                    fullWidth
-                />
-            </Grid>
-            <Grid item xs={6}>
-                <TextField
-                    label="region_5"
-                    value={region5}
-                    onChange={event => {
-                        setRegion5(event.target.value);
-                    }}
-                    variant="standard"
-                    fullWidth
-                />
-            </Grid>
+            {showDetails && (
+                <>
+                    <Grid item xs={6}>
+                        <Autocomplete
+                            options={countries}
+                            value={regions.country}
+                            renderTags={(value: readonly string[], getTagProps) =>
+                                value.map((option: string, index: number) => <Chip variant="outlined" label={option} {...getTagProps({ index })} />)
+                            }
+                            renderInput={params => <TextField {...params} label="country" />}
+                            onChange={(event: any, newValue: string | null) => {
+                                setRegions(prev => {return {...prev, country: newValue};});
+                            }}
+                        />
+                        {/* MYMEMO(後日): consider using _.throttle or _.debounce on all onChanges */}
+                    </Grid>
+                    <Grid item xs={6}>
+                        <TextField
+                            label="region_1"
+                            value={regions.region1}
+                            onChange={event => {
+                                setRegions(prev => {return {...prev, region1: event.target.value};});
+                            }}
+                            variant="standard"
+                            fullWidth
+                        />
+                    </Grid>
+                    <Grid item xs={6}>
+                        <TextField
+                            label="region_2"
+                            value={regions.region2}
+                            onChange={event => {
+                                setRegions(prev => {return {...prev, region2: event.target.value};});
+                            }}
+                            variant="standard"
+                            fullWidth
+                        />
+                    </Grid>
+                    <Grid item xs={6}>
+                        <TextField
+                            label="region_3"
+                            value={regions.region3}
+                            onChange={event => {
+                                setRegions(prev => {return {...prev, region3: event.target.value};});
+                            }}
+                            variant="standard"
+                            fullWidth
+                        />
+                    </Grid>
+                    <Grid item xs={6}>
+                        <TextField
+                            label="region_4"
+                            value={regions.region4}
+                            onChange={event => {
+                                setRegions(prev => {return {...prev, region4: event.target.value};});
+                            }}
+                            variant="standard"
+                            fullWidth
+                        />
+                    </Grid>
+                    <Grid item xs={6}>
+                        <TextField
+                            label="region_5"
+                            value={regions.region5}
+                            onChange={event => {
+                                setRegions(prev => {return {...prev, region5: event.target.value};});
+                            }}
+                            variant="standard"
+                            fullWidth
+                        />
+                    </Grid>
+                </>
+            )}
         </>
     );
 };
