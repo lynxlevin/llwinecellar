@@ -20,6 +20,7 @@ import {
     Paper,
     Tooltip,
 } from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import MenuIcon from '@mui/icons-material/Menu';
 import LogoutIcon from '@mui/icons-material/Logout';
@@ -42,10 +43,11 @@ import WineSearchDialog from './WineSearchDialog';
 interface WineSearchToolbarProps {
     openWineSearchDialog: () => void;
     handleLogout: () => Promise<void>;
+    openCreateWineDialog: () => void;
 }
 
 const WineSearchToolbar = (props: WineSearchToolbarProps) => {
-    const { openWineSearchDialog, handleLogout } = props;
+    const { openWineSearchDialog, handleLogout, openCreateWineDialog } = props;
 
     const wineContext = useContext(WineContext);
 
@@ -84,6 +86,11 @@ const WineSearchToolbar = (props: WineSearchToolbarProps) => {
             <Typography sx={{ flex: '1 1 10%' }} variant="h6" id="tableTitle" component="div">
                 {pageTitle}
             </Typography>
+            <Tooltip title="Add wine">
+                <IconButton onClick={openCreateWineDialog}>
+                    <AddIcon />
+                </IconButton>
+            </Tooltip>
             <Tooltip title="Filter list">
                 <IconButton onClick={openWineSearchDialog}>
                     <FilterListIcon />
@@ -180,6 +187,7 @@ export const WineSearch = () => {
         visibleRows,
         selectedWine,
         wineDialogState,
+        openCreateWineDialog,
         wineSearchDialogState,
         handleClickRow,
         closeWineDialog,
@@ -210,7 +218,7 @@ export const WineSearch = () => {
             <Box sx={{ width: '100%' }}>
                 <Paper sx={{ width: '100%' }}>
                     <div ref={toolbarRef}>
-                        <WineSearchToolbar openWineSearchDialog={openWineSearchDialog} handleLogout={handleLogout} />
+                        <WineSearchToolbar openWineSearchDialog={openWineSearchDialog} handleLogout={handleLogout} openCreateWineDialog={openCreateWineDialog} />
                     </div>
                     <TableContainer sx={{ maxHeight: tableHeight }}>
                         <Table stickyHeader sx={{ minWidth: 750 }} aria-labelledby="tableTitle" size="small">
@@ -276,7 +284,7 @@ export const WineSearch = () => {
                     </div>
                 </Paper>
             </Box>
-            {selectedWine && (
+            {wineDialogState.open && (
                 <WineDialog
                     isOpen={wineDialogState.open}
                     handleClose={closeWineDialog}

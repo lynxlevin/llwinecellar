@@ -59,6 +59,11 @@ const useWineSearchPage = () => {
         selectedWine.name === '' ? setWineDialogState({ open: true, action: 'create' }) : setWineDialogState({ open: true, action: 'edit' });
     };
 
+    const openCreateWineDialog = () => {
+        setSelectedWine(undefined);
+        setWineDialogState({ open: true, action: 'create' });
+    }
+
     const closeWineDialog = () => {
         setWineDialogState(current => {
             return { ...current, open: false };
@@ -155,6 +160,7 @@ const useWineSearchPage = () => {
         visibleRows,
         selectedWine,
         wineDialogState,
+        openCreateWineDialog,
         wineSearchDialogState,
         handleClickRow,
         closeWineDialog,

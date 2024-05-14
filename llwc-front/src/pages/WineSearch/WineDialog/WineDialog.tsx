@@ -27,7 +27,7 @@ const Transition = React.forwardRef(function Transition(
 interface WineDialogProps {
     isOpen: boolean;
     handleClose: () => void;
-    selectedWine: WineData;
+    selectedWine?: WineData;
     action: WineDialogAction;
 }
 
@@ -70,26 +70,26 @@ const WineDialog = (props: WineDialogProps) => {
 
     const initialValues = useMemo(() => {
         return {
-            tagTexts: action === 'edit' ? selectedWine.tag_texts : [],
-            name: action === 'edit' ? selectedWine.name : '',
-            producer: action === 'edit' ? selectedWine.producer : '',
-            vintage: action === 'edit' ? selectedWine.vintage : null,
+            tagTexts: action === 'edit' ? selectedWine!.tag_texts : [],
+            name: action === 'edit' ? selectedWine!.name : '',
+            producer: action === 'edit' ? selectedWine!.producer : '',
+            vintage: action === 'edit' ? selectedWine!.vintage : null,
             regions: {
-                country: action === 'edit' ? selectedWine.country : null,
-                region1: action === 'edit' ? selectedWine.region_1 : '',
-                region2: action === 'edit' ? selectedWine.region_2 : '',
-                region3: action === 'edit' ? selectedWine.region_3 : '',
-                region4: action === 'edit' ? selectedWine.region_4 : '',
-                region5: action === 'edit' ? selectedWine.region_5 : '',
+                country: action === 'edit' ? selectedWine!.country : null,
+                region1: action === 'edit' ? selectedWine!.region_1 : '',
+                region2: action === 'edit' ? selectedWine!.region_2 : '',
+                region3: action === 'edit' ? selectedWine!.region_3 : '',
+                region4: action === 'edit' ? selectedWine!.region_4 : '',
+                region5: action === 'edit' ? selectedWine!.region_5 : '',
             },
-            cepages: action === 'edit' ? selectedWine.cepages : [],
-            boughtAt: action === 'edit' ? selectedWine.bought_at : getLocaleISODateString(),
-            boughtFrom: action === 'edit' ? selectedWine.bought_from : '',
-            price: action === 'edit' ? selectedWine.price : null,
-            drunkAt: action === 'edit' ? selectedWine.drunk_at : null,
-            note: action === 'edit' ? selectedWine.note : '',
-            cellarId: selectedWine.cellar_id ?? noCellarCode,
-            position: selectedWine.position,
+            cepages: action === 'edit' ? selectedWine!.cepages : [],
+            boughtAt: action === 'edit' ? selectedWine!.bought_at : getLocaleISODateString(),
+            boughtFrom: action === 'edit' ? selectedWine!.bought_from : '',
+            price: action === 'edit' ? selectedWine!.price : null,
+            drunkAt: action === 'edit' ? selectedWine!.drunk_at : null,
+            note: action === 'edit' ? selectedWine!.note : '',
+            cellarId: selectedWine?.cellar_id ?? noCellarCode,
+            position: selectedWine?.position ?? '',
             validationErrors: {},
             apiErrors: {},
             dontMove: action === 'edit',
@@ -216,7 +216,7 @@ const WineDialog = (props: WineDialogProps) => {
                     setApiErrors(err.response!.data as apiErrorsType);
                 });
         } else if (action === 'edit') {
-            await WineAPI.update(selectedWine.id, data)
+            await WineAPI.update(selectedWine!.id, data)
                 .then(async _ => {
                     await getWineList();
                     await getWineRegionList();
