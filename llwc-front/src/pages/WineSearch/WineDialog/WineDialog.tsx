@@ -349,7 +349,7 @@ const WineDialog = (props: WineDialogProps) => {
                         setRegions={setRegions}
                         showDetails
                     />
-                    <CepagesForm cepages={cepages} setCepages={setCepages} />
+                    <CepagesForm cepages={cepages} setCepages={setCepages} showDetails />
                     <Grid item xs={8}>
                         <TextField
                             label="drunk_at"

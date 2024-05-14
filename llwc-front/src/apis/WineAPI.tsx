@@ -21,6 +21,7 @@ export interface ListWineQuery {
     region_3?: string;
     region_4?: string;
     region_5?: string;
+    cepage_names?: string[];
 }
 
 export interface FindSameWinesQuery {

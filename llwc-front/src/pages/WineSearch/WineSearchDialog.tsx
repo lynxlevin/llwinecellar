@@ -3,10 +3,11 @@ import { AppBar, Button, Checkbox, Container, Dialog, FormControlLabel, Grid, Ic
 import CloseIcon from '@mui/icons-material/Close';
 import { TransitionProps } from '@mui/material/transitions';
 import { ListWineQuery, WineAPI } from '../../apis/WineAPI';
-import { WineContext } from '../../contexts/wine-context';
+import { Cepage, WineContext } from '../../contexts/wine-context';
 import { CellarContext } from '../../contexts/cellar-context';
 import { WineRegionsObject } from './WineDialog/WineDialog';
 import RegionForm from './WineDialog/RegionForm';
+import CepagesForm from './WineDialog/CepagesForm';
 
 const Transition = React.forwardRef(function Transition(
     props: TransitionProps & {
@@ -39,6 +40,7 @@ const WineSearchDialog = (props: WineSearchDialogProps) => {
         region4: '',
         region5: '',
     })
+    const [cepages, setCepages] = useState<Cepage[]>([]);
 
     const handleSearch = async () => {
         const query: ListWineQuery = {
@@ -55,6 +57,7 @@ const WineSearchDialog = (props: WineSearchDialogProps) => {
         if (regions.region3 !== '') query.region_3 = regions.region3.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
         if (regions.region4 !== '') query.region_4 = regions.region4.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
         if (regions.region5 !== '') query.region_5 = regions.region5.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+        if (cepages.length > 0) query.cepage_names = cepages.map(cepage => cepage.name);
         const res = await WineAPI.list(query);
         wineContext.setWineList(res.data.wines);
         handleClose();
@@ -74,6 +77,7 @@ const WineSearchDialog = (props: WineSearchDialogProps) => {
             region4: '',
             region5: '',
         })
+        setCepages([]);
     }
 
     return (
@@ -127,6 +131,7 @@ const WineSearchDialog = (props: WineSearchDialogProps) => {
                         setRegions={setRegions}
                         freeSolo={false}  // MYMEMO: This is a workaround for region form not updating on resetQueries. But without freeSolo, warning shows on WineDialog when entering new regions.
                     />
+                    <CepagesForm cepages={cepages} setCepages={setCepages} />
                     {/* <Grid item xs={3}>
                         <TextField
                             label="vintage"

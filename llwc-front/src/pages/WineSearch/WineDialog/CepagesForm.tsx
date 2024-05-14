@@ -6,10 +6,11 @@ import { GrapeMasterContext } from '../../../contexts/grape-master-context';
 interface CepagesFormProps {
     cepages: Cepage[];
     setCepages: React.Dispatch<React.SetStateAction<Cepage[]>>;
+    showDetails?: boolean;
 }
 
 const CepagesForm = (props: CepagesFormProps) => {
-    const { cepages, setCepages } = props;
+    const { cepages, setCepages, showDetails=false } = props;
     const grapeMasterContext = useContext(GrapeMasterContext);
 
     return (
@@ -54,7 +55,7 @@ const CepagesForm = (props: CepagesFormProps) => {
                     </Select>
                 </FormControl>
             </Grid>
-            {cepages.map((cepage, i) => (
+            {showDetails && cepages.map((cepage, i) => (
                 <Grid item xs={6} key={i}>
                     <InputLabel id={`cepage-percentage-input-${i}`}>{cepage.name}</InputLabel>
                     <TextField

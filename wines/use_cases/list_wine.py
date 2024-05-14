@@ -26,6 +26,7 @@ if TYPE_CHECKING:
         region_3: str
         region_4: str
         region_5: str
+        cepage_names: list[str]
 
 
 logger = logging.getLogger(__name__)
@@ -88,6 +89,10 @@ class ListWine:
 
         if region_5 := queries.get("region_5"):
             qs = qs.filter(region_5__unaccent=region_5)
+
+        if cepage_names := queries.get("cepage_names"):
+            for cepage_name in cepage_names:
+                qs = qs.filter(cepages__grape__name=cepage_name)
 
         if (is_drunk := queries.get("is_drunk")) is not None:
             qs = qs.filter_is_drunk(is_drunk)
