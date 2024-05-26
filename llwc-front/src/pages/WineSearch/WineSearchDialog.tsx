@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react';
-import { AppBar, Button, Checkbox, Container, Dialog, FormControlLabel, Grid, IconButton, MenuItem, Select, Slide, TextField, Toolbar } from '@mui/material';
+import { AppBar, Button, Checkbox, Container, Dialog, FormControl, FormControlLabel, FormLabel, Grid, IconButton, MenuItem, Radio, RadioGroup, Select, Slide, TextField, Toolbar } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { TransitionProps } from '@mui/material/transitions';
 import { Cepage, WineContext, WineSearchQuery } from '../../contexts/wine-context';
@@ -99,17 +99,37 @@ const WineSearchDialog = (props: WineSearchDialogProps) => {
             </AppBar>
             <Container maxWidth="md" sx={{ marginTop: 3, marginBottom: 3 }}>
                 <Grid container spacing={2}>
-                    <Grid item xs={6}>
-                        <Select id="cellar-select" value={cellarId} onChange={event => setCellarId(event.target.value)} fullWidth>
-                            {cellarContext.cellarList.map(cellar => (
-                                <MenuItem key={cellar.id} value={cellar.id}>
-                                    {cellar.name}
-                                </MenuItem>
-                            ))}
-                            <MenuItem value="NOT_IN_CELLAR">NOT_IN_CELLAR</MenuItem>
-                            <MenuItem value="-">ALL_WINES</MenuItem>
-                        </Select>
-                    </Grid>
+                    {cellarContext.cellarList.length > 2 ? (
+                            <Grid item xs={6}>
+                                <Select id="cellar-select" value={cellarId} onChange={event => setCellarId(event.target.value)} fullWidth>
+                                    {cellarContext.cellarList.map(cellar => (
+                                        <MenuItem key={cellar.id} value={cellar.id}>
+                                            {cellar.name}
+                                        </MenuItem>
+                                    ))}
+                                    <MenuItem value="NOT_IN_CELLAR">NOT_IN_CELLAR</MenuItem>
+                                    <MenuItem value="-">ALL_WINES</MenuItem>
+                                </Select>
+                            </Grid>
+                        ) : (
+                            <Grid item xs={6}>
+                                <FormControl>
+                                    <FormLabel>Cellar Select</FormLabel>
+                                    <RadioGroup
+                                        name="cellar-select-radio-group"
+                                        value={cellarId}
+                                        onChange={event => setCellarId(event.target.value)}
+                                    >
+                                        {cellarContext.cellarList.map(cellar => (
+                                            <FormControlLabel key={cellar.id} value={cellar.id} control={<Radio />} label={cellar.name} />
+                                        ))}
+                                        <FormControlLabel value="NOT_IN_CELLAR" control={<Radio />} label="NOT_IN_CELLAR" />
+                                        <FormControlLabel value="-" control={<Radio />} label="ALL_WINES" />
+                                    </RadioGroup>
+                                </FormControl>
+                            </Grid>
+                        )
+                    }
                     <Grid item xs={3}>
                         <FormControlLabel control={<Checkbox checked={showStock} onChange={e => setShowStock(e.target.checked)} />} label="Stock" />
                     </Grid>
