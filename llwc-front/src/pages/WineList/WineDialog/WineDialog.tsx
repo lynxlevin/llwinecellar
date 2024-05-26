@@ -195,8 +195,8 @@ const WineDialog = (props: WineDialogProps) => {
         };
         if (action === 'edit' && dontMove) {
             // MYMEMO(後日): 汚い。null | undefined | string の使い分けはよろしくない。
-            delete data.cellar_id;
-            delete data.position;
+            data.cellar_id = undefined;
+            data.position = undefined;
         } else if (cellarId === noCellarCode) {
             data.cellar_id = null;
             data.position = null;
@@ -262,7 +262,7 @@ const WineDialog = (props: WineDialogProps) => {
                                 value.map((option: string, index: number) => <Chip variant="outlined" label={option} {...getTagProps({ index })} />)
                             }
                             renderInput={params => <TextField {...params} variant="filled" label="tag_texts" />}
-                            onChange={(event: any, newValue: string[]) => {
+                            onChange={(_, newValue: string[]) => {
                                 setTagTexts(newValue);
                             }}
                         />
