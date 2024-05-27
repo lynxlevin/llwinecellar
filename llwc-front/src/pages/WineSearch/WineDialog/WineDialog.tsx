@@ -116,6 +116,20 @@ const WineDialog = (props: WineDialogProps) => {
 
     const [dontMove, setDontMove] = useState<boolean>(action === 'edit');
 
+    const copyFromHistory = (data: WineData) => {
+        setName(data.name);
+        setProducer(data.producer);
+        setRegions({
+            country: data.country,
+            region_1: data.region_1,
+            region_2: data.region_2,
+            region_3: data.region_3,
+            region_4: data.region_4,
+            region_5: data.region_5,
+        });
+        setCepages(data.cepages);
+    };
+
     const fillDrunkAtAndMoveOutOfCellar = () => {
         if (!drunkAt) setDrunkAt(getLocaleISODateString());
         setDontMove(false);
@@ -226,7 +240,7 @@ const WineDialog = (props: WineDialogProps) => {
             <Container maxWidth="md" sx={{ marginTop: 3, marginBottom: 3 }}>
                 <Grid container spacing={2}>
                     <Grid item xs={12}>
-                        <SameWinesDialog name={name} producer={producer} />
+                        <SameWinesDialog name={name} producer={producer} copyFromHistory={copyFromHistory} />
                     </Grid>
                     <Grid item xs={12}>
                         <Autocomplete
@@ -296,6 +310,7 @@ const WineDialog = (props: WineDialogProps) => {
                         />
                     </Grid>
                     <Grid item xs={6}>
+                        {/* MYMEMO: Change to autoComplete */}
                         <TextField
                             label="bought_from"
                             value={boughtFrom}

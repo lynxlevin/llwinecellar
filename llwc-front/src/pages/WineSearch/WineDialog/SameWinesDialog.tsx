@@ -8,10 +8,11 @@ import { FindSameWinesQuery } from '../../../apis/WineAPI';
 interface SameWinesDialogProps {
     name: string;
     producer: string;
+    copyFromHistory: (data: WineData) => void;
 }
 
 const SameWinesDialog = (props: SameWinesDialogProps) => {
-    const { name, producer } = props;
+    const { name, producer, copyFromHistory } = props;
     const [sameWines, setSameWines] = useState<WineData[]>([])
     const [searchKeys, setSearchKeys] = useState<{name: boolean, producer: boolean, fuzzy: boolean}>({name: true, producer: false, fuzzy: false});
     const { findSameWines } = useWineAPI();
@@ -41,6 +42,7 @@ const SameWinesDialog = (props: SameWinesDialogProps) => {
                     {sameWines.map(wine => {
                         return (
                             <Paper elevation={3} key={wine.id} sx={{m: 1, mb: 2}}>
+                                <Button onClick={() => {copyFromHistory(wine); setSameWines([]);}} variant="contained" sx={{ ml: 'auto', display: 'block'}}>Copy</Button>
                                 <Typography sx={{mb: 2}}>
                                     {wine.name} ({wine.vintage})<br />
                                     {wine.producer}<br />
