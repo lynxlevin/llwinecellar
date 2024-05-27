@@ -143,7 +143,7 @@ const WineSearchTableHead = (props: WineSearchTableHeadProps) => {
         return text
             .toLowerCase()
             .split('_')
-            .map(function (word: string) {
+            .map((word: string) => {
                 return word.replace(word[0], word[0].toUpperCase());
             })
             .join('');

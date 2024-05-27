@@ -65,11 +65,9 @@ const RegionForm = (props: RegionFormProps) => {
         if (regions.country === null) return null;
 
         let regionValue = regions.country;
-        if (regions.region1) regionValue += `>${regions.region1}`;
-        if (regions.region2) regionValue += `>${regions.region2}`;
-        if (regions.region3) regionValue += `>${regions.region3}`;
-        if (regions.region4) regionValue += `>${regions.region4}`;
-        if (regions.region5) regionValue += `>${regions.region5}`;
+        for (const key of ["region1", "region2", "region3", "region4", "region5"] as (keyof WineRegionsObject)[]) {
+            if (regions[key]) regionValue += `>${regions[key]}`;
+        };
 
         return regionValue;
     };
@@ -85,7 +83,7 @@ const RegionForm = (props: RegionFormProps) => {
                         value.map((option: string, index: number) => <Chip variant="outlined" label={option} {...getTagProps({ index })} />)
                     }
                     renderInput={params => <TextField {...params} label="wine_region" />}
-                    onChange={(event: any, newValue: string | null) => {
+                    onChange={(_, newValue: string | null) => {
                         if (newValue) {
                             const [country, region1, region2, region3, region4, region5] = newValue.split('>');
                             setRegions({
@@ -111,7 +109,7 @@ const RegionForm = (props: RegionFormProps) => {
                                 value.map((option: string, index: number) => <Chip variant="outlined" label={option} {...getTagProps({ index })} />)
                             }
                             renderInput={params => <TextField {...params} label="country" />}
-                            onChange={(event: any, newValue: string | null) => {
+                            onChange={(_, newValue: string | null) => {
                                 setRegions(prev => {return {...prev, country: newValue};});
                             }}
                         />
