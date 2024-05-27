@@ -33,11 +33,11 @@ interface WineDialogProps {
 
 export interface WineRegionsObject {
     country: string | null;
-    region1: string;
-    region2: string;
-    region3: string;
-    region4: string;
-    region5: string;
+    region_1: string;
+    region_2: string;
+    region_3: string;
+    region_4: string;
+    region_5: string;
 }
 
 export interface ValidationErrorsType {
@@ -96,11 +96,11 @@ const WineDialog = (props: WineDialogProps) => {
     const [vintage, setVintage] = useState<number | null>(selectedWine.vintage);
     const [regions, setRegions] = useState<WineRegionsObject>({
         country: selectedWine.country,
-        region1: selectedWine.region_1,
-        region2: selectedWine.region_2,
-        region3: selectedWine.region_3,
-        region4: selectedWine.region_4,
-        region5: selectedWine.region_5,
+        region_1: selectedWine.region_1,
+        region_2: selectedWine.region_2,
+        region_3: selectedWine.region_3,
+        region_4: selectedWine.region_4,
+        region_5: selectedWine.region_5,
     })
     const [cepages, setCepages] = useState<Cepage[]>(selectedWine.cepages); // List of objects だから、中身のobjectはdeep copy できてないかも
     const [boughtAt, setBoughtAt] = useState<string | null>(selectedWine.bought_at);
@@ -157,12 +157,7 @@ const WineDialog = (props: WineDialogProps) => {
         const data: WineRequestBody = {
             name: name,
             producer: producer,
-            country: regions.country,
-            region_1: regions.region1,
-            region_2: regions.region2,
-            region_3: regions.region3,
-            region_4: regions.region4,
-            region_5: regions.region5,
+            ...regions,
             cepages: cepages.sort((a, b) => Number(b.percentage)! - Number(a.percentage)!),
             vintage: vintage,
             bought_at: boughtAt,

@@ -65,7 +65,7 @@ const RegionForm = (props: RegionFormProps) => {
         if (regions.country === null) return null;
 
         let regionValue = regions.country;
-        for (const key of ["region1", "region2", "region3", "region4", "region5"] as (keyof WineRegionsObject)[]) {
+        for (const key of ["region_1", "region_2", "region_3", "region_4", "region_5"] as (keyof WineRegionsObject)[]) {
             if (regions[key]) regionValue += `>${regions[key]}`;
         };
 
@@ -85,14 +85,14 @@ const RegionForm = (props: RegionFormProps) => {
                     renderInput={params => <TextField {...params} label="wine_region" />}
                     onChange={(_, newValue: string | null) => {
                         if (newValue) {
-                            const [country, region1, region2, region3, region4, region5] = newValue.split('>');
+                            const [country, region_1, region_2, region_3, region_4, region_5] = newValue.split('>');
                             setRegions({
                                 country,
-                                region1: region1 ?? '',
-                                region2: region2 ?? '',
-                                region3: region3 ?? '',
-                                region4: region4 ?? '',
-                                region5: region5 ?? '',
+                                region_1: region_1 ?? '',
+                                region_2: region_2 ?? '',
+                                region_3: region_3 ?? '',
+                                region_4: region_4 ?? '',
+                                region_5: region_5 ?? '',
                             });
                         }
                     }}
@@ -118,9 +118,9 @@ const RegionForm = (props: RegionFormProps) => {
                     <Grid item xs={6}>
                         <TextField
                             label="region_1"
-                            value={regions.region1}
+                            value={regions.region_1}
                             onChange={event => {
-                                setRegions(prev => {return {...prev, region1: event.target.value};});
+                                setRegions(prev => {return {...prev, region_1: event.target.value};});
                             }}
                             variant="standard"
                             fullWidth
@@ -129,9 +129,9 @@ const RegionForm = (props: RegionFormProps) => {
                     <Grid item xs={6}>
                         <TextField
                             label="region_2"
-                            value={regions.region2}
+                            value={regions.region_2}
                             onChange={event => {
-                                setRegions(prev => {return {...prev, region2: event.target.value};});
+                                setRegions(prev => {return {...prev, region_2: event.target.value};});
                             }}
                             variant="standard"
                             fullWidth
@@ -140,9 +140,9 @@ const RegionForm = (props: RegionFormProps) => {
                     <Grid item xs={6}>
                         <TextField
                             label="region_3"
-                            value={regions.region3}
+                            value={regions.region_3}
                             onChange={event => {
-                                setRegions(prev => {return {...prev, region3: event.target.value};});
+                                setRegions(prev => {return {...prev, region_3: event.target.value};});
                             }}
                             variant="standard"
                             fullWidth
@@ -151,9 +151,9 @@ const RegionForm = (props: RegionFormProps) => {
                     <Grid item xs={6}>
                         <TextField
                             label="region_4"
-                            value={regions.region4}
+                            value={regions.region_4}
                             onChange={event => {
-                                setRegions(prev => {return {...prev, region4: event.target.value};});
+                                setRegions(prev => {return {...prev, region_4: event.target.value};});
                             }}
                             variant="standard"
                             fullWidth
@@ -162,9 +162,9 @@ const RegionForm = (props: RegionFormProps) => {
                     <Grid item xs={6}>
                         <TextField
                             label="region_5"
-                            value={regions.region5}
+                            value={regions.region_5}
                             onChange={event => {
-                                setRegions(prev => {return {...prev, region5: event.target.value};});
+                                setRegions(prev => {return {...prev, region_5: event.target.value};});
                             }}
                             variant="standard"
                             fullWidth

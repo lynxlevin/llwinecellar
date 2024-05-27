@@ -35,11 +35,11 @@ const WineSearchDialog = (props: WineSearchDialogProps) => {
     const [nameOrProducer, setNameOrProducer] = useState<string>('');
     const [regions, setRegions] = useState<WineRegionsObject>({
         country: null,
-        region1: '',
-        region2: '',
-        region3: '',
-        region4: '',
-        region5: '',
+        region_1: '',
+        region_2: '',
+        region_3: '',
+        region_4: '',
+        region_5: '',
     })
     const [cepages, setCepages] = useState<Cepage[]>([]);
 
@@ -52,12 +52,11 @@ const WineSearchDialog = (props: WineSearchDialogProps) => {
         if (cellarId === 'NOT_IN_CELLAR') query.out_of_cellars = true;
         if (nameOrProducer) query.name_or_producer = nameOrProducer;
         if (regions.country) query.country = regions.country;
-        // MYMEMO: maybe normalizing is not needed.
-        if (regions.region1 !== '') query.region_1 = regions.region1.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-        if (regions.region2 !== '') query.region_2 = regions.region2.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-        if (regions.region3 !== '') query.region_3 = regions.region3.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-        if (regions.region4 !== '') query.region_4 = regions.region4.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-        if (regions.region5 !== '') query.region_5 = regions.region5.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+        if (regions.region_1) query.region_1 = regions.region_1;
+        if (regions.region_2) query.region_2 = regions.region_2;
+        if (regions.region_3) query.region_3 = regions.region_3;
+        if (regions.region_4) query.region_4 = regions.region_4;
+        if (regions.region_5) query.region_5 = regions.region_5;
         if (cepages.length > 0) query.cepage_names = cepages.map(cepage => cepage.name);
         wineContext.setWineSearchQuery(query);
         await searchWine(query);
@@ -71,11 +70,11 @@ const WineSearchDialog = (props: WineSearchDialogProps) => {
         setNameOrProducer('');
         setRegions({
             country: null,
-            region1: '',
-            region2: '',
-            region3: '',
-            region4: '',
-            region5: '',
+            region_1: '',
+            region_2: '',
+            region_3: '',
+            region_4: '',
+            region_5: '',
         })
         setCepages([]);
         wineContext.setWineSearchQuery({show_drunk: true, show_stock: true});
