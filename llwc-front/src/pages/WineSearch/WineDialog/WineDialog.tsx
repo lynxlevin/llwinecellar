@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext, useMemo } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { AppBar, Button, Container, Dialog, Grid, IconButton, Slide, TextField, Toolbar, Typography, Autocomplete, Chip } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { TransitionProps } from '@mui/material/transitions';
@@ -52,8 +52,37 @@ export interface apiErrorsType {
     position?: string;
 }
 
+const getLocaleISODateString = (date_?: Date) => {
+    const date = date_ ? date_ : new Date();
+    return `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
+};
+
+const noCellarCode = 'NOT_IN_CELLAR';
+
+const SELECTED_WINE_DEFAULT: WineData = {
+    id: '',
+    name: '',
+    producer: '',
+    country: null,
+    region_1: '',
+    region_2: '',
+    region_3: '',
+    region_4: '',
+    region_5: '',
+    cepages: [],
+    vintage: null,
+    bought_at: getLocaleISODateString(),
+    bought_from: '',
+    price: null,
+    drunk_at: null,
+    note: '',
+    tag_texts: [],
+    cellar_id: noCellarCode,
+    position: '',
+}
+
 const WineDialog = (props: WineDialogProps) => {
-    const { isOpen, handleClose, selectedWine, action } = props;
+    const { isOpen, handleClose, selectedWine=SELECTED_WINE_DEFAULT, action } = props;
 
     const wineTagContext = useContext(WineTagContext);
 
@@ -61,80 +90,31 @@ const WineDialog = (props: WineDialogProps) => {
     const { getWineTagList } = useWineTagAPI();
     const { getWineRegionList } = useWineRegionAPI();
 
-    const noCellarCode = 'NOT_IN_CELLAR';
+    const [tagTexts, setTagTexts] = useState<string[]>(selectedWine.tag_texts); // deep copy できてなさそう
+    const [name, setName] = useState<string>(selectedWine.name);
+    const [producer, setProducer] = useState<string>(selectedWine.producer);
+    const [vintage, setVintage] = useState<number | null>(selectedWine.vintage);
+    const [regions, setRegions] = useState<WineRegionsObject>({
+        country: selectedWine.country,
+        region1: selectedWine.region_1,
+        region2: selectedWine.region_2,
+        region3: selectedWine.region_3,
+        region4: selectedWine.region_4,
+        region5: selectedWine.region_5,
+    })
+    const [cepages, setCepages] = useState<Cepage[]>(selectedWine.cepages); // List of objects だから、中身のobjectはdeep copy できてないかも
+    const [boughtAt, setBoughtAt] = useState<string | null>(selectedWine.bought_at);
+    const [boughtFrom, setBoughtFrom] = useState<string>(selectedWine.bought_from);
+    const [price, setPrice] = useState<number | null>(selectedWine.price);
+    const [drunkAt, setDrunkAt] = useState<string | null>(selectedWine.drunk_at);
+    const [note, setNote] = useState<string>(selectedWine.note);
+    const [cellarId, setCellarId] = useState<string | null>(selectedWine.cellar_id);
+    const [position, setPosition] = useState<string | null>(selectedWine.position);
 
-    const getLocaleISODateString = (date_?: Date) => {
-        const date = date_ ? date_ : new Date();
-        return `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
-    };
+    const [validationErrors, setValidationErrors] = useState<ValidationErrorsType>({});
+    const [apiErrors, setApiErrors] = useState<apiErrorsType>({});
 
-    const initialValues = useMemo(() => {
-        return {
-            tagTexts: action === 'edit' ? selectedWine!.tag_texts : [],
-            name: action === 'edit' ? selectedWine!.name : '',
-            producer: action === 'edit' ? selectedWine!.producer : '',
-            vintage: action === 'edit' ? selectedWine!.vintage : null,
-            regions: {
-                country: action === 'edit' ? selectedWine!.country : null,
-                region1: action === 'edit' ? selectedWine!.region_1 : '',
-                region2: action === 'edit' ? selectedWine!.region_2 : '',
-                region3: action === 'edit' ? selectedWine!.region_3 : '',
-                region4: action === 'edit' ? selectedWine!.region_4 : '',
-                region5: action === 'edit' ? selectedWine!.region_5 : '',
-            },
-            cepages: action === 'edit' ? selectedWine!.cepages : [],
-            boughtAt: action === 'edit' ? selectedWine!.bought_at : getLocaleISODateString(),
-            boughtFrom: action === 'edit' ? selectedWine!.bought_from : '',
-            price: action === 'edit' ? selectedWine!.price : null,
-            drunkAt: action === 'edit' ? selectedWine!.drunk_at : null,
-            note: action === 'edit' ? selectedWine!.note : '',
-            cellarId: selectedWine?.cellar_id ?? noCellarCode,
-            position: selectedWine?.position ?? '',
-            validationErrors: {},
-            apiErrors: {},
-            dontMove: action === 'edit',
-        };
-    }, [action, selectedWine]);
-
-    const [tagTexts, setTagTexts] = useState<string[]>(initialValues.tagTexts); // deep copy できてなさそう
-    const [name, setName] = useState<string>(initialValues.name);
-    const [producer, setProducer] = useState<string>(initialValues.producer);
-    const [vintage, setVintage] = useState<number | null>(initialValues.vintage);
-    const [regions, setRegions] = useState<WineRegionsObject>(initialValues.regions)
-    const [cepages, setCepages] = useState<Cepage[]>(initialValues.cepages); // List of objects だから、中身のobjectはdeep copy できてないかも
-    const [boughtAt, setBoughtAt] = useState<string | null>(initialValues.boughtAt);
-    const [boughtFrom, setBoughtFrom] = useState<string>(initialValues.boughtFrom);
-    const [price, setPrice] = useState<number | null>(initialValues.price);
-    const [drunkAt, setDrunkAt] = useState<string | null>(initialValues.drunkAt);
-    const [note, setNote] = useState<string>(initialValues.note);
-    const [cellarId, setCellarId] = useState<string | null>(initialValues.cellarId);
-    const [position, setPosition] = useState<string | null>(initialValues.position);
-
-    const [validationErrors, setValidationErrors] = useState<ValidationErrorsType>(initialValues.validationErrors);
-    const [apiErrors, setApiErrors] = useState<apiErrorsType>(initialValues.apiErrors);
-
-    const [dontMove, setDontMove] = useState<boolean>(initialValues.dontMove);
-
-    useEffect(() => {
-        if (isOpen) {
-            setTagTexts(initialValues.tagTexts);
-            setName(initialValues.name);
-            setProducer(initialValues.producer);
-            setVintage(initialValues.vintage);
-            setRegions(initialValues.regions)
-            setCepages(initialValues.cepages);
-            setBoughtAt(initialValues.boughtAt);
-            setBoughtFrom(initialValues.boughtFrom);
-            setPrice(initialValues.price);
-            setDrunkAt(initialValues.drunkAt);
-            setNote(initialValues.note);
-            setCellarId(initialValues.cellarId);
-            setPosition(initialValues.position);
-            setValidationErrors(initialValues.validationErrors);
-            setApiErrors(initialValues.apiErrors);
-            setDontMove(initialValues.dontMove);
-        }
-    }, [initialValues, isOpen]);
+    const [dontMove, setDontMove] = useState<boolean>(action === 'edit');
 
     const fillDrunkAtAndMoveOutOfCellar = () => {
         if (!drunkAt) setDrunkAt(getLocaleISODateString());
@@ -216,7 +196,7 @@ const WineDialog = (props: WineDialogProps) => {
                     setApiErrors(err.response!.data as apiErrorsType);
                 });
         } else if (action === 'edit') {
-            await WineAPI.update(selectedWine!.id, data)
+            await WineAPI.update(selectedWine.id, data)
                 .then(async _ => {
                     await searchWine();
                     await getWineRegionList();

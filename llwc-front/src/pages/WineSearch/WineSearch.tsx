@@ -148,7 +148,6 @@ const WineSearchTableHead = (props: WineSearchTableHeadProps) => {
             })
             .join('');
     };
-    // MYMEMO(後日): add filter
 
     return (
         <TableHead>
@@ -243,7 +242,7 @@ export const WineSearch = () => {
                                         >
                                             {/* MYMEMO(後日): make cepages look like tags */}
                                             {COLUMN_ORDER.map(column => {
-                                                let content = rowData[column as WineDataKeys];
+                                                const content = rowData[column as WineDataKeys];
                                                 if (column === 'name') {
                                                     return (
                                                         <TableCell component="th" id={labelId} scope="row" key={row.id + column}>
