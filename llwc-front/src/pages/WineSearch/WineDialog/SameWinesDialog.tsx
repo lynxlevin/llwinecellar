@@ -58,7 +58,7 @@ const SameWinesDialog = (props: SameWinesDialogProps) => {
                                 ) : (
                                     <Typography sx={{mb: 2}}>
                                         {wine.name} ({wine.vintage})<br />
-                                        {wine.producer}<br />
+                                        {wine.producer}
                                     </Typography>
                                 )}
                                 {action === 'edit' && (
