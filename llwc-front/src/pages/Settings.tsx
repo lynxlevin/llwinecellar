@@ -24,6 +24,9 @@ export const Settings = () => {
                         <Link to="/wine-list" style={{ color: 'rgba(0, 0, 0, 0.87)', textDecorationLine: 'none' }}>
                             Wine List
                         </Link>
+                        <Link to="/wine-search" style={{ color: 'rgba(0, 0, 0, 0.87)', textDecorationLine: 'none' }}>
+                            Wine Search
+                        </Link>
                     </MenuItem>
                 </Toolbar>
             </AppBar>

@@ -39,7 +39,7 @@ const WineMemosAppBar = (props: WineMemosAppBarProps) => {
                 <IconButton
                     onClick={() => {
                         window.scroll({ top: 0 });
-                        navigate('/wine-list');
+                        navigate('/wine-search');
                     }}
                     sx={{ mr: 2, color: 'rgba(0,0,0,0.67)' }}
                 >
