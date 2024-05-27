@@ -18,9 +18,9 @@ const SameWinesDialog = (props: SameWinesDialogProps) => {
 
     const search = async () => {
         if (!Object.values(searchKeys).some(key => key)) return;
-        const query: FindSameWinesQuery = {is_drunk: true};
-        if (searchKeys.name) query["name"] = name;
-        if (searchKeys.producer) query["producer"] = producer;
+        const query: FindSameWinesQuery = {show_drunk: true, show_stock: false};
+        if (searchKeys.name) query.name = name;
+        if (searchKeys.producer) query.producer = producer;
         const sameWines = await findSameWines(query);
         setSameWines(sameWines);
     }

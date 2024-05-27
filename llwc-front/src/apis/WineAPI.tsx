@@ -25,7 +25,8 @@ export interface ListWineQuery {
 }
 
 export interface FindSameWinesQuery {
-    is_drunk: boolean;
+    show_drunk: boolean;
+    show_stock: boolean;
     name?: string;
     producer?: string;
     name_or_producer?: string;
