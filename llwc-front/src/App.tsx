@@ -16,7 +16,6 @@ import WineMemos from './pages/WineMemos';
 
 function App() {
     const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
-    // MYMEMO(後日): CellarContext を準備するのはまだ早いかも
     const [cellarList, setCellarList] = useState<Cellar[]>([]);
     const [wineList, setWineList] = useState<WineData[]>([]);
     const [wineListQuery, setWineListQuery] = useState<WineListQuery>({ isDrunk: false, cellarId: undefined });

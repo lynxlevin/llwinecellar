@@ -242,7 +242,6 @@ const WineDialog = (props: WineDialogProps) => {
                                 setTagTexts(newValue);
                             }}
                         />
-                        {/* MYMEMO(後日): consider using _.throttle or _.debounce on all onChanges */}
                     </Grid>
                     <Grid item xs={12}>
                         <TextField

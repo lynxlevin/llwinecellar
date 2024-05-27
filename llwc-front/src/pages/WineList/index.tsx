@@ -181,7 +181,6 @@ const WineListTableHead = (props: WineListTableHeadProps) => {
             })
             .join('');
     };
-    // MYMEMO(後日): add filter
 
     return (
         <TableHead>

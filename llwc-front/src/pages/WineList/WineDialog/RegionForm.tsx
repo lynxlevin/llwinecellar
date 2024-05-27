@@ -103,7 +103,6 @@ const RegionForm = (props: RegionFormProps) => {
                         }
                     }}
                 />
-                {/* MYMEMO(後日): consider using _.throttle or _.debounce on all onChanges */}
             </Grid>
             <Grid item xs={6}>
                 <Autocomplete
@@ -113,11 +112,10 @@ const RegionForm = (props: RegionFormProps) => {
                         value.map((option: string, index: number) => <Chip variant="outlined" label={option} {...getTagProps({ index })} />)
                     }
                     renderInput={params => <TextField {...params} label="country" />}
-                    onChange={(event: any, newValue: string | null) => {
+                    onChange={(_, newValue: string | null) => {
                         setCountry(newValue);
                     }}
                 />
-                {/* MYMEMO(後日): consider using _.throttle or _.debounce on all onChanges */}
             </Grid>
             <Grid item xs={6}>
                 <TextField

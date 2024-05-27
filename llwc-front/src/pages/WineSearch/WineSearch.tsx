@@ -252,8 +252,6 @@ export const WineSearch = () => {
                                                 }
                                                 return <TableCell key={row.id + column}>{content}</TableCell>;
                                             })}
-                                            {/* MYMEMO(後日): show note: TableContainer を width:max-content にしたらできるけど、全列個別指定が必要になる
-                                            https://smartdevpreneur.com/customizing-material-ui-table-cell-width/ */}
                                         </TableRow>
                                     );
                                 })}
