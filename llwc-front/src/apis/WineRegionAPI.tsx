@@ -9,7 +9,7 @@ export const WineRegionAPI = {
     BASE_URL: '/api/wine_regions/',
 
     list: async (): Promise<AxiosResponse<WineRegionListResponse>> => {
-        let url = WineRegionAPI.BASE_URL;
+        const url = WineRegionAPI.BASE_URL;
         return await client.get(url);
     },
 };

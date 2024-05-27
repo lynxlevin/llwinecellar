@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useState, useContext } from 'react';
 import { AppBar, Button, Container, Dialog, Grid, IconButton, Slide, TextField, Toolbar, Typography, Autocomplete, Chip } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { TransitionProps } from '@mui/material/transitions';
@@ -90,7 +90,7 @@ const WineDialog = (props: WineDialogProps) => {
     const { getWineTagList } = useWineTagAPI();
     const { getWineRegionList } = useWineRegionAPI();
 
-    const [tagTexts, setTagTexts] = useState<string[]>(selectedWine.tag_texts); // deep copy できてなさそう
+    const [tagTexts, setTagTexts] = useState<string[]>(selectedWine.tag_texts);
     const [name, setName] = useState<string>(selectedWine.name);
     const [producer, setProducer] = useState<string>(selectedWine.producer);
     const [vintage, setVintage] = useState<number | null>(selectedWine.vintage);
@@ -102,7 +102,7 @@ const WineDialog = (props: WineDialogProps) => {
         region_4: selectedWine.region_4,
         region_5: selectedWine.region_5,
     })
-    const [cepages, setCepages] = useState<Cepage[]>(selectedWine.cepages); // List of objects だから、中身のobjectはdeep copy できてないかも
+    const [cepages, setCepages] = useState<Cepage[]>(selectedWine.cepages);
     const [boughtAt, setBoughtAt] = useState<string | null>(selectedWine.bought_at);
     const [boughtFrom, setBoughtFrom] = useState<string>(selectedWine.bought_from);
     const [price, setPrice] = useState<number | null>(selectedWine.price);

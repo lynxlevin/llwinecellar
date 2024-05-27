@@ -149,7 +149,8 @@ const WineSearchDialog = (props: WineSearchDialogProps) => {
                     <RegionForm
                         regions={regions}
                         setRegions={setRegions}
-                        freeSolo={false}  // MYMEMO: This is a workaround for region form not updating on resetQueries. But without freeSolo, warning shows on WineDialog when entering new regions.
+                        // MYMEMO: This is a workaround for region form not updating on resetQueries. But without freeSolo, warning shows on WineDialog when entering new regions.
+                        freeSolo={false}
                     />
                     <CepagesForm cepages={cepages} setCepages={setCepages} />
                 </Grid>
