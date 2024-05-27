@@ -13,14 +13,15 @@ interface SameWinesDialogProps {
 const SameWinesDialog = (props: SameWinesDialogProps) => {
     const { name, producer } = props;
     const [sameWines, setSameWines] = useState<WineData[]>([])
-    const [searchKeys, setSearchKeys] = useState<{name: boolean, producer: boolean}>({name: true, producer: false});
+    const [searchKeys, setSearchKeys] = useState<{name: boolean, producer: boolean, fuzzy: boolean}>({name: true, producer: false, fuzzy: false});
     const { findSameWines } = useWineAPI();
 
     const search = async () => {
         if (!Object.values(searchKeys).some(key => key)) return;
         const query: FindSameWinesQuery = {is_drunk: true};
-        if (searchKeys.name) query["name"] = name;
-        if (searchKeys.producer) query["producer"] = producer;
+        if (searchKeys.name) query.name = name;
+        if (searchKeys.producer) query.name = producer;
+        if (searchKeys.fuzzy) query.name_or_producer = name + producer;
         const sameWines = await findSameWines(query);
         setSameWines(sameWines);
     }
@@ -31,8 +32,9 @@ const SameWinesDialog = (props: SameWinesDialogProps) => {
                 <Button variant="contained" sx={{ marginTop: '10px' }} onClick={search}>
                     Find same
                 </Button>
-                <FormControlLabel labelPlacement='bottom' label='by name' control={<Switch checked={searchKeys.name} onChange={event => {setSearchKeys(prev => { return {...prev, name: event.target.checked}})}} />} />
-                <FormControlLabel labelPlacement='bottom' label='by producer' control={<Switch checked={searchKeys.producer} onChange={event => {setSearchKeys(prev => { return {...prev, producer: event.target.checked}})}} />} />
+                <FormControlLabel labelPlacement='bottom' label='by name' control={<Switch checked={searchKeys.name} onChange={event => {setSearchKeys(prev => { return {...prev, name: event.target.checked, fuzzy: false}})}} />} />
+                <FormControlLabel labelPlacement='bottom' label='by producer' control={<Switch checked={searchKeys.producer} onChange={event => {setSearchKeys(prev => { return {...prev, producer: event.target.checked, fuzzy: false}})}} />} />
+                <FormControlLabel labelPlacement='bottom' label='fuzzy (name/producer)' control={<Switch checked={searchKeys.fuzzy} onChange={event => {setSearchKeys(prev => { return {fuzzy: event.target.checked, name: false, producer: false}})}} />} />
             </Stack>
             <Dialog fullWidth scroll="paper" onClose={() => setSameWines([])} open={sameWines.length !== 0}>
                 <Container sx={{ padding: 2, pr: 1, pl: 1 }}>
