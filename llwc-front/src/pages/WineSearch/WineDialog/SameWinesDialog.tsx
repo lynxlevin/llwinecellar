@@ -3,16 +3,18 @@ import { Button, Container, Dialog, Typography, Paper, FormControlLabel, Switch,
 import { WineData } from '../../../contexts/wine-context';
 import useWineAPI from '../../../hooks/useWineAPI';
 import { FindSameWinesQuery } from '../../../apis/WineAPI';
+import { WineDialogAction } from '../../../hooks/useWineSearchPage';
 
 
 interface SameWinesDialogProps {
     name: string;
     producer: string;
     copyFromHistory: (data: WineData) => void;
+    action: WineDialogAction;
 }
 
 const SameWinesDialog = (props: SameWinesDialogProps) => {
-    const { name, producer, copyFromHistory } = props;
+    const { name, producer, copyFromHistory, action } = props;
     const [sameWines, setSameWines] = useState<WineData[]>([])
     const [searchKeys, setSearchKeys] = useState<{name: boolean, producer: boolean, fuzzy: boolean}>({name: true, producer: false, fuzzy: false});
     const { findSameWines } = useWineAPI();
@@ -42,34 +44,51 @@ const SameWinesDialog = (props: SameWinesDialogProps) => {
                     {sameWines.map(wine => {
                         return (
                             <Paper elevation={3} key={wine.id} sx={{m: 1, mb: 2}}>
-                                <Button onClick={() => {copyFromHistory(wine); setSameWines([]);}} variant="contained" sx={{ ml: 'auto', display: 'block'}}>Copy</Button>
-                                <Typography sx={{mb: 2}}>
-                                    {wine.name} ({wine.vintage})<br />
-                                    {wine.producer}<br />
-                                    drunk_at: {wine.drunk_at}
-                                </Typography>
-                                {wine.tag_texts.length > 0 && (
-                                    <Typography>
-                                        tag_texts: {wine.tag_texts.join(', ')}
+                                {action === 'create' && (
+                                    <Button onClick={() => {copyFromHistory(wine); setSameWines([]);}} variant="contained" sx={{ ml: 'auto', display: 'block'}}>
+                                        Copy
+                                    </Button>
+                                )}
+                                {action === 'edit' ? (
+                                    <Typography sx={{mb: 2}}>
+                                        {wine.name} ({wine.vintage})<br />
+                                        {wine.producer}<br />
+                                        drunk_at: {wine.drunk_at}
+                                    </Typography>
+                                ) : (
+                                    <Typography sx={{mb: 2}}>
+                                        {wine.name} ({wine.vintage})<br />
+                                        {wine.producer}<br />
                                     </Typography>
                                 )}
-                                <Typography>
-                                    bought_at: {wine.bought_at}
-                                </Typography>
-                                <Typography>
-                                    bought_from: {wine.bought_from}
-                                </Typography>
-                                <Typography>
-                                    price: {wine.price}
-                                </Typography>
+                                {action === 'edit' && (
+                                    <>
+                                        {wine.tag_texts.length > 0 && (
+                                            <Typography>
+                                                tag_texts: {wine.tag_texts.join(', ')}
+                                            </Typography>
+                                        )}
+                                        <Typography>
+                                            bought_at: {wine.bought_at}
+                                        </Typography>
+                                        <Typography>
+                                            bought_from: {wine.bought_from}
+                                        </Typography>
+                                        <Typography>
+                                            price: {wine.price}
+                                        </Typography>
+                                    </>
+                                )}
                                 {wine.cepages.length > 0 && (
                                     <Typography>
                                         cepages: {wine.cepages.map(cepage => cepage.abbreviation).join(', ')}
                                     </Typography>
                                 )}
-                                <Typography>
-                                    note: {wine.note}
-                                </Typography>
+                                {action === 'edit' && (
+                                    <Typography>
+                                        note: {wine.note}
+                                    </Typography>
+                                )}
                             </Paper>
                         )
                     })}
