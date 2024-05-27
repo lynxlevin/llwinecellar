@@ -32,7 +32,7 @@ const useWineSearchPage = () => {
     const [rowsPerPage, setRowsPerPage] = useState(100);
     const [selectedWine, setSelectedWine] = useState<WineData>();
     const [wineDialogState, setWineDialogState] = useState<{ open: boolean; action: WineDialogAction }>({ open: false, action: 'create' });
-    const [wineSearchDialogState, setWineSearchDialogState] = useState<{ open: boolean }>({ open: false });
+    const [isWineSearchDialogOpen, setIsWineSearchDialogOpen] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState(true);
 
     // Avoid a layout jump when reaching the last page with empty rows.
@@ -67,18 +67,6 @@ const useWineSearchPage = () => {
     const closeWineDialog = () => {
         setWineDialogState(current => {
             return { ...current, open: false };
-        });
-    };
-
-    const closeWineSearchDialog = () => {
-        setWineSearchDialogState(current => {
-            return { ...current, open: false };
-        });
-    };
-
-    const openWineSearchDialog = () => {
-        setWineSearchDialogState(current => {
-            return { ...current, open: true };
         });
     };
 
@@ -161,11 +149,10 @@ const useWineSearchPage = () => {
         selectedWine,
         wineDialogState,
         openCreateWineDialog,
-        wineSearchDialogState,
+        isWineSearchDialogOpen,
+        setIsWineSearchDialogOpen,
         handleClickRow,
         closeWineDialog,
-        closeWineSearchDialog,
-        openWineSearchDialog,
         emptyRows,
         rowsPerPage,
         page,

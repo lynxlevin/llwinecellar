@@ -188,11 +188,10 @@ export const WineSearch = () => {
         selectedWine,
         wineDialogState,
         openCreateWineDialog,
-        wineSearchDialogState,
+        isWineSearchDialogOpen,
+        setIsWineSearchDialogOpen,
         handleClickRow,
         closeWineDialog,
-        closeWineSearchDialog,
-        openWineSearchDialog,
         emptyRows,
         rowsPerPage,
         page,
@@ -218,7 +217,7 @@ export const WineSearch = () => {
             <Box sx={{ width: '100%' }}>
                 <Paper sx={{ width: '100%' }}>
                     <div ref={toolbarRef}>
-                        <WineSearchToolbar openWineSearchDialog={openWineSearchDialog} handleLogout={handleLogout} openCreateWineDialog={openCreateWineDialog} />
+                        <WineSearchToolbar openWineSearchDialog={() => setIsWineSearchDialogOpen(true)} handleLogout={handleLogout} openCreateWineDialog={openCreateWineDialog} />
                     </div>
                     <TableContainer sx={{ maxHeight: tableHeight }}>
                         <Table stickyHeader sx={{ minWidth: 750 }} aria-labelledby="tableTitle" size="small">
@@ -290,11 +289,11 @@ export const WineSearch = () => {
                     handleClose={closeWineDialog}
                     selectedWine={selectedWine}
                     action={wineDialogState.action}
-                ></WineDialog>
+                />
             )}
             <WineSearchDialog
-                isOpen={wineSearchDialogState.open}
-                handleClose={closeWineSearchDialog}
+                isOpen={isWineSearchDialogOpen}
+                handleClose={() => setIsWineSearchDialogOpen(false)}
             />
         </div>
     );
