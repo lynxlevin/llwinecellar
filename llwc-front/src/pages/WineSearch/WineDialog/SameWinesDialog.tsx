@@ -33,6 +33,19 @@ const SameWinesDialog = (props: SameWinesDialogProps) => {
         setSameWines(sameWines);
     }
 
+    const getWineRegionValue = (wine: WineData) => {
+        if (wine.country === null) return null;
+
+        let regionValue = wine.country;
+        if (wine.region_1) regionValue += `>${wine.region_1}`;
+        if (wine.region_2) regionValue += `>${wine.region_2}`;
+        if (wine.region_3) regionValue += `>${wine.region_3}`;
+        if (wine.region_4) regionValue += `>${wine.region_4}`;
+        if (wine.region_5) regionValue += `>${wine.region_5}`;
+
+        return regionValue;
+    };
+
     return (
         <>
             <Stack direction="row">
@@ -69,6 +82,16 @@ const SameWinesDialog = (props: SameWinesDialogProps) => {
                                         {wine.name} ({wine.vintage})<br />
                                         {wine.producer}
                                     </Typography>
+                                )}
+                                {action === 'create' && (
+                                    <>
+                                        <Typography sx={{mb: 2}}>
+                                            {getWineRegionValue(wine)}
+                                        </Typography>
+                                        <Typography sx={{mb: 2}}>
+                                            {wine.cepages.map(cepage => cepage.name)}
+                                        </Typography>
+                                    </>
                                 )}
                                 {action === 'edit' && (
                                     <>
