@@ -108,7 +108,7 @@ const WineDialog = (props: WineDialogProps) => {
     const [price, setPrice] = useState<number | null>(selectedWine.price);
     const [drunkAt, setDrunkAt] = useState<string | null>(selectedWine.drunk_at);
     const [note, setNote] = useState<string>(selectedWine.note);
-    const [cellarId, setCellarId] = useState<string | null>(selectedWine.cellar_id);
+    const [cellarId, setCellarId] = useState<string | null>(selectedWine.cellar_id ?? noCellarCode);
     const [position, setPosition] = useState<string | null>(selectedWine.position);
 
     const [validationErrors, setValidationErrors] = useState<ValidationErrorsType>({});
