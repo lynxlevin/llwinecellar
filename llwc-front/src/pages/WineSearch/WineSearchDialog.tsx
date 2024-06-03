@@ -42,6 +42,7 @@ const WineSearchDialog = (props: WineSearchDialogProps) => {
         region_5: '',
     })
     const [cepages, setCepages] = useState<Cepage[]>([]);
+    // MYMEMO: add hasNote
 
     const handleSearch = async () => {
         const query: WineSearchQuery = {
@@ -88,11 +89,11 @@ const WineSearchDialog = (props: WineSearchDialogProps) => {
                         <CloseIcon />
                     </IconButton>
                     <div style={{ flexGrow: 1 }} />
-                    <Button color='inherit' variant='outlined' onClick={handleSearch}>
-                        Search
-                    </Button>
                     <Button color='inherit' onClick={resetQueries}>
                         Reset
+                    </Button>
+                    <Button color='inherit' variant='outlined' onClick={handleSearch}>
+                        Search
                     </Button>
                 </Toolbar>
             </AppBar>
