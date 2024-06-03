@@ -19,18 +19,19 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import SecurityUpdateGoodIcon from '@mui/icons-material/SecurityUpdateGood';
 import { WineContext } from '../../contexts/wine-context';
 import AppIcon from '../../components/AppIcon';
+import WineSearchDialog from './WineSearchDialog';
 
 interface WineSearchToolbarProps {
-    openWineSearchDialog: () => void;
     handleLogout: () => Promise<void>;
     openCreateWineDialog: () => void;
 }
 
 export const WineSearchToolbar = (props: WineSearchToolbarProps) => {
-    const { openWineSearchDialog, handleLogout, openCreateWineDialog } = props;
+    const { handleLogout, openCreateWineDialog } = props;
 
     const wineContext = useContext(WineContext);
 
+    const [isWineSearchDialogOpen, setIsWineSearchDialogOpen] = useState<boolean>(false);
     const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null);
     const isMenuOpen = Boolean(menuAnchor);
 
@@ -72,7 +73,7 @@ export const WineSearchToolbar = (props: WineSearchToolbarProps) => {
                 </IconButton>
             </Tooltip>
             <Tooltip title="Filter list">
-                <IconButton onClick={openWineSearchDialog}>
+                <IconButton onClick={() => setIsWineSearchDialogOpen(true)}>
                     <FilterListIcon />
                 </IconButton>
             </Tooltip>
@@ -103,6 +104,10 @@ export const WineSearchToolbar = (props: WineSearchToolbarProps) => {
                     </MenuItem>
                 </MenuList>
             </Menu>
+            <WineSearchDialog
+                isOpen={isWineSearchDialogOpen}
+                handleClose={() => setIsWineSearchDialogOpen(false)}
+            />
         </Toolbar>
     );
 };

@@ -1,4 +1,4 @@
-import { useContext, useRef } from 'react';
+import { useContext, useEffect, useRef } from 'react';
 import { Navigate } from 'react-router-dom';
 import {
     Box,
@@ -16,7 +16,6 @@ import useUserAPI from '../../hooks/useUserAPI';
 import { UserContext } from '../../contexts/user-context';
 import WineDialog from './WineDialog/WineDialog';
 import Loading from '../Loading';
-import WineSearchDialog from './WineSearchDialog';
 import { WineSearchToolbar } from './WineSearchToolbar';
 import { WineSearchTableHead } from './WineSearchTableHead';
 
@@ -24,6 +23,7 @@ import { WineSearchTableHead } from './WineSearchTableHead';
 
 export const WineSearch = () => {
     const userContext = useContext(UserContext);
+
     const toolbarRef = useRef<HTMLDivElement>(null);
     const paginationRef = useRef<HTMLDivElement>(null);
     // MYMEMO(後日): 全ページでこれだけするのは違和感
@@ -36,8 +36,6 @@ export const WineSearch = () => {
         selectedWine,
         wineDialogState,
         openCreateWineDialog,
-        isWineSearchDialogOpen,
-        setIsWineSearchDialogOpen,
         handleClickRow,
         closeWineDialog,
         emptyRows,
@@ -47,12 +45,17 @@ export const WineSearch = () => {
         handleChangeRowsPerPage,
         getCepageAbbreviations,
         isLoading,
+        initializeWineSearch,
     } = useWineSearchPage();
 
     const tableHeight =
         toolbarRef.current && paginationRef.current
             ? `${window.innerHeight - toolbarRef.current!.clientHeight - paginationRef.current!.clientHeight}px`
             : '70vh';
+
+    useEffect(() => {
+        initializeWineSearch();
+    }, [initializeWineSearch])
 
     if (userContext.isLoggedIn === false) {
         return <Navigate to="/login" />;
@@ -65,7 +68,7 @@ export const WineSearch = () => {
             <Box sx={{ width: '100%' }}>
                 <Paper sx={{ width: '100%' }}>
                     <div ref={toolbarRef}>
-                        <WineSearchToolbar openWineSearchDialog={() => setIsWineSearchDialogOpen(true)} handleLogout={handleLogout} openCreateWineDialog={openCreateWineDialog} />
+                        <WineSearchToolbar handleLogout={handleLogout} openCreateWineDialog={openCreateWineDialog} />
                     </div>
                     <TableContainer sx={{ maxHeight: tableHeight }}>
                         <Table stickyHeader sx={{ minWidth: 750 }} aria-labelledby="tableTitle" size="small">
@@ -137,10 +140,6 @@ export const WineSearch = () => {
                     action={wineDialogState.action}
                 />
             )}
-            <WineSearchDialog
-                isOpen={isWineSearchDialogOpen}
-                handleClose={() => setIsWineSearchDialogOpen(false)}
-            />
         </div>
     );
 };

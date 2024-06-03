@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { useCallback, useContext, useMemo, useState } from 'react';
 import { Cepage, WineContext, WineData, WineDataKeys } from '../contexts/wine-context';
 import { WineAPI } from '../apis/WineAPI';
 
@@ -32,7 +32,6 @@ const useWineSearchPage = () => {
     const [rowsPerPage, setRowsPerPage] = useState(100);
     const [selectedWine, setSelectedWine] = useState<WineData>();
     const [wineDialogState, setWineDialogState] = useState<{ open: boolean; action: WineDialogAction }>({ open: false, action: 'create' });
-    const [isWineSearchDialogOpen, setIsWineSearchDialogOpen] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState(true);
 
     // Avoid a layout jump when reaching the last page with empty rows.
@@ -130,8 +129,7 @@ const useWineSearchPage = () => {
         return wineContext.wineList.sort(getComparator(sortOrder.order, sortOrder.key)).slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
     }, [getComparator, page, rowsPerPage, sortOrder, wineContext.wineList]);
 
-
-    useEffect(() => {
+    const initializeWineSearch = useCallback(() => {
         if (wineContext.wineListQuery.cellarId === undefined) return;
         setIsLoading(true);
         WineAPI.list({cellar_id: wineContext.wineListQuery.cellarId, show_drunk: false, show_stock: true}).then(res => {
@@ -139,7 +137,7 @@ const useWineSearchPage = () => {
             setIsLoading(false);
         });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [wineContext.wineListQuery.cellarId])
+    }, [wineContext.wineListQuery.cellarId]);
 
     return {
         sortOrder,
@@ -149,8 +147,6 @@ const useWineSearchPage = () => {
         selectedWine,
         wineDialogState,
         openCreateWineDialog,
-        isWineSearchDialogOpen,
-        setIsWineSearchDialogOpen,
         handleClickRow,
         closeWineDialog,
         emptyRows,
@@ -160,6 +156,7 @@ const useWineSearchPage = () => {
         handleChangeRowsPerPage,
         getCepageAbbreviations,
         isLoading,
+        initializeWineSearch,
     };
 };
 
