@@ -67,39 +67,32 @@ const SameWinesDialog = (props: SameWinesDialogProps) => {
                         return (
                             <Paper elevation={3} key={wine.id} sx={{m: 1, mb: 2}}>
                                 {action === 'create' && (
-                                    <Button onClick={() => {copyFromHistory(wine); setSameWines([]);}} variant="contained" sx={{ ml: 'auto', display: 'block'}}>
-                                        Copy
-                                    </Button>
-                                )}
-                                {action === 'edit' ? (
-                                    <Typography sx={{mb: 2}}>
-                                        {wine.name} ({wine.vintage})<br />
-                                        {wine.producer}<br />
-                                        drunk_at: {wine.drunk_at}
-                                    </Typography>
-                                ) : (
-                                    <Typography sx={{mb: 2}}>
-                                        {wine.name}<br />
-                                        {wine.producer}
-                                    </Typography>
-                                )}
-                                {action === 'create' && (
                                     <>
-                                        <Typography sx={{mb: 2}}>
+                                        <Button onClick={() => {copyFromHistory(wine); setSameWines([]);}} variant="contained" sx={{ ml: 'auto', display: 'block'}}>
+                                            Copy
+                                        </Button>
+                                        <Typography>
+                                            {wine.name}<br />
+                                            {wine.producer}
+                                        </Typography>
+                                        <Typography>
                                             {getWineRegionValue(wine)}
                                         </Typography>
-                                        <Typography sx={{mb: 2}}>
-                                            {wine.cepages.map(cepage => cepage.name)}
+                                        <Typography>
+                                            cepages: {wine.cepages.map(cepage => cepage.name).join(', ')}
                                         </Typography>
                                     </>
                                 )}
                                 {action === 'edit' && (
                                     <>
-                                        {wine.tag_texts.length > 0 && (
-                                            <Typography>
-                                                tag_texts: {wine.tag_texts.join(', ')}
-                                            </Typography>
-                                        )}
+                                        <Typography>
+                                            {wine.name} ({wine.vintage})<br />
+                                            {wine.producer}<br />
+                                            drunk_at: {wine.drunk_at}
+                                        </Typography>
+                                        <Typography>
+                                            tag_texts: {wine.tag_texts.join(', ')}
+                                        </Typography>
                                         <Typography>
                                             bought_at: {wine.bought_at}
                                         </Typography>
@@ -109,17 +102,13 @@ const SameWinesDialog = (props: SameWinesDialogProps) => {
                                         <Typography>
                                             price: {wine.price}
                                         </Typography>
+                                        <Typography>
+                                            cepages: {wine.cepages.map(cepage => cepage.name).join(', ')}
+                                        </Typography>
+                                        <Typography>
+                                            note: {wine.note}
+                                        </Typography>
                                     </>
-                                )}
-                                {wine.cepages.length > 0 && (
-                                    <Typography>
-                                        cepages: {wine.cepages.map(cepage => cepage.abbreviation).join(', ')}
-                                    </Typography>
-                                )}
-                                {action === 'edit' && (
-                                    <Typography>
-                                        note: {wine.note}
-                                    </Typography>
                                 )}
                             </Paper>
                         )
