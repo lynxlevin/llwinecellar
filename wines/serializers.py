@@ -56,11 +56,27 @@ class WinesSerializer(serializers.Serializer):
 
 
 class ListWineQuerySerializer(serializers.Serializer):
+    class CommaSeparatedField(serializers.ListField):
+        def to_internal_value(self, data):
+            data = data.split(",")
+            return super().to_internal_value(data)
+
     cellar_id = serializers.UUIDField(required=False)
     is_drunk = serializers.BooleanField(required=False)
     out_of_cellars = serializers.BooleanField(required=False)
     name = serializers.CharField(max_length=256, required=False)
     producer = serializers.CharField(max_length=128, required=False)
+    name_or_producer = serializers.CharField(max_length=256, required=False)
+    show_drunk = serializers.BooleanField(required=False)
+    show_stock = serializers.BooleanField(required=False)
+
+    country = serializers.ChoiceField(required=False, choices=Country.choices_for_serializer())
+    region_1 = serializers.CharField(required=False, max_length=128)
+    region_2 = serializers.CharField(required=False, max_length=128)
+    region_3 = serializers.CharField(required=False, max_length=128)
+    region_4 = serializers.CharField(required=False, max_length=128)
+    region_5 = serializers.CharField(required=False, max_length=128)
+    cepage_names = CommaSeparatedField(child=serializers.CharField(), required=False)
 
 
 class MoveWineSerializer(serializers.Serializer):

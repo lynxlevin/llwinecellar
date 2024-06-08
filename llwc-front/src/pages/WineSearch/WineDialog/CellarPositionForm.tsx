@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import { Grid, TextField, FormControl, InputLabel, Select, MenuItem, FormControlLabel, Checkbox } from '@mui/material';
 import { CellarContext } from '../../../contexts/cellar-context';
-import { WineDialogAction } from '../../../hooks/useWineListPage';
+import { WineDialogAction } from '../../../hooks/useWineSearchPage';
 import { ValidationErrorsType, apiErrorsType } from './WineDialog';
 
 interface CellarPositionFormProps {

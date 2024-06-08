@@ -1,19 +1,19 @@
-import React, { useEffect, useState, useContext, useMemo } from 'react';
+import React, { useState, useContext } from 'react';
 import { AppBar, Button, Container, Dialog, Grid, IconButton, Slide, TextField, Toolbar, Typography, Autocomplete, Chip } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { TransitionProps } from '@mui/material/transitions';
 import { Cepage, WineData } from '../../../contexts/wine-context';
 import { WineRequestBody, WineAPI } from '../../../apis/WineAPI';
-import useWineAPI from '../../../hooks/useWineAPI';
 import { AxiosError } from 'axios';
 import { WineTagContext } from '../../../contexts/wine-tag-context';
 import useWineTagAPI from '../../../hooks/useWineTagAPI';
-import { WineDialogAction } from '../../../hooks/useWineListPage';
+import { WineDialogAction } from '../../../hooks/useWineSearchPage';
 import useWineRegionAPI from '../../../hooks/useWineRegionAPI';
 import CepagesForm from './CepagesForm';
 import RegionForm from './RegionForm';
 import CellarPositionForm from './CellarPositionForm';
 import SameWinesDialog from './SameWinesDialog';
+import useWineContext from '../../../hooks/useWineContext';
 
 const Transition = React.forwardRef(function Transition(
     props: TransitionProps & {
@@ -27,8 +27,17 @@ const Transition = React.forwardRef(function Transition(
 interface WineDialogProps {
     isOpen: boolean;
     handleClose: () => void;
-    selectedWine: WineData;
+    selectedWine?: WineData;
     action: WineDialogAction;
+}
+
+export interface WineRegionsObject {
+    country: string | null;
+    region_1: string;
+    region_2: string;
+    region_3: string;
+    region_4: string;
+    region_5: string;
 }
 
 export interface ValidationErrorsType {
@@ -43,97 +52,83 @@ export interface apiErrorsType {
     position?: string;
 }
 
+const getLocaleISODateString = (date_?: Date) => {
+    const date = date_ ? date_ : new Date();
+    return `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
+};
+
+const noCellarCode = 'NOT_IN_CELLAR';
+
+const SELECTED_WINE_DEFAULT: WineData = {
+    id: '',
+    name: '',
+    producer: '',
+    country: null,
+    region_1: '',
+    region_2: '',
+    region_3: '',
+    region_4: '',
+    region_5: '',
+    cepages: [],
+    vintage: null,
+    bought_at: getLocaleISODateString(),
+    bought_from: '',
+    price: null,
+    drunk_at: null,
+    note: '',
+    tag_texts: [],
+    cellar_id: noCellarCode,
+    position: '',
+};
+
 const WineDialog = (props: WineDialogProps) => {
-    const { isOpen, handleClose, selectedWine, action } = props;
+    const { isOpen, handleClose, selectedWine = SELECTED_WINE_DEFAULT, action } = props;
 
     const wineTagContext = useContext(WineTagContext);
 
-    const { getWineList } = useWineAPI();
+    const { searchWine } = useWineContext();
     const { getWineTagList } = useWineTagAPI();
     const { getWineRegionList } = useWineRegionAPI();
 
-    const noCellarCode = 'NOT_IN_CELLAR';
+    const [tagTexts, setTagTexts] = useState<string[]>(selectedWine.tag_texts);
+    const [name, setName] = useState<string>(selectedWine.name);
+    const [producer, setProducer] = useState<string>(selectedWine.producer);
+    const [vintage, setVintage] = useState<number | null>(selectedWine.vintage);
+    const [regions, setRegions] = useState<WineRegionsObject>({
+        country: selectedWine.country,
+        region_1: selectedWine.region_1,
+        region_2: selectedWine.region_2,
+        region_3: selectedWine.region_3,
+        region_4: selectedWine.region_4,
+        region_5: selectedWine.region_5,
+    });
+    const [cepages, setCepages] = useState<Cepage[]>(selectedWine.cepages);
+    const [boughtAt, setBoughtAt] = useState<string | null>(selectedWine.bought_at);
+    const [boughtFrom, setBoughtFrom] = useState<string>(selectedWine.bought_from);
+    const [price, setPrice] = useState<number | null>(selectedWine.price);
+    const [drunkAt, setDrunkAt] = useState<string | null>(selectedWine.drunk_at);
+    const [note, setNote] = useState<string>(selectedWine.note);
+    const [cellarId, setCellarId] = useState<string | null>(selectedWine.cellar_id ?? noCellarCode);
+    const [position, setPosition] = useState<string | null>(selectedWine.position);
 
-    const getLocaleISODateString = (date_?: Date) => {
-        const date = date_ ? date_ : new Date();
-        return `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
+    const [validationErrors, setValidationErrors] = useState<ValidationErrorsType>({});
+    const [apiErrors, setApiErrors] = useState<apiErrorsType>({});
+
+    const [dontMove, setDontMove] = useState<boolean>(action === 'edit');
+
+    const copyFromHistory = (data: WineData) => {
+        setName(data.name);
+        setProducer(data.producer);
+        setRegions({
+            country: data.country,
+            region_1: data.region_1,
+            region_2: data.region_2,
+            region_3: data.region_3,
+            region_4: data.region_4,
+            region_5: data.region_5,
+        });
+        setCepages(data.cepages);
     };
-
-    const initialValues = useMemo(() => {
-        return {
-            tagTexts: action === 'edit' ? selectedWine.tag_texts : [],
-            name: action === 'edit' ? selectedWine.name : '',
-            producer: action === 'edit' ? selectedWine.producer : '',
-            vintage: action === 'edit' ? selectedWine.vintage : null,
-            country: action === 'edit' ? selectedWine.country : null,
-            region1: action === 'edit' ? selectedWine.region_1 : '',
-            region2: action === 'edit' ? selectedWine.region_2 : '',
-            region3: action === 'edit' ? selectedWine.region_3 : '',
-            region4: action === 'edit' ? selectedWine.region_4 : '',
-            region5: action === 'edit' ? selectedWine.region_5 : '',
-            cepages: action === 'edit' ? selectedWine.cepages : [],
-            boughtAt: action === 'edit' ? selectedWine.bought_at : getLocaleISODateString(),
-            boughtFrom: action === 'edit' ? selectedWine.bought_from : '',
-            price: action === 'edit' ? selectedWine.price : null,
-            drunkAt: action === 'edit' ? selectedWine.drunk_at : null,
-            note: action === 'edit' ? selectedWine.note : '',
-            cellarId: selectedWine.cellar_id ?? noCellarCode,
-            position: selectedWine.position,
-            validationErrors: {},
-            apiErrors: {},
-            dontMove: action === 'edit',
-        };
-    }, [action, selectedWine]);
-
-    const [tagTexts, setTagTexts] = useState<string[]>(initialValues.tagTexts); // deep copy できてなさそう
-    const [name, setName] = useState<string>(initialValues.name);
-    const [producer, setProducer] = useState<string>(initialValues.producer);
-    const [vintage, setVintage] = useState<number | null>(initialValues.vintage);
-    const [country, setCountry] = useState<string | null>(initialValues.country);
-    const [region1, setRegion1] = useState<string>(initialValues.region1);
-    const [region2, setRegion2] = useState<string>(initialValues.region2);
-    const [region3, setRegion3] = useState<string>(initialValues.region3);
-    const [region4, setRegion4] = useState<string>(initialValues.region4);
-    const [region5, setRegion5] = useState<string>(initialValues.region5);
-    const [cepages, setCepages] = useState<Cepage[]>(initialValues.cepages); // List of objects だから、中身のobjectはdeep copy できてないかも
-    const [boughtAt, setBoughtAt] = useState<string | null>(initialValues.boughtAt);
-    const [boughtFrom, setBoughtFrom] = useState<string>(initialValues.boughtFrom);
-    const [price, setPrice] = useState<number | null>(initialValues.price);
-    const [drunkAt, setDrunkAt] = useState<string | null>(initialValues.drunkAt);
-    const [note, setNote] = useState<string>(initialValues.note);
-    const [cellarId, setCellarId] = useState<string | null>(initialValues.cellarId);
-    const [position, setPosition] = useState<string | null>(initialValues.position);
-
-    const [validationErrors, setValidationErrors] = useState<ValidationErrorsType>(initialValues.validationErrors);
-    const [apiErrors, setApiErrors] = useState<apiErrorsType>(initialValues.apiErrors);
-
-    const [dontMove, setDontMove] = useState<boolean>(initialValues.dontMove);
-
-    useEffect(() => {
-        if (isOpen) {
-            setTagTexts(initialValues.tagTexts);
-            setName(initialValues.name);
-            setProducer(initialValues.producer);
-            setVintage(initialValues.vintage);
-            setCountry(initialValues.country);
-            setRegion1(initialValues.region1);
-            setRegion2(initialValues.region2);
-            setRegion3(initialValues.region3);
-            setRegion4(initialValues.region4);
-            setRegion5(initialValues.region5);
-            setCepages(initialValues.cepages);
-            setBoughtAt(initialValues.boughtAt);
-            setBoughtFrom(initialValues.boughtFrom);
-            setPrice(initialValues.price);
-            setDrunkAt(initialValues.drunkAt);
-            setNote(initialValues.note);
-            setCellarId(initialValues.cellarId);
-            setPosition(initialValues.position);
-            setValidationErrors(initialValues.validationErrors);
-            setApiErrors(initialValues.apiErrors);
-            setDontMove(initialValues.dontMove);
-        }
-    }, [initialValues, isOpen]);
 
     const fillDrunkAtAndMoveOutOfCellar = () => {
         if (!drunkAt) setDrunkAt(getLocaleISODateString());
@@ -176,12 +171,7 @@ const WineDialog = (props: WineDialogProps) => {
         const data: WineRequestBody = {
             name: name,
             producer: producer,
-            country: country,
-            region_1: region1,
-            region_2: region2,
-            region_3: region3,
-            region_4: region4,
-            region_5: region5,
+            ...regions,
             cepages: cepages.sort((a, b) => Number(b.percentage)! - Number(a.percentage)!),
             vintage: vintage,
             bought_at: boughtAt,
@@ -206,7 +196,7 @@ const WineDialog = (props: WineDialogProps) => {
         if (action === 'create') {
             await WineAPI.create(data)
                 .then(async _ => {
-                    await getWineList();
+                    searchWine();
                     await getWineRegionList();
                     if (newTagCreated) await getWineTagList();
                     handleClose();
@@ -217,7 +207,7 @@ const WineDialog = (props: WineDialogProps) => {
         } else if (action === 'edit') {
             await WineAPI.update(selectedWine.id, data)
                 .then(async _ => {
-                    await getWineList();
+                    searchWine();
                     await getWineRegionList();
                     if (newTagCreated) await getWineTagList();
                     handleClose();
@@ -250,7 +240,7 @@ const WineDialog = (props: WineDialogProps) => {
             <Container maxWidth='md' sx={{ marginTop: 3, marginBottom: 3 }}>
                 <Grid container spacing={2}>
                     <Grid item xs={12}>
-                        <SameWinesDialog name={name} producer={producer} />
+                        <SameWinesDialog name={name} producer={producer} copyFromHistory={copyFromHistory} action={action} />
                     </Grid>
                     <Grid item xs={12}>
                         <Autocomplete
@@ -320,6 +310,7 @@ const WineDialog = (props: WineDialogProps) => {
                         />
                     </Grid>
                     <Grid item xs={6}>
+                        {/* MYMEMO: Change to autoComplete */}
                         <TextField
                             label='bought_from'
                             value={boughtFrom}
@@ -342,21 +333,8 @@ const WineDialog = (props: WineDialogProps) => {
                             fullWidth
                         />
                     </Grid>
-                    <RegionForm
-                        country={country}
-                        region1={region1}
-                        region2={region2}
-                        region3={region3}
-                        region4={region4}
-                        region5={region5}
-                        setCountry={setCountry}
-                        setRegion1={setRegion1}
-                        setRegion2={setRegion2}
-                        setRegion3={setRegion3}
-                        setRegion4={setRegion4}
-                        setRegion5={setRegion5}
-                    />
-                    <CepagesForm cepages={cepages} setCepages={setCepages} />
+                    <RegionForm regions={regions} setRegions={setRegions} showDetails />
+                    <CepagesForm cepages={cepages} setCepages={setCepages} showDetails />
                     <Grid item xs={8}>
                         <TextField
                             label='drunk_at'

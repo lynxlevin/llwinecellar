@@ -6,10 +6,11 @@ import { GrapeMasterContext } from '../../../contexts/grape-master-context';
 interface CepagesFormProps {
     cepages: Cepage[];
     setCepages: React.Dispatch<React.SetStateAction<Cepage[]>>;
+    showDetails?: boolean;
 }
 
 const CepagesForm = (props: CepagesFormProps) => {
-    const { cepages, setCepages } = props;
+    const { cepages, setCepages, showDetails = false } = props;
     const grapeMasterContext = useContext(GrapeMasterContext);
 
     return (
@@ -34,7 +35,8 @@ const CepagesForm = (props: CepagesFormProps) => {
                                     const exists = cur.find(c => c.name === grape);
                                     if (exists) return exists;
                                     const abbreviation = grapeMasterContext.grapeMasterList.find(grapeMaster => grapeMaster.name === grape)!.abbreviation;
-                                    return { name: grape, abbreviation, percentage: '0' };
+                                    const defaultTo100Percent = cepages.length === 0 && grapes.length === 1;
+                                    return { name: grape, abbreviation, percentage: defaultTo100Percent ? '100' : '0' };
                                 }),
                             );
                         }}
@@ -54,23 +56,24 @@ const CepagesForm = (props: CepagesFormProps) => {
                     </Select>
                 </FormControl>
             </Grid>
-            {cepages.map((cepage, i) => (
-                <Grid item xs={6} key={i}>
-                    <InputLabel id={`cepage-percentage-input-${i}`}>{cepage.name}</InputLabel>
-                    <TextField
-                        value={cepage.percentage}
-                        type='number'
-                        onChange={event => {
-                            setCepages(cur => {
-                                return cur.map(c => {
-                                    if (c.name === cepage.name) return { ...c, percentage: event.target.value };
-                                    return c;
+            {showDetails &&
+                cepages.map((cepage, i) => (
+                    <Grid item xs={6} key={i}>
+                        <InputLabel id={`cepage-percentage-input-${i}`}>{cepage.name}</InputLabel>
+                        <TextField
+                            value={cepage.percentage}
+                            type='number'
+                            onChange={event => {
+                                setCepages(cur => {
+                                    return cur.map(c => {
+                                        if (c.name === cepage.name) return { ...c, percentage: event.target.value };
+                                        return c;
+                                    });
                                 });
-                            });
-                        }}
-                    />
-                </Grid>
-            ))}
+                            }}
+                        />
+                    </Grid>
+                ))}
             {cepages.length % 2 !== 0 && <Grid item xs={6} />}
         </>
     );

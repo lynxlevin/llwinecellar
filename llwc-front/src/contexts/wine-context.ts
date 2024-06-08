@@ -57,15 +57,35 @@ export interface WineListQuery {
     cellarId: string | undefined;
 }
 
+export interface WineSearchQuery {
+    cellar_id?: string;
+    name_or_producer?: string;
+    out_of_cellars?: boolean;
+    show_drunk: boolean;
+    show_stock: boolean;
+    country?: string | null;
+    region_1?: string;
+    region_2?: string;
+    region_3?: string;
+    region_4?: string;
+    region_5?: string;
+    cepage_names?: string[];
+}
+
 interface WineContextType {
     wineList: WineData[];
     setWineList: React.Dispatch<React.SetStateAction<WineData[]>>;
     wineListQuery: WineListQuery;
     setWineListQuery: React.Dispatch<React.SetStateAction<WineListQuery>>;
+    wineSearchQuery: WineSearchQuery;
+    setWineSearchQuery: React.Dispatch<React.SetStateAction<WineSearchQuery>>;
 }
 
 export const WineContext = createContext({
     wineList: [],
     setWineList: () => {},
     wineListQuery: {},
+    setWineListQuery: () => {},
+    wineSearchQuery: {},
+    setWineSearchQuery: () => {},
 } as unknown as WineContextType);
