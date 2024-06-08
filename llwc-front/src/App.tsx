@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import './App.css';
 import { Link, Routes, Route } from 'react-router-dom';
 import Login from './pages/Login';
-import { WineList } from './pages/WineList';
 import { WineSearch } from './pages/WineSearch/WineSearch';
 import { CellarContext, type Cellar } from './contexts/cellar-context';
 import { UserContext } from './contexts/user-context';
@@ -38,9 +37,6 @@ function App() {
                                             element={
                                                 <div style={{ fontSize: '24px' }}>
                                                     <br />
-                                                    <Link to='/wine-list'>Wine List</Link>
-                                                    <br />
-                                                    <br />
                                                     <Link to='/wine-search'>Wine Search</Link>
                                                     <br />
                                                     <br />
@@ -55,7 +51,6 @@ function App() {
                                             }
                                         />
                                         <Route path='/login' element={<Login />} />
-                                        <Route path='/wine-list' element={<WineList />} />
                                         <Route path='/wine-search' element={<WineSearch />} />
                                         <Route path='/wine-memos' element={<WineMemos />} />
                                         <Route path='/settings' element={<Settings />} />
