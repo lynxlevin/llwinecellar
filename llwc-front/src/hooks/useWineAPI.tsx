@@ -1,6 +1,6 @@
 import { useContext, useCallback } from 'react';
-import { FindSameWinesQuery, ListWineQuery, WineAPI } from '../apis/WineAPI';
-import { WineContext, WineSearchQuery } from '../contexts/wine-context';
+import { FindSameWinesQuery, WineAPI } from '../apis/WineAPI';
+import { WineContext } from '../contexts/wine-context';
 
 interface getWineListQuery {
     is_drunk: boolean;
@@ -27,12 +27,6 @@ const useWineAPI = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [wineContext.wineListQuery]);
 
-    const searchWine = useCallback(async (query?: WineSearchQuery) => {
-        const params = query ?? wineContext.wineSearchQuery;
-        const res = await WineAPI.list(params as ListWineQuery);
-        wineContext.setWineList(res.data.wines);
-    }, [wineContext])
-
     const findSameWines = async (query: FindSameWinesQuery) => {
         const res = await WineAPI.findSameWines(query);
         return res.data.wines;
@@ -40,8 +34,7 @@ const useWineAPI = () => {
 
     return {
         getWineList,
-        searchWine,
-        findSameWines
+        findSameWines,
     };
 };
 

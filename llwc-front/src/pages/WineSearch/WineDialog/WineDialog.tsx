@@ -4,7 +4,6 @@ import CloseIcon from '@mui/icons-material/Close';
 import { TransitionProps } from '@mui/material/transitions';
 import { Cepage, WineData } from '../../../contexts/wine-context';
 import { WineRequestBody, WineAPI } from '../../../apis/WineAPI';
-import useWineAPI from '../../../hooks/useWineAPI';
 import { AxiosError } from 'axios';
 import { WineTagContext } from '../../../contexts/wine-tag-context';
 import useWineTagAPI from '../../../hooks/useWineTagAPI';
@@ -14,6 +13,7 @@ import CepagesForm from './CepagesForm';
 import RegionForm from './RegionForm';
 import CellarPositionForm from './CellarPositionForm';
 import SameWinesDialog from './SameWinesDialog';
+import useWineContext from '../../../hooks/useWineContext';
 
 const Transition = React.forwardRef(function Transition(
     props: TransitionProps & {
@@ -86,7 +86,7 @@ const WineDialog = (props: WineDialogProps) => {
 
     const wineTagContext = useContext(WineTagContext);
 
-    const { searchWine } = useWineAPI();
+    const { searchWine } = useWineContext();
     const { getWineTagList } = useWineTagAPI();
     const { getWineRegionList } = useWineRegionAPI();
 
@@ -196,7 +196,7 @@ const WineDialog = (props: WineDialogProps) => {
         if (action === 'create') {
             await WineAPI.create(data)
                 .then(async _ => {
-                    await searchWine();
+                    searchWine();
                     await getWineRegionList();
                     if (newTagCreated) await getWineTagList();
                     handleClose();
@@ -207,7 +207,7 @@ const WineDialog = (props: WineDialogProps) => {
         } else if (action === 'edit') {
             await WineAPI.update(selectedWine.id, data)
                 .then(async _ => {
-                    await searchWine();
+                    searchWine();
                     await getWineRegionList();
                     if (newTagCreated) await getWineTagList();
                     handleClose();

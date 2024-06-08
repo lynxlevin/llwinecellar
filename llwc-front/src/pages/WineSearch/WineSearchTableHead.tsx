@@ -7,8 +7,9 @@ import {
     TableSortLabel,
 } from '@mui/material';
 import { visuallyHidden } from '@mui/utils';
-import { COLUMN_ORDER, Order } from '../../hooks/useWineSearchPage';
+import { COLUMN_ORDER } from '../../hooks/useWineSearchPage';
 import { WineDataKeys } from '../../contexts/wine-context';
+import { Order } from '../../hooks/useWineContext';
 
 
 interface WineSearchTableHeadProps {

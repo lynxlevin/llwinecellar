@@ -18,6 +18,7 @@ import WineDialog from './WineDialog/WineDialog';
 import Loading from '../Loading';
 import { WineSearchToolbar } from './WineSearchToolbar';
 import { WineSearchTableHead } from './WineSearchTableHead';
+import useWineContext from '../../hooks/useWineContext';
 
 // Originally copied from https://mui.com/material-ui/react-table/#sorting-amp-selecting
 
@@ -31,7 +32,6 @@ export const WineSearch = () => {
     const {
         sortOrder,
         handleRequestSort,
-        rowsCount,
         visibleRows,
         selectedWine,
         wineDialogState,
@@ -43,10 +43,9 @@ export const WineSearch = () => {
         page,
         handleChangePage,
         handleChangeRowsPerPage,
-        getCepageAbbreviations,
-        isLoading,
-        initializeWineSearch,
     } = useWineSearchPage();
+
+    const { isLoading, wineCount, getCepageAbbreviations, initializeWineSearch } = useWineContext();
 
     const tableHeight =
         toolbarRef.current && paginationRef.current
@@ -122,7 +121,7 @@ export const WineSearch = () => {
                     <div ref={paginationRef}>
                         <TablePagination
                             component="div"
-                            count={rowsCount}
+                            count={wineCount}
                             rowsPerPage={rowsPerPage}
                             rowsPerPageOptions={[25, 50, 100, 200]}
                             page={page}

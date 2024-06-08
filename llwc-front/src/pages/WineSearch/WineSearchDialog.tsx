@@ -7,7 +7,7 @@ import { CellarContext } from '../../contexts/cellar-context';
 import { WineRegionsObject } from './WineDialog/WineDialog';
 import RegionForm from './WineDialog/RegionForm';
 import CepagesForm from './WineDialog/CepagesForm';
-import useWineAPI from '../../hooks/useWineAPI';
+import useWineContext from '../../hooks/useWineContext';
 
 const Transition = React.forwardRef(function Transition(
     props: TransitionProps & {
@@ -27,7 +27,7 @@ const WineSearchDialog = (props: WineSearchDialogProps) => {
     const { isOpen, handleClose } = props;
     const wineContext = useContext(WineContext);
     const cellarContext = useContext(CellarContext);
-    const { searchWine } = useWineAPI();
+    const { searchWine } = useWineContext();
 
     const [cellarId, setCellarId] = useState<string | undefined>(wineContext.wineListQuery.cellarId);
     const [showStock, setShowStock] = useState<boolean>(true);
@@ -44,7 +44,7 @@ const WineSearchDialog = (props: WineSearchDialogProps) => {
     const [cepages, setCepages] = useState<Cepage[]>([]);
     // MYMEMO: add hasNote
 
-    const handleSearch = async () => {
+    const handleSearch = () => {
         const query: WineSearchQuery = {
             show_stock: showStock,
             show_drunk: showDrunk,
@@ -60,7 +60,7 @@ const WineSearchDialog = (props: WineSearchDialogProps) => {
         if (regions.region_5) query.region_5 = regions.region_5;
         if (cepages.length > 0) query.cepage_names = cepages.map(cepage => cepage.name);
         wineContext.setWineSearchQuery(query);
-        await searchWine(query);
+        searchWine(query);
         handleClose();
     };
 
