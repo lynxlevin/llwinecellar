@@ -35,12 +35,12 @@ const CellarPositionForm = (props: CellarPositionFormProps) => {
         <>
             <Grid item xs={9}>
                 <FormControl>
-                    <InputLabel id="cellar-id-input-label" shrink>
+                    <InputLabel id='cellar-id-input-label' shrink>
                         cellar
                     </InputLabel>
                     <Select
-                        labelId="cellar-id-input-label"
-                        label="cellar"
+                        labelId='cellar-id-input-label'
+                        label='cellar'
                         value={cellarId}
                         onChange={event => {
                             setCellarId(event.target.value);
@@ -74,7 +74,7 @@ const CellarPositionForm = (props: CellarPositionFormProps) => {
             <Grid item xs={12}>
                 {/* MYMEMO(後日): make this a select */}
                 <TextField
-                    label="position"
+                    label='position'
                     value={position ?? ''}
                     onChange={event => {
                         if (cellarId === noCellarCode || event.target.value !== '') {
@@ -85,7 +85,7 @@ const CellarPositionForm = (props: CellarPositionFormProps) => {
                     disabled={cellarId === noCellarCode || dontMove}
                     error={Boolean(apiErrors.position) || Boolean(validationErrors.position)}
                     helperText={apiErrors.position || validationErrors.position}
-                    variant="standard"
+                    variant='standard'
                     fullWidth
                     multiline
                 />

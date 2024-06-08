@@ -1,6 +1,6 @@
-import { useCallback, useContext, useState } from "react";
-import { Cepage, WineContext, WineDataKeys, WineSearchQuery } from "../contexts/wine-context";
-import { ListWineQuery, WineAPI } from "../apis/WineAPI";
+import { useCallback, useContext, useState } from 'react';
+import { Cepage, WineContext, WineDataKeys, WineSearchQuery } from '../contexts/wine-context';
+import { ListWineQuery, WineAPI } from '../apis/WineAPI';
 
 export type Order = 'asc' | 'desc';
 
@@ -74,27 +74,30 @@ const useWineContext = () => {
     );
 
     const getSortedWineList = (sortOrder: SortOrder) => {
-        return wineContext.wineList.sort(getComparator(sortOrder.order, sortOrder.key))
-    }
+        return wineContext.wineList.sort(getComparator(sortOrder.order, sortOrder.key));
+    };
 
     const initializeWineSearch = useCallback(() => {
         if (wineContext.wineListQuery.cellarId === undefined) return;
         setIsLoading(true);
-        WineAPI.list({cellar_id: wineContext.wineListQuery.cellarId, show_drunk: false, show_stock: true}).then(res => {
+        WineAPI.list({ cellar_id: wineContext.wineListQuery.cellarId, show_drunk: false, show_stock: true }).then(res => {
             wineContext.setWineList(res.data.wines);
             setIsLoading(false);
         });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [wineContext.wineListQuery.cellarId]);
 
-    const searchWine = useCallback((query?: WineSearchQuery) => {
-        const params = query ?? wineContext.wineSearchQuery;
-        setIsLoading(true);
-        WineAPI.list(params as ListWineQuery).then(res => {
-            wineContext.setWineList(res.data.wines);
-            setIsLoading(false);
-        });
-    }, [wineContext])
+    const searchWine = useCallback(
+        (query?: WineSearchQuery) => {
+            const params = query ?? wineContext.wineSearchQuery;
+            setIsLoading(true);
+            WineAPI.list(params as ListWineQuery).then(res => {
+                wineContext.setWineList(res.data.wines);
+                setIsLoading(false);
+            });
+        },
+        [wineContext],
+    );
 
     return {
         isLoading,

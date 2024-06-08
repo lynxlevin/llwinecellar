@@ -3,7 +3,7 @@ import AppIcon from '../components/AppIcon';
 
 const Loading = () => {
     return (
-        <Container component="main" maxWidth="xs">
+        <Container component='main' maxWidth='xs'>
             <Box
                 sx={{
                     height: '100vh',

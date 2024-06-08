@@ -88,9 +88,9 @@ const RegionForm = (props: RegionFormProps) => {
                     options={wineRegionContext.wineRegionList}
                     value={getWineRegionValue()}
                     renderTags={(value: readonly string[], getTagProps) =>
-                        value.map((option: string, index: number) => <Chip variant="outlined" label={option} {...getTagProps({ index })} />)
+                        value.map((option: string, index: number) => <Chip variant='outlined' label={option} {...getTagProps({ index })} />)
                     }
-                    renderInput={params => <TextField {...params} label="wine_region" />}
+                    renderInput={params => <TextField {...params} label='wine_region' />}
                     onChange={(event: any, newValue: string | null) => {
                         if (newValue) {
                             const [_country, _region1, _region2, _region3, _region4, _region5] = newValue.split('>');
@@ -109,9 +109,9 @@ const RegionForm = (props: RegionFormProps) => {
                     options={countries}
                     value={country}
                     renderTags={(value: readonly string[], getTagProps) =>
-                        value.map((option: string, index: number) => <Chip variant="outlined" label={option} {...getTagProps({ index })} />)
+                        value.map((option: string, index: number) => <Chip variant='outlined' label={option} {...getTagProps({ index })} />)
                     }
-                    renderInput={params => <TextField {...params} label="country" />}
+                    renderInput={params => <TextField {...params} label='country' />}
                     onChange={(_, newValue: string | null) => {
                         setCountry(newValue);
                     }}
@@ -119,56 +119,56 @@ const RegionForm = (props: RegionFormProps) => {
             </Grid>
             <Grid item xs={6}>
                 <TextField
-                    label="region_1"
+                    label='region_1'
                     value={region1}
                     onChange={event => {
                         setRegion1(event.target.value);
                     }}
-                    variant="standard"
+                    variant='standard'
                     fullWidth
                 />
             </Grid>
             <Grid item xs={6}>
                 <TextField
-                    label="region_2"
+                    label='region_2'
                     value={region2}
                     onChange={event => {
                         setRegion2(event.target.value);
                     }}
-                    variant="standard"
+                    variant='standard'
                     fullWidth
                 />
             </Grid>
             <Grid item xs={6}>
                 <TextField
-                    label="region_3"
+                    label='region_3'
                     value={region3}
                     onChange={event => {
                         setRegion3(event.target.value);
                     }}
-                    variant="standard"
+                    variant='standard'
                     fullWidth
                 />
             </Grid>
             <Grid item xs={6}>
                 <TextField
-                    label="region_4"
+                    label='region_4'
                     value={region4}
                     onChange={event => {
                         setRegion4(event.target.value);
                     }}
-                    variant="standard"
+                    variant='standard'
                     fullWidth
                 />
             </Grid>
             <Grid item xs={6}>
                 <TextField
-                    label="region_5"
+                    label='region_5'
                     value={region5}
                     onChange={event => {
                         setRegion5(event.target.value);
                     }}
-                    variant="standard"
+                    variant='standard'
                     fullWidth
                 />
             </Grid>

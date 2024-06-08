@@ -21,7 +21,7 @@ const Transition = React.forwardRef(function Transition(
     },
     ref: React.Ref<unknown>,
 ) {
-    return <Slide direction="up" ref={ref} {...props} />;
+    return <Slide direction='up' ref={ref} {...props} />;
 });
 
 interface WineDialogProps {
@@ -79,10 +79,10 @@ const SELECTED_WINE_DEFAULT: WineData = {
     tag_texts: [],
     cellar_id: noCellarCode,
     position: '',
-}
+};
 
 const WineDialog = (props: WineDialogProps) => {
-    const { isOpen, handleClose, selectedWine=SELECTED_WINE_DEFAULT, action } = props;
+    const { isOpen, handleClose, selectedWine = SELECTED_WINE_DEFAULT, action } = props;
 
     const wineTagContext = useContext(WineTagContext);
 
@@ -101,7 +101,7 @@ const WineDialog = (props: WineDialogProps) => {
         region_3: selectedWine.region_3,
         region_4: selectedWine.region_4,
         region_5: selectedWine.region_5,
-    })
+    });
     const [cepages, setCepages] = useState<Cepage[]>(selectedWine.cepages);
     const [boughtAt, setBoughtAt] = useState<string | null>(selectedWine.bought_at);
     const [boughtFrom, setBoughtFrom] = useState<string>(selectedWine.bought_from);
@@ -220,12 +220,12 @@ const WineDialog = (props: WineDialogProps) => {
 
     return (
         <Dialog fullScreen open={isOpen} onClose={handleClose} TransitionComponent={Transition}>
-            <AppBar position="sticky">
+            <AppBar position='sticky'>
                 <Toolbar>
-                    <IconButton edge="start" color="inherit" onClick={handleClose} aria-label="close">
+                    <IconButton edge='start' color='inherit' onClick={handleClose} aria-label='close'>
                         <CloseIcon />
                     </IconButton>
-                    <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
+                    <Typography sx={{ ml: 2, flex: 1 }} variant='h6' component='div'>
                         {action === 'create' ? 'Create' : 'Edit'}
                     </Typography>
                     <Button
@@ -237,7 +237,7 @@ const WineDialog = (props: WineDialogProps) => {
                     </Button>
                 </Toolbar>
             </AppBar>
-            <Container maxWidth="md" sx={{ marginTop: 3, marginBottom: 3 }}>
+            <Container maxWidth='md' sx={{ marginTop: 3, marginBottom: 3 }}>
                 <Grid container spacing={2}>
                     <Grid item xs={12}>
                         <SameWinesDialog name={name} producer={producer} copyFromHistory={copyFromHistory} action={action} />
@@ -249,9 +249,9 @@ const WineDialog = (props: WineDialogProps) => {
                             value={tagTexts}
                             freeSolo
                             renderTags={(value: readonly string[], getTagProps) =>
-                                value.map((option: string, index: number) => <Chip variant="outlined" label={option} {...getTagProps({ index })} />)
+                                value.map((option: string, index: number) => <Chip variant='outlined' label={option} {...getTagProps({ index })} />)
                             }
-                            renderInput={params => <TextField {...params} variant="filled" label="tag_texts" />}
+                            renderInput={params => <TextField {...params} variant='filled' label='tag_texts' />}
                             onChange={(_, newValue: string[]) => {
                                 setTagTexts(newValue);
                             }}
@@ -259,7 +259,7 @@ const WineDialog = (props: WineDialogProps) => {
                     </Grid>
                     <Grid item xs={12}>
                         <TextField
-                            label="name"
+                            label='name'
                             error={Boolean(validationErrors.name)}
                             helperText={validationErrors.name ? validationErrors.name : ''}
                             value={name}
@@ -271,98 +271,94 @@ const WineDialog = (props: WineDialogProps) => {
                                 }
                                 setName(event.target.value);
                             }}
-                            variant="standard"
+                            variant='standard'
                             fullWidth
                         />
                     </Grid>
                     <Grid item xs={9}>
                         <TextField
-                            label="producer"
+                            label='producer'
                             value={producer}
                             onChange={event => {
                                 setProducer(event.target.value);
                             }}
-                            variant="standard"
+                            variant='standard'
                             fullWidth
                         />
                     </Grid>
                     <Grid item xs={3}>
                         <TextField
-                            label="vintage"
+                            label='vintage'
                             value={vintage ?? ''}
                             onChange={event => {
                                 const value = event.target.value === '' ? null : Number(event.target.value);
                                 setVintage(value);
                             }}
-                            variant="standard"
+                            variant='standard'
                             fullWidth
                         />
                     </Grid>
                     <Grid item xs={6}>
                         <TextField
-                            label="bought_at"
+                            label='bought_at'
                             value={boughtAt ?? ''}
                             onChange={event => {
                                 setBoughtAt(event.target.value || null);
                             }}
-                            variant="standard"
+                            variant='standard'
                             fullWidth
                         />
                     </Grid>
                     <Grid item xs={6}>
                         {/* MYMEMO: Change to autoComplete */}
                         <TextField
-                            label="bought_from"
+                            label='bought_from'
                             value={boughtFrom}
                             onChange={event => {
                                 setBoughtFrom(event.target.value);
                             }}
-                            variant="standard"
+                            variant='standard'
                             fullWidth
                         />
                     </Grid>
                     <Grid item xs={12}>
                         <TextField
-                            label="price"
+                            label='price'
                             value={price ?? ''}
                             onChange={event => {
                                 const value = event.target.value === '' ? null : Number(event.target.value);
                                 setPrice(value);
                             }}
-                            variant="standard"
+                            variant='standard'
                             fullWidth
                         />
                     </Grid>
-                    <RegionForm
-                        regions={regions}
-                        setRegions={setRegions}
-                        showDetails
-                    />
+                    <RegionForm regions={regions} setRegions={setRegions} showDetails />
                     <CepagesForm cepages={cepages} setCepages={setCepages} showDetails />
                     <Grid item xs={8}>
                         <TextField
-                            label="drunk_at"
+                            label='drunk_at'
                             value={drunkAt ?? ''}
                             onChange={event => {
                                 setDrunkAt(event.target.value || null);
                             }}
-                            variant="standard"
+                            variant='standard'
                             fullWidth
                         />
                     </Grid>
                     <Grid item xs={4} sx={{ textAlign: 'center' }}>
-                        <Button variant="contained" sx={{ marginTop: '10px' }} onClick={fillDrunkAtAndMoveOutOfCellar}>
+                        <Button variant='contained' sx={{ marginTop: '10px' }} onClick={fillDrunkAtAndMoveOutOfCellar}>
                             Drink
                         </Button>
                     </Grid>
                     <Grid item xs={12}>
                         <TextField
-                            label="note"
+                            label='note'
                             value={note}
                             onChange={event => {
                                 setNote(event.target.value);
                             }}
-                            variant="standard"
+                            variant='standard'
                             fullWidth
                             multiline
                         />

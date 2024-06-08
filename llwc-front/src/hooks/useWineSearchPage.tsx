@@ -21,7 +21,7 @@ export const COLUMN_ORDER: WineDataKeys[] = [
     'cepages',
     'bought_at',
     'bought_from',
-]
+];
 
 const useWineSearchPage = () => {
     const { wineCount, getSortedWineList } = useWineContext();
@@ -33,7 +33,7 @@ const useWineSearchPage = () => {
     const [wineDialogState, setWineDialogState] = useState<{ open: boolean; action: WineDialogAction }>({ open: false, action: 'create' });
 
     // Avoid a layout jump when reaching the last page with empty rows.
-    const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - wineCount) : 0
+    const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - wineCount) : 0;
 
     const handleChangePage = (_event: unknown, newPage: number) => {
         setPage(newPage);
@@ -59,7 +59,7 @@ const useWineSearchPage = () => {
     const openCreateWineDialog = () => {
         setSelectedWine(undefined);
         setWineDialogState({ open: true, action: 'create' });
-    }
+    };
 
     const closeWineDialog = () => {
         setWineDialogState(current => {

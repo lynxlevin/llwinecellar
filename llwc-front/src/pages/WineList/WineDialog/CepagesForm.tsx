@@ -16,12 +16,12 @@ const CepagesForm = (props: CepagesFormProps) => {
         <>
             <Grid item xs={12}>
                 <FormControl sx={{ width: '100%' }}>
-                    <InputLabel id="cepages-select-label" shrink>
+                    <InputLabel id='cepages-select-label' shrink>
                         cepages
                     </InputLabel>
                     <Select
-                        labelId="cepages-select-label"
-                        label="cepages"
+                        labelId='cepages-select-label'
+                        label='cepages'
                         multiple
                         value={cepages.map(cepage => cepage.name)}
                         onChange={(event: SelectChangeEvent<string[]>) => {
@@ -59,7 +59,7 @@ const CepagesForm = (props: CepagesFormProps) => {
                     <InputLabel id={`cepage-percentage-input-${i}`}>{cepage.name}</InputLabel>
                     <TextField
                         value={cepage.percentage}
-                        type="number"
+                        type='number'
                         onChange={event => {
                             setCepages(cur => {
                                 return cur.map(c => {

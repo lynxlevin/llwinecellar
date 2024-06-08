@@ -25,7 +25,7 @@ function App() {
     const [grapeMasterList, setGrapeMasterList] = useState<GrapeMaster[]>([]);
 
     return (
-        <div className="App">
+        <div className='App'>
             <UserContext.Provider value={{ isLoggedIn, setIsLoggedIn }}>
                 <CellarContext.Provider value={{ cellarList, setCellarList }}>
                     <WineContext.Provider value={{ wineList, setWineList, wineListQuery, setWineListQuery, wineSearchQuery, setWineSearchQuery }}>
@@ -34,32 +34,32 @@ function App() {
                                 <GrapeMasterContext.Provider value={{ grapeMasterList, setGrapeMasterList }}>
                                     <Routes>
                                         <Route
-                                            path="/"
+                                            path='/'
                                             element={
                                                 <div style={{ fontSize: '24px' }}>
                                                     <br />
-                                                    <Link to="/wine-list">Wine List</Link>
+                                                    <Link to='/wine-list'>Wine List</Link>
                                                     <br />
                                                     <br />
-                                                    <Link to="/wine-search">Wine Search</Link>
+                                                    <Link to='/wine-search'>Wine Search</Link>
                                                     <br />
                                                     <br />
-                                                    <Link to="/wine-memos">WineMemo</Link>
+                                                    <Link to='/wine-memos'>WineMemo</Link>
                                                     <br />
                                                     <br />
-                                                    <Link to="/settings">Settings</Link>
+                                                    <Link to='/settings'>Settings</Link>
                                                     <br />
                                                     <br />
-                                                    <Link to="/grape-list">GrapeList</Link>
+                                                    <Link to='/grape-list'>GrapeList</Link>
                                                 </div>
                                             }
                                         />
-                                        <Route path="/login" element={<Login />} />
-                                        <Route path="/wine-list" element={<WineList />} />
-                                        <Route path="/wine-search" element={<WineSearch />} />
-                                        <Route path="/wine-memos" element={<WineMemos />} />
-                                        <Route path="/settings" element={<Settings />} />
-                                        <Route path="/grape-list" element={<GrapeList />} />
+                                        <Route path='/login' element={<Login />} />
+                                        <Route path='/wine-list' element={<WineList />} />
+                                        <Route path='/wine-search' element={<WineSearch />} />
+                                        <Route path='/wine-memos' element={<WineMemos />} />
+                                        <Route path='/settings' element={<Settings />} />
+                                        <Route path='/grape-list' element={<GrapeList />} />
                                     </Routes>
                                 </GrapeMasterContext.Provider>
                             </WineRegionContext.Provider>

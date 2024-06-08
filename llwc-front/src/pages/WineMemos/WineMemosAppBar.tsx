@@ -32,7 +32,7 @@ const WineMemosAppBar = (props: WineMemosAppBarProps) => {
     return (
         <AppBar position='fixed' sx={{ bgcolor: 'white' }}>
             <Toolbar>
-                <Link to="/">
+                <Link to='/'>
                     <AppIcon height={36} />
                 </Link>
                 <div style={{ flexGrow: 1 }} />
@@ -52,11 +52,15 @@ const WineMemosAppBar = (props: WineMemosAppBarProps) => {
                     <MenuList>
                         <MenuItem>
                             <SettingsIcon />
-                            <Link to="/settings" style={{ color: 'rgba(0, 0, 0, 0.87)', textDecorationLine: 'none' }}>
+                            <Link to='/settings' style={{ color: 'rgba(0, 0, 0, 0.87)', textDecorationLine: 'none' }}>
                                 Settings
                             </Link>
                         </MenuItem>
-                        <MenuItem onClick={() => {window.location.reload();}}>
+                        <MenuItem
+                            onClick={() => {
+                                window.location.reload();
+                            }}
+                        >
                             <SecurityUpdateGoodIcon />
                             バージョンアップ
                         </MenuItem>

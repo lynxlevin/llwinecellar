@@ -1,15 +1,6 @@
 import React, { useContext, useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import {
-    Toolbar,
-    Typography,
-    Menu,
-    MenuList,
-    MenuItem,
-    ListItemText,
-    IconButton,
-    Tooltip,
-} from '@mui/material';
+import { Toolbar, Typography, Menu, MenuList, MenuItem, ListItemText, IconButton, Tooltip } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -62,18 +53,18 @@ export const WineSearchToolbar = (props: WineSearchToolbarProps) => {
                 maxHeight: '56px',
             }}
         >
-            <Link to="/">
+            <Link to='/'>
                 <AppIcon height={36} />
             </Link>
-            <Typography sx={{ flex: '1 1 10%' }} variant="h6" id="tableTitle" component="div">
+            <Typography sx={{ flex: '1 1 10%' }} variant='h6' id='tableTitle' component='div'>
                 {pageTitle}
             </Typography>
-            <Tooltip title="Add wine">
+            <Tooltip title='Add wine'>
                 <IconButton onClick={openCreateWineDialog}>
                     <AddIcon />
                 </IconButton>
             </Tooltip>
-            <Tooltip title="Filter list">
+            <Tooltip title='Filter list'>
                 <IconButton onClick={() => setIsWineSearchDialogOpen(true)}>
                     <FilterListIcon />
                 </IconButton>
@@ -85,17 +76,21 @@ export const WineSearchToolbar = (props: WineSearchToolbarProps) => {
                 <MenuList>
                     <MenuItem>
                         <NoteIcon />
-                        <Link to="/wine-memos" style={{ color: 'rgba(0, 0, 0, 0.87)', textDecorationLine: 'none' }}>
+                        <Link to='/wine-memos' style={{ color: 'rgba(0, 0, 0, 0.87)', textDecorationLine: 'none' }}>
                             Memos
                         </Link>
                     </MenuItem>
                     <MenuItem>
                         <SettingsIcon />
-                        <Link to="/settings" style={{ color: 'rgba(0, 0, 0, 0.87)', textDecorationLine: 'none' }}>
+                        <Link to='/settings' style={{ color: 'rgba(0, 0, 0, 0.87)', textDecorationLine: 'none' }}>
                             Settings
                         </Link>
                     </MenuItem>
-                    <MenuItem onClick={() => {window.location.reload();}}>
+                    <MenuItem
+                        onClick={() => {
+                            window.location.reload();
+                        }}
+                    >
                         <SecurityUpdateGoodIcon />
                         バージョンアップ
                     </MenuItem>
@@ -105,10 +100,7 @@ export const WineSearchToolbar = (props: WineSearchToolbarProps) => {
                     </MenuItem>
                 </MenuList>
             </Menu>
-            <WineSearchDialog
-                isOpen={isWineSearchDialogOpen}
-                handleClose={() => setIsWineSearchDialogOpen(false)}
-            />
+            <WineSearchDialog isOpen={isWineSearchDialogOpen} handleClose={() => setIsWineSearchDialogOpen(false)} />
         </Toolbar>
     );
 };

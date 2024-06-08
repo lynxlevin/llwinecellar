@@ -72,13 +72,13 @@ export const GrapeList = () => {
     };
 
     if (userContext.isLoggedIn === false) {
-        return <Navigate to="/login" />;
+        return <Navigate to='/login' />;
     }
     return (
         <>
             <AppBar
-                position="absolute"
-                color="default"
+                position='absolute'
+                color='default'
                 elevation={0}
                 sx={{
                     position: 'relative',
@@ -86,10 +86,10 @@ export const GrapeList = () => {
                 }}
             >
                 <Toolbar>
-                    <Link to="/">
+                    <Link to='/'>
                         <AppIcon height={36} />
                     </Link>
-                    <Typography sx={{ flex: '1 1 10%' }} variant="h6" color="inherit" noWrap>
+                    <Typography sx={{ flex: '1 1 10%' }} variant='h6' color='inherit' noWrap>
                         GrapeList
                     </Typography>
                     <IconButton onClick={() => setShowDeleteButtons(prev => !prev)}>
@@ -97,7 +97,7 @@ export const GrapeList = () => {
                     </IconButton>
                 </Toolbar>
             </AppBar>
-            <Container maxWidth="md">
+            <Container maxWidth='md'>
                 <TableContainer component={Paper}>
                     <Table>
                         <TableHead>
@@ -130,7 +130,7 @@ export const GrapeList = () => {
                                     <TextField
                                         error={createErrorMessage.length !== 0}
                                         helperText={createErrorMessage}
-                                        label="name"
+                                        label='name'
                                         value={name}
                                         onChange={event => {
                                             setName(event.target.value);
@@ -139,7 +139,7 @@ export const GrapeList = () => {
                                 </TableCell>
                                 <TableCell>
                                     <TextField
-                                        label="abbreviation"
+                                        label='abbreviation'
                                         value={abbreviation}
                                         onChange={event => {
                                             setAbbreviation(event.target.value);

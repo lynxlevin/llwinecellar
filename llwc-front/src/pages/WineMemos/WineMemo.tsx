@@ -25,7 +25,14 @@ const WineMemo = (props: WineMemoProps) => {
                             <EditIcon />
                         </IconButton>
                     </div>
-                    <TextField value={wineMemo.entry} multiline maxRows={12} fullWidth disabled sx={{"& .MuiInputBase-input.Mui-disabled": {WebkitTextFillColor: "rgba(0, 0, 0, 0.87)"}}} />
+                    <TextField
+                        value={wineMemo.entry}
+                        multiline
+                        maxRows={12}
+                        fullWidth
+                        disabled
+                        sx={{ '& .MuiInputBase-input.Mui-disabled': { WebkitTextFillColor: 'rgba(0, 0, 0, 0.87)' } }}
+                    />
                     {/* <Typography className='memo-description'>{wineMemo.entry}</Typography> */}
                 </CardContent>
             </Card>

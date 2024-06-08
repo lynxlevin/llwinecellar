@@ -1,15 +1,6 @@
 import { useContext, useEffect } from 'react';
 import { Navigate } from 'react-router-dom';
-import {
-    Box,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TablePagination,
-    TableRow,
-    Paper,
-} from '@mui/material';
+import { Box, Table, TableBody, TableCell, TableContainer, TablePagination, TableRow, Paper } from '@mui/material';
 import useWineSearchPage, { COLUMN_ORDER } from '../../hooks/useWineSearchPage';
 import { WineDataKeys } from '../../contexts/wine-context';
 import useUserAPI from '../../hooks/useUserAPI';
@@ -49,10 +40,10 @@ export const WineSearch = () => {
 
     useEffect(() => {
         initializeWineSearch();
-    }, [initializeWineSearch])
+    }, [initializeWineSearch]);
 
     if (userContext.isLoggedIn === false) {
-        return <Navigate to="/login" />;
+        return <Navigate to='/login' />;
     }
     if (isLoading) {
         return <Loading />;
@@ -63,7 +54,7 @@ export const WineSearch = () => {
                 <Paper sx={{ width: '100%' }}>
                     <WineSearchToolbar handleLogout={handleLogout} openCreateWineDialog={openCreateWineDialog} />
                     <TableContainer sx={{ maxHeight: tableHeight }}>
-                        <Table stickyHeader sx={{ minWidth: 750 }} aria-labelledby="tableTitle" size="small">
+                        <Table stickyHeader sx={{ minWidth: 750 }} aria-labelledby='tableTitle' size='small'>
                             <WineSearchTableHead sortOrder={sortOrder} onRequestSort={handleRequestSort} />
                             <TableBody>
                                 {visibleRows.map((row, index) => {
@@ -78,7 +69,7 @@ export const WineSearch = () => {
                                         <TableRow
                                             hover
                                             onClick={event => handleClickRow(event, row)}
-                                            role="checkbox"
+                                            role='checkbox'
                                             selected={selectedWine?.id === row.id}
                                             tabIndex={-1}
                                             key={row.id}
@@ -89,7 +80,7 @@ export const WineSearch = () => {
                                                 const content = rowData[column as WineDataKeys];
                                                 if (column === 'name') {
                                                     return (
-                                                        <TableCell component="th" id={labelId} scope="row" key={row.id + column}>
+                                                        <TableCell component='th' id={labelId} scope='row' key={row.id + column}>
                                                             {content}
                                                         </TableCell>
                                                     );
@@ -112,24 +103,19 @@ export const WineSearch = () => {
                         </Table>
                     </TableContainer>
                     <TablePagination
-                        component="div"
+                        component='div'
                         count={wineCount}
                         rowsPerPage={rowsPerPage}
                         rowsPerPageOptions={[25, 50, 100, 200]}
                         page={page}
                         onPageChange={handleChangePage}
                         onRowsPerPageChange={handleChangeRowsPerPage}
-                        sx={{maxHeight: '52px'}}
+                        sx={{ maxHeight: '52px' }}
                     />
                 </Paper>
             </Box>
             {wineDialogState.open && (
-                <WineDialog
-                    isOpen={wineDialogState.open}
-                    handleClose={closeWineDialog}
-                    selectedWine={selectedWine}
-                    action={wineDialogState.action}
-                />
+                <WineDialog isOpen={wineDialogState.open} handleClose={closeWineDialog} selectedWine={selectedWine} action={wineDialogState.action} />
             )}
         </div>
     );

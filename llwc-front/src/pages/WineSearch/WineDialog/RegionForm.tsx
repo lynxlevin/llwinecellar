@@ -57,7 +57,7 @@ interface RegionFormProps {
 }
 
 const RegionForm = (props: RegionFormProps) => {
-    const { regions, setRegions, showDetails=false, freeSolo=true } = props;
+    const { regions, setRegions, showDetails = false, freeSolo = true } = props;
 
     const wineRegionContext = useContext(WineRegionContext);
 
@@ -65,9 +65,9 @@ const RegionForm = (props: RegionFormProps) => {
         if (regions.country === null) return null;
 
         let regionValue = regions.country;
-        for (const key of ["region_1", "region_2", "region_3", "region_4", "region_5"] as (keyof WineRegionsObject)[]) {
+        for (const key of ['region_1', 'region_2', 'region_3', 'region_4', 'region_5'] as (keyof WineRegionsObject)[]) {
             if (regions[key]) regionValue += `>${regions[key]}`;
-        };
+        }
 
         return regionValue;
     };
@@ -80,9 +80,9 @@ const RegionForm = (props: RegionFormProps) => {
                     freeSolo={freeSolo}
                     value={getWineRegionValue()}
                     renderTags={(value: readonly string[], getTagProps) =>
-                        value.map((option: string, index: number) => <Chip variant="outlined" label={option} {...getTagProps({ index })} />)
+                        value.map((option: string, index: number) => <Chip variant='outlined' label={option} {...getTagProps({ index })} />)
                     }
-                    renderInput={params => <TextField {...params} label="wine_region" />}
+                    renderInput={params => <TextField {...params} label='wine_region' />}
                     onChange={(_, newValue: string | null) => {
                         if (newValue) {
                             const [country, region_1, region_2, region_3, region_4, region_5] = newValue.split('>');
@@ -105,66 +105,78 @@ const RegionForm = (props: RegionFormProps) => {
                             options={countries}
                             value={regions.country}
                             renderTags={(value: readonly string[], getTagProps) =>
-                                value.map((option: string, index: number) => <Chip variant="outlined" label={option} {...getTagProps({ index })} />)
+                                value.map((option: string, index: number) => <Chip variant='outlined' label={option} {...getTagProps({ index })} />)
                             }
-                            renderInput={params => <TextField {...params} label="country" />}
+                            renderInput={params => <TextField {...params} label='country' />}
                             onChange={(_, newValue: string | null) => {
-                                setRegions(prev => {return {...prev, country: newValue};});
+                                setRegions(prev => {
+                                    return { ...prev, country: newValue };
+                                });
                             }}
                         />
                     </Grid>
                     <Grid item xs={6}>
                         <TextField
-                            label="region_1"
+                            label='region_1'
                             value={regions.region_1}
                             onChange={event => {
-                                setRegions(prev => {return {...prev, region_1: event.target.value};});
+                                setRegions(prev => {
+                                    return { ...prev, region_1: event.target.value };
+                                });
                             }}
-                            variant="standard"
+                            variant='standard'
                             fullWidth
                         />
                     </Grid>
                     <Grid item xs={6}>
                         <TextField
-                            label="region_2"
+                            label='region_2'
                             value={regions.region_2}
                             onChange={event => {
-                                setRegions(prev => {return {...prev, region_2: event.target.value};});
+                                setRegions(prev => {
+                                    return { ...prev, region_2: event.target.value };
+                                });
                             }}
-                            variant="standard"
+                            variant='standard'
                             fullWidth
                         />
                     </Grid>
                     <Grid item xs={6}>
                         <TextField
-                            label="region_3"
+                            label='region_3'
                             value={regions.region_3}
                             onChange={event => {
-                                setRegions(prev => {return {...prev, region_3: event.target.value};});
+                                setRegions(prev => {
+                                    return { ...prev, region_3: event.target.value };
+                                });
                             }}
-                            variant="standard"
+                            variant='standard'
                             fullWidth
                         />
                     </Grid>
                     <Grid item xs={6}>
                         <TextField
-                            label="region_4"
+                            label='region_4'
                             value={regions.region_4}
                             onChange={event => {
-                                setRegions(prev => {return {...prev, region_4: event.target.value};});
+                                setRegions(prev => {
+                                    return { ...prev, region_4: event.target.value };
+                                });
                             }}
-                            variant="standard"
+                            variant='standard'
                             fullWidth
                         />
                     </Grid>
                     <Grid item xs={6}>
                         <TextField
-                            label="region_5"
+                            label='region_5'
                             value={regions.region_5}
                             onChange={event => {
-                                setRegions(prev => {return {...prev, region_5: event.target.value};});
+                                setRegions(prev => {
+                                    return { ...prev, region_5: event.target.value };
+                                });
                             }}
-                            variant="standard"
+                            variant='standard'
                             fullWidth
                         />
                     </Grid>

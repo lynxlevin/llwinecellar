@@ -1,16 +1,9 @@
 import React from 'react';
-import {
-    Box,
-    TableCell,
-    TableHead,
-    TableRow,
-    TableSortLabel,
-} from '@mui/material';
+import { Box, TableCell, TableHead, TableRow, TableSortLabel } from '@mui/material';
 import { visuallyHidden } from '@mui/utils';
 import { COLUMN_ORDER } from '../../hooks/useWineSearchPage';
 import { WineDataKeys } from '../../contexts/wine-context';
 import { Order } from '../../hooks/useWineContext';
-
 
 interface WineSearchTableHeadProps {
     onRequestSort: (event: React.MouseEvent<unknown>, property: WineDataKeys) => void;
@@ -38,7 +31,7 @@ export const WineSearchTableHead = (props: WineSearchTableHeadProps) => {
         <TableHead>
             <TableRow>
                 {COLUMN_ORDER.map(column => (
-                    <TableCell key={column} align="left" padding="normal" sortDirection={sortOrder.key === column ? sortOrder.order : false}>
+                    <TableCell key={column} align='left' padding='normal' sortDirection={sortOrder.key === column ? sortOrder.order : false}>
                         <TableSortLabel
                             active={sortOrder.key === column}
                             direction={sortOrder.key === column ? sortOrder.order : 'asc'}
@@ -46,7 +39,7 @@ export const WineSearchTableHead = (props: WineSearchTableHeadProps) => {
                         >
                             {toTitleCase(column)}
                             {sortOrder.key === column ? (
-                                <Box component="span" sx={visuallyHidden}>
+                                <Box component='span' sx={visuallyHidden}>
                                     {sortOrder.order === 'desc' ? 'sorted descending' : 'sorted ascending'}
                                 </Box>
                             ) : null}
