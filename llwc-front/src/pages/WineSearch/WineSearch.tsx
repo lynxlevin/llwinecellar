@@ -1,4 +1,4 @@
-import { useContext, useEffect, useRef } from 'react';
+import { useContext, useEffect } from 'react';
 import { Navigate } from 'react-router-dom';
 import {
     Box,
@@ -25,8 +25,6 @@ import useWineContext from '../../hooks/useWineContext';
 export const WineSearch = () => {
     const userContext = useContext(UserContext);
 
-    const toolbarRef = useRef<HTMLDivElement>(null);
-    const paginationRef = useRef<HTMLDivElement>(null);
     // MYMEMO(後日): 全ページでこれだけするのは違和感
     const { handleLogout } = useUserAPI();
     const {
@@ -47,10 +45,7 @@ export const WineSearch = () => {
 
     const { isLoading, wineCount, getCepageAbbreviations, initializeWineSearch } = useWineContext();
 
-    const tableHeight =
-        toolbarRef.current && paginationRef.current
-            ? `${window.innerHeight - toolbarRef.current!.clientHeight - paginationRef.current!.clientHeight}px`
-            : '70vh';
+    const tableHeight = `${window.innerHeight - 56 - 52}px`;
 
     useEffect(() => {
         initializeWineSearch();
@@ -66,9 +61,7 @@ export const WineSearch = () => {
         <div>
             <Box sx={{ width: '100%' }}>
                 <Paper sx={{ width: '100%' }}>
-                    <div ref={toolbarRef}>
-                        <WineSearchToolbar handleLogout={handleLogout} openCreateWineDialog={openCreateWineDialog} />
-                    </div>
+                    <WineSearchToolbar handleLogout={handleLogout} openCreateWineDialog={openCreateWineDialog} />
                     <TableContainer sx={{ maxHeight: tableHeight }}>
                         <Table stickyHeader sx={{ minWidth: 750 }} aria-labelledby="tableTitle" size="small">
                             <WineSearchTableHead sortOrder={sortOrder} onRequestSort={handleRequestSort} />
@@ -118,17 +111,16 @@ export const WineSearch = () => {
                             </TableBody>
                         </Table>
                     </TableContainer>
-                    <div ref={paginationRef}>
-                        <TablePagination
-                            component="div"
-                            count={wineCount}
-                            rowsPerPage={rowsPerPage}
-                            rowsPerPageOptions={[25, 50, 100, 200]}
-                            page={page}
-                            onPageChange={handleChangePage}
-                            onRowsPerPageChange={handleChangeRowsPerPage}
-                        />
-                    </div>
+                    <TablePagination
+                        component="div"
+                        count={wineCount}
+                        rowsPerPage={rowsPerPage}
+                        rowsPerPageOptions={[25, 50, 100, 200]}
+                        page={page}
+                        onPageChange={handleChangePage}
+                        onRowsPerPageChange={handleChangeRowsPerPage}
+                        sx={{maxHeight: '52px'}}
+                    />
                 </Paper>
             </Box>
             {wineDialogState.open && (

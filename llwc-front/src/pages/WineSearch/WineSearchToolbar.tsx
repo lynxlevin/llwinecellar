@@ -59,6 +59,7 @@ export const WineSearchToolbar = (props: WineSearchToolbarProps) => {
             sx={{
                 pl: { sm: 2 },
                 pr: { xs: 1, sm: 1 },
+                maxHeight: '56px',
             }}
         >
             <Link to="/">

@@ -60,7 +60,7 @@ const WineListToolbar = (props: WineListToolbarProps) => {
 
     const pageTitle = useMemo(() => {
         let title = 'Wines';
-        if (drunkOnly) return 'Drunk' + title;
+        if (drunkOnly) return `Drunk${title}`;
 
         if (wineContext.wineListQuery.cellarId !== 'NOT_IN_CELLAR') {
             const cellarCapacity = wineContext.wineList.length;
@@ -176,7 +176,7 @@ const WineListTableHead = (props: WineListTableHeadProps) => {
         return text
             .toLowerCase()
             .split('_')
-            .map(function (word: string) {
+            .map((word: string) => {
                 return word.replace(word[0], word[0].toUpperCase());
             })
             .join('');
@@ -275,7 +275,7 @@ export const WineList = () => {
                                         >
                                             {/* MYMEMO(後日): make cepages look like tags */}
                                             {orderedColumn.map(column => {
-                                                let content = rowData[column as WineDataKeys];
+                                                const content = rowData[column as WineDataKeys];
                                                 if (column === 'name') {
                                                     return (
                                                         <TableCell component="th" id={labelId} scope="row" key={row.id + column}>
@@ -321,7 +321,7 @@ export const WineList = () => {
                     handleClose={closeWineDialog}
                     selectedWine={selectedWine}
                     action={wineDialogState.action}
-                ></WineDialog>
+                />
             )}
         </div>
     );
