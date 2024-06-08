@@ -53,8 +53,7 @@ export interface WineData {
 }
 
 export interface WineListQuery {
-    isDrunk: boolean;
-    cellarId: string | undefined;
+    cellarId: string | undefined; // MYMEMO: これしか使ってない
 }
 
 export interface WineSearchQuery {

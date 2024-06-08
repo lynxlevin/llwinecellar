@@ -40,8 +40,8 @@ const useUserAPI = () => {
                     const res = await CellarAPI.list();
                     const cellars = res.data.cellars;
                     cellarContext.setCellarList(cellars);
-                    wineContext.setWineListQuery(curr => {
-                        return { ...curr, cellarId: cellars[0].id };
+                    wineContext.setWineListQuery(_ => {
+                        return { cellarId: cellars[0].id };
                     });
                 }
                 if (wineTagContext.wineTagList.length === 0) {

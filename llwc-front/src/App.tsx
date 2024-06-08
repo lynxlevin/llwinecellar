@@ -17,7 +17,7 @@ function App() {
     const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
     const [cellarList, setCellarList] = useState<Cellar[]>([]);
     const [wineList, setWineList] = useState<WineData[]>([]);
-    const [wineListQuery, setWineListQuery] = useState<WineListQuery>({ isDrunk: false, cellarId: undefined });
+    const [wineListQuery, setWineListQuery] = useState<WineListQuery>({ cellarId: undefined });
     const [wineSearchQuery, setWineSearchQuery] = useState<WineSearchQuery>({ show_drunk: true, show_stock: true });
     const [wineTagList, setWineTagList] = useState<string[]>([]);
     const [wineRegionList, setWineRegionList] = useState<string[]>([]);
