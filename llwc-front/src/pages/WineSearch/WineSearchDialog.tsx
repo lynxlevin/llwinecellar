@@ -82,7 +82,7 @@ const WineSearchDialog = (props: WineSearchDialogProps) => {
         handleClose();
     };
 
-    const resetQueries = () => {
+    const setQueryForAll = () => {
         setCellarId('-');
         setShowStock(true);
         setShowDrunk(true);
@@ -99,6 +99,24 @@ const WineSearchDialog = (props: WineSearchDialogProps) => {
         wineContext.setWineSearchQuery({ show_drunk: true, show_stock: true });
     };
 
+    const resetQuery = () => {
+        const firstCellarId = cellarContext.cellarList[0].id;
+        setCellarId(firstCellarId);
+        setShowStock(true);
+        setShowDrunk(false);
+        setNameOrProducer('');
+        setRegions({
+            country: null,
+            region_1: '',
+            region_2: '',
+            region_3: '',
+            region_4: '',
+            region_5: '',
+        });
+        setCepages([]);
+        wineContext.setWineSearchQuery({ cellar_id: firstCellarId, show_drunk: false, show_stock: true });
+    };
+
     return (
         <Dialog fullScreen open={isOpen} onClose={handleClose} TransitionComponent={Transition}>
             <AppBar position='sticky'>
@@ -107,7 +125,10 @@ const WineSearchDialog = (props: WineSearchDialogProps) => {
                         <CloseIcon />
                     </IconButton>
                     <div style={{ flexGrow: 1 }} />
-                    <Button color='inherit' onClick={resetQueries}>
+                    <Button color='inherit' onClick={setQueryForAll}>
+                        All
+                    </Button>
+                    <Button color='inherit' onClick={resetQuery}>
                         Reset
                     </Button>
                     <Button color='inherit' variant='outlined' onClick={handleSearch}>
@@ -163,7 +184,7 @@ const WineSearchDialog = (props: WineSearchDialogProps) => {
                     <RegionForm
                         regions={regions}
                         setRegions={setRegions}
-                        // MYMEMO: This is a workaround for region form not updating on resetQueries. But without freeSolo, warning shows on WineDialog when entering new regions.
+                        // MYMEMO: This is a workaround for region form not updating on setQueryForAll. But without freeSolo, warning shows on WineDialog when entering new regions.
                         freeSolo={false}
                     />
                     <CepagesForm cepages={cepages} setCepages={setCepages} />
