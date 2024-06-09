@@ -49,7 +49,7 @@ const SameWinesDialog = (props: SameWinesDialogProps) => {
     return (
         <>
             <Stack direction='row'>
-                <Button variant='contained' sx={{ marginTop: '10px' }} onClick={_ => search()}>
+                <Button variant='contained' onClick={_ => search()}>
                     Find same{action === 'create' && ' (fuzzy)'}
                 </Button>
             </Stack>

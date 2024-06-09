@@ -116,6 +116,8 @@ const WineDialog = (props: WineDialogProps) => {
 
     const [dontMove, setDontMove] = useState<boolean>(action === 'edit');
 
+    const [isNoteDialogOpen, setIsNoteDialogOpen] = useState<boolean>(false);
+
     const copyFromHistory = (data: WineData) => {
         setName(data.name);
         setProducer(data.producer);
@@ -239,7 +241,12 @@ const WineDialog = (props: WineDialogProps) => {
             </AppBar>
             <Container maxWidth='md' sx={{ marginTop: 3, marginBottom: 3 }}>
                 <Grid container spacing={2}>
-                    <Grid item xs={12}>
+                    <Grid item xs={6}>
+                        <Button variant='outlined' onClick={() => setIsNoteDialogOpen(true)}>
+                            View note
+                        </Button>
+                    </Grid>
+                    <Grid item xs={6}>
                         <SameWinesDialog name={name} producer={producer} copyFromHistory={copyFromHistory} action={action} />
                     </Grid>
                     <Grid item xs={12}>
@@ -351,7 +358,7 @@ const WineDialog = (props: WineDialogProps) => {
                             Drink
                         </Button>
                     </Grid>
-                    <Grid item xs={12}>
+                    {/* <Grid item xs={12}>
                         <TextField
                             label='note'
                             value={note}
@@ -362,7 +369,7 @@ const WineDialog = (props: WineDialogProps) => {
                             fullWidth
                             multiline
                         />
-                    </Grid>
+                    </Grid> */}
                     <CellarPositionForm
                         cellarId={cellarId}
                         position={position}
@@ -377,6 +384,21 @@ const WineDialog = (props: WineDialogProps) => {
                     />
                 </Grid>
             </Container>
+            <Dialog fullWidth scroll='paper' onClose={() => setIsNoteDialogOpen(false)} open={isNoteDialogOpen}>
+                <Container sx={{ padding: 2 }}>
+                    <TextField
+                        label='note'
+                        value={note}
+                        onChange={event => {
+                            setNote(event.target.value);
+                        }}
+                        variant='standard'
+                        fullWidth
+                        minRows={16}
+                        multiline
+                    />
+                </Container>
+            </Dialog>
         </Dialog>
     );
 };
