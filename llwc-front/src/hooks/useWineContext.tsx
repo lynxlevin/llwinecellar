@@ -14,8 +14,8 @@ const useWineContext = () => {
     const wineContext = useContext(WineContext);
     const cellarContext = useContext(CellarContext);
 
-    // MYMEMO: Maybe better to move into context, and then this hook can be called at multiple places.
-    const [isLoading, setIsLoading] = useState(true);
+    // MYMEMO: Maybe better to move into context, and then this hook can be called from multiple places.
+    const [isLoading, setIsLoading] = useState(false);
 
     const wineCount = wineContext.wineList.length;
 

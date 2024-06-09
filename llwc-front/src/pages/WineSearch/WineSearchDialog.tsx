@@ -48,18 +48,18 @@ const WineSearchDialog = (props: WineSearchDialogProps) => {
     const { searchWine } = useWineContext();
 
     const [cellarId, setCellarId] = useState<string>(wineContext.wineSearchQuery.cellar_id ?? '-');
-    const [showStock, setShowStock] = useState<boolean>(true);
-    const [showDrunk, setShowDrunk] = useState<boolean>(false);
-    const [nameOrProducer, setNameOrProducer] = useState<string>('');
+    const [showStock, setShowStock] = useState<boolean>(wineContext.wineSearchQuery.show_stock);
+    const [showDrunk, setShowDrunk] = useState<boolean>(wineContext.wineSearchQuery.show_drunk);
+    const [nameOrProducer, setNameOrProducer] = useState<string>(wineContext.wineSearchQuery.name_or_producer ?? '');
     const [regions, setRegions] = useState<WineRegionsObject>({
-        country: null,
-        region_1: '',
-        region_2: '',
-        region_3: '',
-        region_4: '',
-        region_5: '',
+        country: wineContext.wineSearchQuery.country ?? null,
+        region_1: wineContext.wineSearchQuery.region_1 ?? '',
+        region_2: wineContext.wineSearchQuery.region_2 ?? '',
+        region_3: wineContext.wineSearchQuery.region_3 ?? '',
+        region_4: wineContext.wineSearchQuery.region_4 ?? '',
+        region_5: wineContext.wineSearchQuery.region_5 ?? '',
     });
-    const [cepages, setCepages] = useState<Cepage[]>([]);
+    const [cepages, setCepages] = useState<Cepage[]>([]); // MYMEMO: これだけcontextからとってこれてない
     // MYMEMO: add hasNote
 
     const handleSearch = () => {

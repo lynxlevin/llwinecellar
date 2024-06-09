@@ -39,8 +39,9 @@ export const WineSearch = () => {
     const tableHeight = `${window.innerHeight - 56 - 52}px`;
 
     useEffect(() => {
+        if (wineCount > 0) return;
         initializeWineSearch();
-    }, [initializeWineSearch]);
+    }, [initializeWineSearch, wineCount]);
 
     if (userContext.isLoggedIn === false) {
         return <Navigate to='/login' />;
