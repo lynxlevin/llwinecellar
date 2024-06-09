@@ -1,6 +1,7 @@
 import { useCallback, useContext, useState } from 'react';
 import { Cepage, WineContext, WineDataKeys, WineSearchQuery } from '../contexts/wine-context';
 import { ListWineQuery, WineAPI } from '../apis/WineAPI';
+import { CellarContext } from '../contexts/cellar-context';
 
 export type Order = 'asc' | 'desc';
 
@@ -11,6 +12,7 @@ export interface SortOrder {
 
 const useWineContext = () => {
     const wineContext = useContext(WineContext);
+    const cellarContext = useContext(CellarContext);
 
     // MYMEMO: Maybe better to move into context, and then this hook can be called at multiple places.
     const [isLoading, setIsLoading] = useState(true);
@@ -78,14 +80,17 @@ const useWineContext = () => {
     };
 
     const initializeWineSearch = useCallback(() => {
-        if (wineContext.wineListQuery.cellarId === undefined) return;
+        if (cellarContext.cellarList.length === 0) return;
         setIsLoading(true);
-        WineAPI.list({ cellar_id: wineContext.wineListQuery.cellarId, show_drunk: false, show_stock: true }).then(res => {
+        const cellarId = cellarContext.cellarList[0].id;
+        const query = { cellar_id: cellarId, show_drunk: false, show_stock: true };
+        wineContext.setWineSearchQuery(query);
+        WineAPI.list(query).then(res => {
             wineContext.setWineList(res.data.wines);
             setIsLoading(false);
         });
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [wineContext.wineListQuery.cellarId]);
+    }, [cellarContext.cellarList]);
 
     const searchWine = useCallback(
         (query?: WineSearchQuery) => {

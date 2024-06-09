@@ -47,7 +47,7 @@ const WineSearchDialog = (props: WineSearchDialogProps) => {
     const cellarContext = useContext(CellarContext);
     const { searchWine } = useWineContext();
 
-    const [cellarId, setCellarId] = useState<string | undefined>(wineContext.wineListQuery.cellarId);
+    const [cellarId, setCellarId] = useState<string>(wineContext.wineSearchQuery.cellar_id ?? '-');
     const [showStock, setShowStock] = useState<boolean>(true);
     const [showDrunk, setShowDrunk] = useState<boolean>(false);
     const [nameOrProducer, setNameOrProducer] = useState<string>('');

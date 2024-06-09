@@ -52,10 +52,6 @@ export interface WineData {
     position: string | null;
 }
 
-export interface WineListQuery {
-    cellarId: string | undefined; // MYMEMO: これしか使ってない
-}
-
 export interface WineSearchQuery {
     cellar_id?: string;
     name_or_producer?: string;
@@ -74,8 +70,6 @@ export interface WineSearchQuery {
 interface WineContextType {
     wineList: WineData[];
     setWineList: React.Dispatch<React.SetStateAction<WineData[]>>;
-    wineListQuery: WineListQuery;
-    setWineListQuery: React.Dispatch<React.SetStateAction<WineListQuery>>;
     wineSearchQuery: WineSearchQuery;
     setWineSearchQuery: React.Dispatch<React.SetStateAction<WineSearchQuery>>;
 }
@@ -83,8 +77,6 @@ interface WineContextType {
 export const WineContext = createContext({
     wineList: [],
     setWineList: () => {},
-    wineListQuery: {},
-    setWineListQuery: () => {},
     wineSearchQuery: {},
     setWineSearchQuery: () => {},
 } as unknown as WineContextType);
