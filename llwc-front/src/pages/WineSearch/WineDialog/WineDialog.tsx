@@ -305,7 +305,7 @@ const WineDialog = (props: WineDialogProps) => {
                             fullWidth
                         />
                     </Grid>
-                    <Grid item xs={6}>
+                    <Grid item xs={4}>
                         <TextField
                             label='bought_at'
                             value={boughtAt ?? ''}
@@ -316,25 +316,25 @@ const WineDialog = (props: WineDialogProps) => {
                             fullWidth
                         />
                     </Grid>
-                    <Grid item xs={6}>
-                        {/* MYMEMO: Change to autoComplete */}
-                        <TextField
-                            label='bought_from'
-                            value={boughtFrom}
-                            onChange={event => {
-                                setBoughtFrom(event.target.value);
-                            }}
-                            variant='standard'
-                            fullWidth
-                        />
-                    </Grid>
-                    <Grid item xs={12}>
+                    <Grid item xs={3}>
                         <TextField
                             label='price'
                             value={price ?? ''}
                             onChange={event => {
                                 const value = event.target.value === '' ? null : Number(event.target.value);
                                 setPrice(value);
+                            }}
+                            variant='standard'
+                            fullWidth
+                        />
+                    </Grid>
+                    <Grid item xs={5}>
+                        {/* MYMEMO: Change to autoComplete */}
+                        <TextField
+                            label='bought_from'
+                            value={boughtFrom}
+                            onChange={event => {
+                                setBoughtFrom(event.target.value);
                             }}
                             variant='standard'
                             fullWidth
