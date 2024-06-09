@@ -20,7 +20,7 @@ import {
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { TransitionProps } from '@mui/material/transitions';
-import { Cepage, WineContext, WineSearchQuery } from '../../contexts/wine-context';
+import { ALL_WINES_QUERY, Cepage, WineContext, WineSearchQuery } from '../../contexts/wine-context';
 import { CellarContext } from '../../contexts/cellar-context';
 import { WineRegionsObject } from './WineDialog/WineDialog';
 import RegionForm from './WineDialog/RegionForm';
@@ -45,12 +45,12 @@ const WineSearchDialog = (props: WineSearchDialogProps) => {
     const { isOpen, handleClose } = props;
     const wineContext = useContext(WineContext);
     const cellarContext = useContext(CellarContext);
-    const { searchWine } = useWineContext();
+    const { searchWine, setQuery } = useWineContext();
 
-    const [cellarId, setCellarId] = useState<string>(wineContext.wineSearchQuery.cellar_id ?? '-');
-    const [showStock, setShowStock] = useState<boolean>(wineContext.wineSearchQuery.show_stock);
-    const [showDrunk, setShowDrunk] = useState<boolean>(wineContext.wineSearchQuery.show_drunk);
-    const [nameOrProducer, setNameOrProducer] = useState<string>(wineContext.wineSearchQuery.name_or_producer ?? '');
+    const [cellarId, setCellarId] = useState<string>(wineContext.wineSearchQuery.cellarId);
+    const [showStock, setShowStock] = useState<boolean>(wineContext.wineSearchQuery.showStock);
+    const [showDrunk, setShowDrunk] = useState<boolean>(wineContext.wineSearchQuery.showDrunk);
+    const [nameOrProducer, setNameOrProducer] = useState<string>(wineContext.wineSearchQuery.nameOrProducer ?? '');
     const [regions, setRegions] = useState<WineRegionsObject>({
         country: wineContext.wineSearchQuery.country ?? null,
         region_1: wineContext.wineSearchQuery.region_1 ?? '',
@@ -63,40 +63,33 @@ const WineSearchDialog = (props: WineSearchDialogProps) => {
     // MYMEMO: add hasNote
 
     const handleSearch = () => {
-        const query: WineSearchQuery = {
-            show_stock: showStock,
-            show_drunk: showDrunk,
+        const searchQuery: WineSearchQuery = {
+            cellarId,
+            showStock,
+            showDrunk,
+            nameOrProducer,
+            ...regions,
+            cepages,
         };
-        if (cellarId !== '-' && cellarId !== 'NOT_IN_CELLAR') query.cellar_id = cellarId;
-        if (cellarId === 'NOT_IN_CELLAR') query.out_of_cellars = true;
-        if (nameOrProducer) query.name_or_producer = nameOrProducer;
-        if (regions.country) query.country = regions.country;
-        if (regions.region_1) query.region_1 = regions.region_1;
-        if (regions.region_2) query.region_2 = regions.region_2;
-        if (regions.region_3) query.region_3 = regions.region_3;
-        if (regions.region_4) query.region_4 = regions.region_4;
-        if (regions.region_5) query.region_5 = regions.region_5;
-        if (cepages.length > 0) query.cepage_names = cepages.map(cepage => cepage.name);
-        wineContext.setWineSearchQuery(query);
-        searchWine(query);
+        searchWine(searchQuery);
         handleClose();
     };
 
     const setQueryForAll = () => {
-        setCellarId('-');
-        setShowStock(true);
-        setShowDrunk(true);
-        setNameOrProducer('');
+        setCellarId(ALL_WINES_QUERY.cellarId);
+        setShowStock(ALL_WINES_QUERY.showStock);
+        setShowDrunk(ALL_WINES_QUERY.showDrunk);
+        setNameOrProducer(ALL_WINES_QUERY.nameOrProducer);
         setRegions({
-            country: null,
-            region_1: '',
-            region_2: '',
-            region_3: '',
-            region_4: '',
-            region_5: '',
+            country: ALL_WINES_QUERY.country,
+            region_1: ALL_WINES_QUERY.region_1,
+            region_2: ALL_WINES_QUERY.region_2,
+            region_3: ALL_WINES_QUERY.region_3,
+            region_4: ALL_WINES_QUERY.region_4,
+            region_5: ALL_WINES_QUERY.region_5,
         });
-        setCepages([]);
-        wineContext.setWineSearchQuery({ show_drunk: true, show_stock: true });
+        setCepages(ALL_WINES_QUERY.cepages);
+        setQuery();
     };
 
     const resetQuery = () => {
@@ -104,17 +97,17 @@ const WineSearchDialog = (props: WineSearchDialogProps) => {
         setCellarId(firstCellarId);
         setShowStock(true);
         setShowDrunk(false);
-        setNameOrProducer('');
+        setNameOrProducer(ALL_WINES_QUERY.nameOrProducer);
         setRegions({
-            country: null,
-            region_1: '',
-            region_2: '',
-            region_3: '',
-            region_4: '',
-            region_5: '',
+            country: ALL_WINES_QUERY.country,
+            region_1: ALL_WINES_QUERY.region_1,
+            region_2: ALL_WINES_QUERY.region_2,
+            region_3: ALL_WINES_QUERY.region_3,
+            region_4: ALL_WINES_QUERY.region_4,
+            region_5: ALL_WINES_QUERY.region_5,
         });
-        setCepages([]);
-        wineContext.setWineSearchQuery({ cellar_id: firstCellarId, show_drunk: false, show_stock: true });
+        setCepages(ALL_WINES_QUERY.cepages);
+        setQuery({ cellarId: firstCellarId, showDrunk: false, showStock: true });
     };
 
     return (

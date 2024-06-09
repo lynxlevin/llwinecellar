@@ -53,19 +53,32 @@ export interface WineData {
 }
 
 export interface WineSearchQuery {
-    cellar_id?: string;
-    name_or_producer?: string;
-    out_of_cellars?: boolean;
-    show_drunk: boolean;
-    show_stock: boolean;
-    country?: string | null;
-    region_1?: string;
-    region_2?: string;
-    region_3?: string;
-    region_4?: string;
-    region_5?: string;
-    cepage_names?: string[];
+    cellarId: string;
+    showStock: boolean;
+    showDrunk: boolean;
+    nameOrProducer: string;
+    country: string | null;
+    region_1: string;
+    region_2: string;
+    region_3: string;
+    region_4: string;
+    region_5: string;
+    cepages: Cepage[];
 }
+
+export const ALL_WINES_QUERY: WineSearchQuery = {
+    cellarId: '-',
+    showStock: true,
+    showDrunk: true,
+    nameOrProducer: '',
+    country: null,
+    region_1: '',
+    region_2: '',
+    region_3: '',
+    region_4: '',
+    region_5: '',
+    cepages: [],
+};
 
 interface WineContextType {
     wineList: WineData[];

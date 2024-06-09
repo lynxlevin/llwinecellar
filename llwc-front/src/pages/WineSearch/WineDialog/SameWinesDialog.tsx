@@ -1,8 +1,7 @@
 import { useState } from 'react';
 import { Button, Container, Dialog, Typography, Paper, FormControlLabel, Switch, Stack } from '@mui/material';
 import { WineData } from '../../../contexts/wine-context';
-import useWineAPI from '../../../hooks/useWineAPI';
-import { FindSameWinesQuery } from '../../../apis/WineAPI';
+import useWineAPI, { FindSameWinesQuery } from '../../../hooks/useWineAPI';
 import { WineDialogAction } from '../../../hooks/useWineSearchPage';
 
 interface SameWinesDialogProps {
