@@ -2,21 +2,21 @@ import React from 'react';
 import { Box, TableCell, TableHead, TableRow, TableSortLabel } from '@mui/material';
 import { visuallyHidden } from '@mui/utils';
 import { COLUMN_ORDER } from '../../hooks/useWineSearchPage';
-import { WineDataKeys } from '../../contexts/wine-context';
+import { ColumnKeys } from '../../contexts/wine-context';
 import { Order } from '../../hooks/useWineContext';
 
 interface WineSearchTableHeadProps {
-    onRequestSort: (event: React.MouseEvent<unknown>, property: WineDataKeys) => void;
-    sortOrder: { key: WineDataKeys; order: Order };
+    onRequestSort: (event: React.MouseEvent<unknown>, property: ColumnKeys) => void;
+    sortOrder: { key: ColumnKeys; order: Order };
 }
 
 export const WineSearchTableHead = (props: WineSearchTableHeadProps) => {
     const { sortOrder, onRequestSort } = props;
-    const createSortHandler = (property: WineDataKeys) => (event: React.MouseEvent<unknown>) => {
+    const createSortHandler = (property: ColumnKeys) => (event: React.MouseEvent<unknown>) => {
         onRequestSort(event, property);
     };
 
-    const toTitleCase = (text: WineDataKeys): string => {
+    const toTitleCase = (text: ColumnKeys): string => {
         if (text === 'price') return 'Price';
         return text
             .toLowerCase()
@@ -35,7 +35,7 @@ export const WineSearchTableHead = (props: WineSearchTableHeadProps) => {
                         <TableSortLabel
                             active={sortOrder.key === column}
                             direction={sortOrder.key === column ? sortOrder.order : 'asc'}
-                            onClick={createSortHandler(column as WineDataKeys)}
+                            onClick={createSortHandler(column as ColumnKeys)}
                         >
                             {toTitleCase(column)}
                             {sortOrder.key === column ? (

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Button, Container, Dialog, Typography, Paper, FormControlLabel, Switch, Stack } from '@mui/material';
-import { WineData } from '../../../contexts/wine-context';
+import { WineData, WineDataWithRegions } from '../../../contexts/wine-context';
 import useWineAPI, { FindSameWinesQuery } from '../../../hooks/useWineAPI';
 import { WineDialogAction } from '../../../hooks/useWineSearchPage';
 
@@ -13,7 +13,7 @@ interface SameWinesDialogProps {
 
 const SameWinesDialog = (props: SameWinesDialogProps) => {
     const { name, producer, copyFromHistory, action } = props;
-    const [sameWines, setSameWines] = useState<WineData[] | undefined>();
+    const [sameWines, setSameWines] = useState<WineDataWithRegions[] | undefined>();
     const [searchKeys, setSearchKeys] = useState<{ name: boolean; producer: boolean }>({
         name: action === 'edit',
         producer: false,
@@ -31,19 +31,6 @@ const SameWinesDialog = (props: SameWinesDialogProps) => {
         }
         const sameWines = await findSameWines(query);
         setSameWines(sameWines);
-    };
-
-    const getWineRegionValue = (wine: WineData) => {
-        if (wine.country === null) return null;
-
-        let regionValue = wine.country;
-        if (wine.region_1) regionValue += `>${wine.region_1}`;
-        if (wine.region_2) regionValue += `>${wine.region_2}`;
-        if (wine.region_3) regionValue += `>${wine.region_3}`;
-        if (wine.region_4) regionValue += `>${wine.region_4}`;
-        if (wine.region_5) regionValue += `>${wine.region_5}`;
-
-        return regionValue;
     };
 
     return (
@@ -122,7 +109,7 @@ const SameWinesDialog = (props: SameWinesDialogProps) => {
                                                 <br />
                                                 {wine.producer}
                                             </Typography>
-                                            <Typography>{getWineRegionValue(wine)}</Typography>
+                                            <Typography>{wine.regions}</Typography>
                                             <Typography>cepages: {wine.cepages.map(cepage => cepage.name).join(', ')}</Typography>
                                         </>
                                     )}

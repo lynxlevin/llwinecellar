@@ -1,12 +1,12 @@
 import { useCallback, useContext, useState } from 'react';
-import { ALL_WINES_QUERY, Cepage, WineContext, WineDataKeys, WineSearchQuery } from '../contexts/wine-context';
+import { ALL_WINES_QUERY, Cepage, WineContext, ColumnKeys, WineSearchQuery } from '../contexts/wine-context';
 import { CellarContext } from '../contexts/cellar-context';
 import useWineAPI from './useWineAPI';
 
 export type Order = 'asc' | 'desc';
 
 export interface SortOrder {
-    key: WineDataKeys;
+    key: ColumnKeys;
     order: Order;
 }
 
@@ -86,8 +86,8 @@ const useWineContext = () => {
         setIsLoading(true);
         const query = { ...ALL_WINES_QUERY, cellarId: cellarContext.cellarList[0].id, showDrunk: false, showStock: true };
         wineContext.setWineSearchQuery(query);
-        listWines(query).then(res => {
-            wineContext.setWineList(res.data.wines);
+        listWines(query).then(wines => {
+            wineContext.setWineList(wines);
             setIsLoading(false);
         });
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -98,8 +98,8 @@ const useWineContext = () => {
             const params = query ? { ...ALL_WINES_QUERY, ...query } : wineContext.wineSearchQuery;
             if (query) wineContext.setWineSearchQuery(params);
             setIsLoading(true);
-            listWines(params).then(res => {
-                wineContext.setWineList(res.data.wines);
+            listWines(params).then(wines => {
+                wineContext.setWineList(wines);
                 setIsLoading(false);
             });
         },

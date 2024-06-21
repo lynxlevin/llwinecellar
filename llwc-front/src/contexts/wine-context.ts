@@ -6,16 +6,11 @@ export interface Cepage {
     percentage: string | null;
 }
 
-const wineDataKeys = [
+const columnKeys = [
     'id',
     'name',
     'producer',
-    'country',
-    'region_1',
-    'region_2',
-    'region_3',
-    'region_4',
-    'region_5',
+    'regions',
     'cepages',
     'vintage',
     'bought_at',
@@ -28,13 +23,36 @@ const wineDataKeys = [
     'position',
 ] as const;
 
-export type WineDataKeys = (typeof wineDataKeys)[number];
+export type ColumnKeys = (typeof columnKeys)[number];
 
 export interface WineData {
     id: string;
     name: string;
     producer: string;
     country: string | null;
+    region_1: string;
+    region_2: string;
+    region_3: string;
+    region_4: string;
+    region_5: string;
+    cepages: Cepage[];
+    vintage: number | null;
+    bought_at: string | null;
+    bought_from: string;
+    price: number | null;
+    drunk_at: string | null;
+    note: string;
+    tag_texts: string[];
+    cellar_id: string | null;
+    position: string | null;
+}
+
+export interface WineDataWithRegions {
+    id: string;
+    name: string;
+    producer: string;
+    country: string | null;
+    regions: string;
     region_1: string;
     region_2: string;
     region_3: string;
@@ -81,8 +99,8 @@ export const ALL_WINES_QUERY: WineSearchQuery = {
 };
 
 interface WineContextType {
-    wineList: WineData[];
-    setWineList: React.Dispatch<React.SetStateAction<WineData[]>>;
+    wineList: WineDataWithRegions[];
+    setWineList: React.Dispatch<React.SetStateAction<WineDataWithRegions[]>>;
     wineSearchQuery: WineSearchQuery;
     setWineSearchQuery: React.Dispatch<React.SetStateAction<WineSearchQuery>>;
 }

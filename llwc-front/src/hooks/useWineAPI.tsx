@@ -1,5 +1,5 @@
 import { ListWineQuery, WineAPI } from '../apis/WineAPI';
-import { WineSearchQuery } from '../contexts/wine-context';
+import { WineData, WineDataWithRegions, WineSearchQuery } from '../contexts/wine-context';
 
 export interface FindSameWinesQuery {
     show_drunk: boolean;
@@ -10,6 +10,19 @@ export interface FindSameWinesQuery {
 }
 
 const useWineAPI = () => {
+    const getWineRegionValue = (wine: WineData) => {
+        if (wine.country === null) return '';
+
+        let regionValue = wine.country;
+        if (wine.region_1) regionValue += `>${wine.region_1}`;
+        if (wine.region_2) regionValue += `>${wine.region_2}`;
+        if (wine.region_3) regionValue += `>${wine.region_3}`;
+        if (wine.region_4) regionValue += `>${wine.region_4}`;
+        if (wine.region_5) regionValue += `>${wine.region_5}`;
+
+        return regionValue;
+    };
+
     const listWines = async (searchQuery: WineSearchQuery) => {
         const query: ListWineQuery = {
             show_stock: searchQuery.showStock,
@@ -25,13 +38,19 @@ const useWineAPI = () => {
         if (searchQuery.region_4) query.region_4 = searchQuery.region_4;
         if (searchQuery.region_5) query.region_5 = searchQuery.region_5;
         if (searchQuery.cepages.length > 0) query.cepage_names = searchQuery.cepages.map(cepage => cepage.name);
-        const res = await WineAPI.list(query);
-        return res;
+        const wines = (await WineAPI.list(query)).data.wines;
+        const winesWithRegions: WineDataWithRegions[] = wines.map(wine => {
+            return { ...wine, regions: getWineRegionValue(wine) };
+        });
+        return winesWithRegions;
     };
 
     const findSameWines = async (query: FindSameWinesQuery) => {
-        const res = await WineAPI.list(query);
-        return res.data.wines;
+        const wines = (await WineAPI.list(query)).data.wines;
+        const winesWithRegions: WineDataWithRegions[] = wines.map(wine => {
+            return { ...wine, regions: getWineRegionValue(wine) };
+        });
+        return winesWithRegions;
     };
 
     return {

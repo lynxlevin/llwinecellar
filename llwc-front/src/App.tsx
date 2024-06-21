@@ -5,7 +5,7 @@ import Login from './pages/Login';
 import { WineSearch } from './pages/WineSearch/WineSearch';
 import { CellarContext, type Cellar } from './contexts/cellar-context';
 import { UserContext } from './contexts/user-context';
-import { ALL_WINES_QUERY, WineContext, WineData, WineSearchQuery } from './contexts/wine-context';
+import { ALL_WINES_QUERY, WineContext, WineDataWithRegions, WineSearchQuery } from './contexts/wine-context';
 import { WineTagContext } from './contexts/wine-tag-context';
 import { WineRegionContext } from './contexts/wine-region-context';
 import { GrapeMaster, GrapeMasterContext } from './contexts/grape-master-context';
@@ -16,7 +16,7 @@ import WineMemos from './pages/WineMemos';
 function App() {
     const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
     const [cellarList, setCellarList] = useState<Cellar[]>([]);
-    const [wineList, setWineList] = useState<WineData[]>([]);
+    const [wineList, setWineList] = useState<WineDataWithRegions[]>([]);
     const [wineSearchQuery, setWineSearchQuery] = useState<WineSearchQuery>(ALL_WINES_QUERY);
     const [wineTagList, setWineTagList] = useState<string[]>([]);
     const [wineRegionList, setWineRegionList] = useState<string[]>([]);
