@@ -10,20 +10,6 @@ export interface SortOrder {
     order: Order;
 }
 
-interface WineSearchQueryOptional {
-    cellarId?: string;
-    showStock?: boolean;
-    showDrunk?: boolean;
-    nameOrProducer?: string;
-    country?: string | null;
-    region_1?: string;
-    region_2?: string;
-    region_3?: string;
-    region_4?: string;
-    region_5?: string;
-    cepages?: Cepage[];
-}
-
 const useWineContext = () => {
     const wineContext = useContext(WineContext);
     const cellarContext = useContext(CellarContext);
@@ -120,7 +106,7 @@ const useWineContext = () => {
         [listWines, wineContext],
     );
 
-    const setQuery = (query?: WineSearchQueryOptional) => {
+    const setQuery = (query?: Partial<WineSearchQuery>) => {
         if (query) {
             wineContext.setWineSearchQuery({ ...ALL_WINES_QUERY, ...query });
         } else {
