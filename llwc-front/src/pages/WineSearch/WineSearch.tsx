@@ -87,7 +87,9 @@ export const WineSearch = () => {
                                                 } else if (column === 'value') {
                                                     return (
                                                         <TableCell component='th' id={labelId} scope='row' key={row.id + column}>
-                                                            <LinearProgress variant="determinate" value={row.value ?? 0} />
+                                                            {row.value === null ? (<></>) : (
+                                                                <LinearProgress variant="determinate" value={row.value} />
+                                                            )}
                                                         </TableCell>
                                                     )
                                                 }
