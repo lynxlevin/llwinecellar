@@ -72,6 +72,7 @@ class Wine(models.Model):
     drunk_at = models.DateField(blank=True, null=True)
     note = models.TextField(blank=True, default="")
     tags = models.ManyToManyField("WineTag", through="WineTagRelation")
+    value = models.PositiveSmallIntegerField(blank=True, null=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
