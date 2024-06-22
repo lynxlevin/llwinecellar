@@ -36,7 +36,7 @@ const CepagesForm = (props: CepagesFormProps) => {
                                     if (exists) return exists;
                                     const abbreviation = grapeMasterContext.grapeMasterList.find(grapeMaster => grapeMaster.name === grape)!.abbreviation;
                                     const defaultTo100Percent = cepages.length === 0 && grapes.length === 1;
-                                    return { name: grape, abbreviation, percentage: defaultTo100Percent ? '100' : '0' };
+                                    return { name: grape, abbreviation, percentage: defaultTo100Percent ? '100' : null };
                                 }),
                             );
                         }}
