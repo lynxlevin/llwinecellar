@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import { AppBar, Button, Container, Dialog, Grid, IconButton, Slide, TextField, Toolbar, Typography, Autocomplete, Chip } from '@mui/material';
+import { AppBar, Button, Container, Dialog, Grid, IconButton, Slide, TextField, Toolbar, Typography, Autocomplete, Chip, Slider, LinearProgress } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { TransitionProps } from '@mui/material/transitions';
 import { Cepage, WineData } from '../../../contexts/wine-context';
@@ -79,6 +79,7 @@ const SELECTED_WINE_DEFAULT: WineData = {
     tag_texts: [],
     cellar_id: noCellarCode,
     position: '',
+    value: null,
 };
 
 const WineDialog = (props: WineDialogProps) => {
@@ -110,6 +111,7 @@ const WineDialog = (props: WineDialogProps) => {
     const [note, setNote] = useState<string>(selectedWine.note);
     const [cellarId, setCellarId] = useState<string | null>(selectedWine.cellar_id ?? noCellarCode);
     const [position, setPosition] = useState<string | null>(selectedWine.position);
+    const [value, setValue] = useState<number>(selectedWine.value ?? 0);
 
     const [validationErrors, setValidationErrors] = useState<ValidationErrorsType>({});
     const [apiErrors, setApiErrors] = useState<apiErrorsType>({});
@@ -184,6 +186,7 @@ const WineDialog = (props: WineDialogProps) => {
             tag_texts: tagTexts,
             cellar_id: cellarId,
             position: position,
+            value: value === 0 ? null : value,
         };
         if (action === 'edit' && dontMove) {
             // MYMEMO(後日): 汚い。null | undefined | string の使い分けはよろしくない。
@@ -374,6 +377,8 @@ const WineDialog = (props: WineDialogProps) => {
             </Container>
             <Dialog fullWidth scroll='paper' onClose={() => setIsNoteDialogOpen(false)} open={isNoteDialogOpen}>
                 <Container sx={{ padding: 2 }}>
+                    <Typography>value</Typography>
+                    <Slider value={value} min={0} max={100} sx={ value === 0 ? {color: 'lightgrey'}: {}} onChange={(_, newValue) => setValue(newValue as number)} />
                     <TextField
                         label='note'
                         value={note}

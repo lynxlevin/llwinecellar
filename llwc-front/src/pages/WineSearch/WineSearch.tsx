@@ -1,8 +1,7 @@
 import { useContext, useEffect } from 'react';
 import { Navigate } from 'react-router-dom';
-import { Box, Table, TableBody, TableCell, TableContainer, TablePagination, TableRow, Paper } from '@mui/material';
+import { Box, Table, TableBody, TableCell, TableContainer, TablePagination, TableRow, Paper, LinearProgress } from '@mui/material';
 import useWineSearchPage, { COLUMN_ORDER } from '../../hooks/useWineSearchPage';
-import { ColumnKeys } from '../../contexts/wine-context';
 import useUserAPI from '../../hooks/useUserAPI';
 import { UserContext } from '../../contexts/user-context';
 import WineDialog from './WineDialog/WineDialog';
@@ -85,6 +84,12 @@ export const WineSearch = () => {
                                                             {content}
                                                         </TableCell>
                                                     );
+                                                } else if (column === 'value') {
+                                                    return (
+                                                        <TableCell component='th' id={labelId} scope='row' key={row.id + column}>
+                                                            <LinearProgress variant="determinate" value={row.value ?? 0} />
+                                                        </TableCell>
+                                                    )
                                                 }
                                                 return <TableCell key={row.id + column}>{content}</TableCell>;
                                             })}

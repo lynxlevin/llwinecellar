@@ -5,6 +5,7 @@ import useWineContext, { SortOrder } from './useWineContext';
 export type WineDialogAction = 'create' | 'edit';
 
 export const COLUMN_ORDER: ColumnKeys[] = [
+    'value',
     'position',
     'tag_texts',
     'name',
