@@ -71,7 +71,7 @@ const SELECTED_WINE_DEFAULT: WineData = {
     region_5: '',
     cepages: [],
     vintage: null,
-    bought_at: getLocaleISODateString(),
+    bought_at: null,
     bought_from: '',
     price: null,
     drunk_at: null,
@@ -104,7 +104,7 @@ const WineDialog = (props: WineDialogProps) => {
         region_5: selectedWine.region_5,
     });
     const [cepages, setCepages] = useState<Cepage[]>(selectedWine.cepages);
-    const [boughtAt, setBoughtAt] = useState<string | null>(selectedWine.bought_at);
+    const [boughtAt, setBoughtAt] = useState<string | null>(selectedWine.bought_at ?? getLocaleISODateString());
     const [boughtFrom, setBoughtFrom] = useState<string>(selectedWine.bought_from);
     const [price, setPrice] = useState<number | null>(selectedWine.price);
     const [drunkAt, setDrunkAt] = useState<string | null>(selectedWine.drunk_at);
