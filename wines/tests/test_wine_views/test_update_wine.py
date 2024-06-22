@@ -45,6 +45,7 @@ class TestUpdateWine(TestCase):
             "drunk_at": None,
             "note": "テスト用のノート",
             "tag_texts": ["updated_tag1", "updated_tag2"],
+            "value": 50,
         }
 
     def test_update(self):
@@ -87,6 +88,7 @@ class TestUpdateWine(TestCase):
         self.assertEqual(params["note"], wine.note)
         for param_tag, wine_tag in zip(params["tag_texts"], wine.tags.all()):
             self.assertEqual(param_tag, wine_tag.text)
+        self.assertEqual(params["value"], wine.value)
 
     def test_update__same_result_on_multiple_requests(self):
         # Arrange
@@ -129,6 +131,7 @@ class TestUpdateWine(TestCase):
         self.assertEqual(params["note"], wine.note)
         for param_tag, wine_tag in zip(params["tag_texts"], wine.tags.all()):
             self.assertEqual(param_tag, wine_tag.text)
+        self.assertEqual(params["value"], wine.value)
 
     def test_update__empty_cepages(self):
         # Arrange
