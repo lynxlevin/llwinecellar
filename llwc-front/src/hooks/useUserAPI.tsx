@@ -7,14 +7,12 @@ import { UserContext } from '../contexts/user-context';
 import { WineTagContext } from '../contexts/wine-tag-context';
 import { WineRegionContext } from '../contexts/wine-region-context';
 import useWineRegionAPI from './useWineRegionAPI';
-import { WineContext } from '../contexts/wine-context';
 import { GrapeMasterContext } from '../contexts/grape-master-context';
 import useGrapeMasterAPI from './useGrapeMasterAPI';
 
 const useUserAPI = () => {
     const userContext = useContext(UserContext);
     const cellarContext = useContext(CellarContext);
-    const wineContext = useContext(WineContext);
     const wineTagContext = useContext(WineTagContext);
     const wineRegionContext = useContext(WineRegionContext);
     const grapeMasterContext = useContext(GrapeMasterContext);
@@ -40,9 +38,6 @@ const useUserAPI = () => {
                     const res = await CellarAPI.list();
                     const cellars = res.data.cellars;
                     cellarContext.setCellarList(cellars);
-                    wineContext.setWineListQuery(curr => {
-                        return { ...curr, cellarId: cellars[0].id };
-                    });
                 }
                 if (wineTagContext.wineTagList.length === 0) {
                     getWineTagList();

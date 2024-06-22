@@ -1,10 +1,10 @@
 import { useMemo, useState } from 'react';
-import { WineData, WineDataKeys } from '../contexts/wine-context';
+import { WineData, ColumnKeys } from '../contexts/wine-context';
 import useWineContext, { SortOrder } from './useWineContext';
 
 export type WineDialogAction = 'create' | 'edit';
 
-export const COLUMN_ORDER: WineDataKeys[] = [
+export const COLUMN_ORDER: ColumnKeys[] = [
     'position',
     'tag_texts',
     'name',
@@ -12,12 +12,7 @@ export const COLUMN_ORDER: WineDataKeys[] = [
     'vintage',
     'price',
     'drunk_at',
-    'country',
-    'region_1',
-    'region_2',
-    'region_3',
-    'region_4',
-    'region_5',
+    'regions',
     'cepages',
     'bought_at',
     'bought_from',
@@ -44,7 +39,7 @@ const useWineSearchPage = () => {
         setPage(0);
     };
 
-    const handleRequestSort = (event: React.MouseEvent<unknown>, property: WineDataKeys) => {
+    const handleRequestSort = (event: React.MouseEvent<unknown>, property: ColumnKeys) => {
         const isAsc = sortOrder.key === property && sortOrder.order === 'asc';
         setSortOrder({ key: property, order: isAsc ? 'desc' : 'asc' });
     };

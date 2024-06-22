@@ -2,7 +2,7 @@ import { useContext, useEffect } from 'react';
 import { Navigate } from 'react-router-dom';
 import { Box, Table, TableBody, TableCell, TableContainer, TablePagination, TableRow, Paper } from '@mui/material';
 import useWineSearchPage, { COLUMN_ORDER } from '../../hooks/useWineSearchPage';
-import { WineDataKeys } from '../../contexts/wine-context';
+import { ColumnKeys } from '../../contexts/wine-context';
 import useUserAPI from '../../hooks/useUserAPI';
 import { UserContext } from '../../contexts/user-context';
 import WineDialog from './WineDialog/WineDialog';
@@ -39,8 +39,9 @@ export const WineSearch = () => {
     const tableHeight = `${window.innerHeight - 56 - 52}px`;
 
     useEffect(() => {
+        if (wineCount > 0) return;
         initializeWineSearch();
-    }, [initializeWineSearch]);
+    }, [initializeWineSearch, wineCount]);
 
     if (userContext.isLoggedIn === false) {
         return <Navigate to='/login' />;
@@ -77,7 +78,7 @@ export const WineSearch = () => {
                                         >
                                             {/* MYMEMO(後日): make cepages look like tags */}
                                             {COLUMN_ORDER.map(column => {
-                                                const content = rowData[column as WineDataKeys];
+                                                const content = rowData[column];
                                                 if (column === 'name') {
                                                     return (
                                                         <TableCell component='th' id={labelId} scope='row' key={row.id + column}>

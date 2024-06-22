@@ -29,13 +29,13 @@ export const WineSearchToolbar = (props: WineSearchToolbarProps) => {
     const pageTitle = useMemo(() => {
         let title = 'Wines';
 
-        if (wineContext.wineListQuery.cellarId !== 'NOT_IN_CELLAR') {
+        if (!['-', 'NOT_IN_CELLAR'].includes(wineContext.wineSearchQuery.cellarId)) {
             const cellarCapacity = wineContext.wineList.length;
             const winesInCellarCount = wineContext.wineList.filter(wine => wine.name !== '').length;
             title += ` (${winesInCellarCount}/${cellarCapacity})`;
         }
         return title;
-    }, [wineContext.wineListQuery.cellarId, wineContext.wineList]);
+    }, [wineContext.wineSearchQuery.cellarId, wineContext.wineList]);
 
     const openMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
         setMenuAnchor(event.currentTarget);

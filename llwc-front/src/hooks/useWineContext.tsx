@@ -1,19 +1,23 @@
 import { useCallback, useContext, useState } from 'react';
-import { Cepage, WineContext, WineDataKeys, WineSearchQuery } from '../contexts/wine-context';
-import { ListWineQuery, WineAPI } from '../apis/WineAPI';
+import { ALL_WINES_QUERY, Cepage, WineContext, ColumnKeys, WineSearchQuery } from '../contexts/wine-context';
+import { CellarContext } from '../contexts/cellar-context';
+import useWineAPI from './useWineAPI';
 
 export type Order = 'asc' | 'desc';
 
 export interface SortOrder {
-    key: WineDataKeys;
+    key: ColumnKeys;
     order: Order;
 }
 
 const useWineContext = () => {
     const wineContext = useContext(WineContext);
+    const cellarContext = useContext(CellarContext);
 
-    // MYMEMO: Maybe better to move into context, and then this hook can be called at multiple places.
-    const [isLoading, setIsLoading] = useState(true);
+    const { listWines } = useWineAPI();
+
+    // MYMEMO: Maybe better to move into context, and then this hook can be called from multiple places.
+    const [isLoading, setIsLoading] = useState(false);
 
     const wineCount = wineContext.wineList.length;
 
@@ -78,26 +82,37 @@ const useWineContext = () => {
     };
 
     const initializeWineSearch = useCallback(() => {
-        if (wineContext.wineListQuery.cellarId === undefined) return;
+        if (cellarContext.cellarList.length === 0) return;
         setIsLoading(true);
-        WineAPI.list({ cellar_id: wineContext.wineListQuery.cellarId, show_drunk: false, show_stock: true }).then(res => {
-            wineContext.setWineList(res.data.wines);
+        const query = { ...ALL_WINES_QUERY, cellarId: cellarContext.cellarList[0].id, showDrunk: false, showStock: true };
+        wineContext.setWineSearchQuery(query);
+        listWines(query).then(wines => {
+            wineContext.setWineList(wines);
             setIsLoading(false);
         });
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [wineContext.wineListQuery.cellarId]);
+    }, [cellarContext.cellarList]);
 
     const searchWine = useCallback(
         (query?: WineSearchQuery) => {
-            const params = query ?? wineContext.wineSearchQuery;
+            const params = query ? { ...ALL_WINES_QUERY, ...query } : wineContext.wineSearchQuery;
+            if (query) wineContext.setWineSearchQuery(params);
             setIsLoading(true);
-            WineAPI.list(params as ListWineQuery).then(res => {
-                wineContext.setWineList(res.data.wines);
+            listWines(params).then(wines => {
+                wineContext.setWineList(wines);
                 setIsLoading(false);
             });
         },
-        [wineContext],
+        [listWines, wineContext],
     );
+
+    const setQuery = (query?: Partial<WineSearchQuery>) => {
+        if (query) {
+            wineContext.setWineSearchQuery({ ...ALL_WINES_QUERY, ...query });
+        } else {
+            wineContext.setWineSearchQuery(ALL_WINES_QUERY);
+        }
+    };
 
     return {
         isLoading,
@@ -106,6 +121,7 @@ const useWineContext = () => {
         getSortedWineList,
         initializeWineSearch,
         searchWine,
+        setQuery,
     };
 };
 

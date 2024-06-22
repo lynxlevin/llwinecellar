@@ -1,6 +1,7 @@
 import React, { useContext } from 'react';
-import { Grid, TextField, Autocomplete, Chip } from '@mui/material';
+import { Grid, TextField, Autocomplete, Chip, Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
 import { WineRegionContext } from '../../../contexts/wine-region-context';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { WineRegionsObject } from './WineDialog';
 
 const countries = [
@@ -100,86 +101,93 @@ const RegionForm = (props: RegionFormProps) => {
             </Grid>
             {showDetails && (
                 <>
-                    <Grid item xs={6}>
-                        <Autocomplete
-                            options={countries}
-                            value={regions.country}
-                            renderTags={(value: readonly string[], getTagProps) =>
-                                value.map((option: string, index: number) => <Chip variant='outlined' label={option} {...getTagProps({ index })} />)
-                            }
-                            renderInput={params => <TextField {...params} label='country' />}
-                            onChange={(_, newValue: string | null) => {
-                                setRegions(prev => {
-                                    return { ...prev, country: newValue };
-                                });
-                            }}
-                        />
-                    </Grid>
-                    <Grid item xs={6}>
-                        <TextField
-                            label='region_1'
-                            value={regions.region_1}
-                            onChange={event => {
-                                setRegions(prev => {
-                                    return { ...prev, region_1: event.target.value };
-                                });
-                            }}
-                            variant='standard'
-                            fullWidth
-                        />
-                    </Grid>
-                    <Grid item xs={6}>
-                        <TextField
-                            label='region_2'
-                            value={regions.region_2}
-                            onChange={event => {
-                                setRegions(prev => {
-                                    return { ...prev, region_2: event.target.value };
-                                });
-                            }}
-                            variant='standard'
-                            fullWidth
-                        />
-                    </Grid>
-                    <Grid item xs={6}>
-                        <TextField
-                            label='region_3'
-                            value={regions.region_3}
-                            onChange={event => {
-                                setRegions(prev => {
-                                    return { ...prev, region_3: event.target.value };
-                                });
-                            }}
-                            variant='standard'
-                            fullWidth
-                        />
-                    </Grid>
-                    <Grid item xs={6}>
-                        <TextField
-                            label='region_4'
-                            value={regions.region_4}
-                            onChange={event => {
-                                setRegions(prev => {
-                                    return { ...prev, region_4: event.target.value };
-                                });
-                            }}
-                            variant='standard'
-                            fullWidth
-                        />
-                    </Grid>
-                    <Grid item xs={6}>
-                        <TextField
-                            label='region_5'
-                            value={regions.region_5}
-                            onChange={event => {
-                                setRegions(prev => {
-                                    return { ...prev, region_5: event.target.value };
-                                });
-                            }}
-                            variant='standard'
-                            fullWidth
-                        />
-                    </Grid>
+                    <Accordion disableGutters sx={{ width: '100%', ml: 2 }}>
+                        <AccordionSummary expandIcon={<ExpandMoreIcon />}>Region details</AccordionSummary>
+                        <AccordionDetails sx={{ ml: 2 }}>
+                            <Grid container spacing={2}>
+                                <Grid item xs={6}>
+                                    <Autocomplete
+                                        options={countries}
+                                        value={regions.country}
+                                        renderTags={(value: readonly string[], getTagProps) =>
+                                            value.map((option: string, index: number) => <Chip variant='outlined' label={option} {...getTagProps({ index })} />)
+                                        }
+                                        renderInput={params => <TextField {...params} label='country' />}
+                                        onChange={(_, newValue: string | null) => {
+                                            setRegions(prev => {
+                                                return { ...prev, country: newValue };
+                                            });
+                                        }}
+                                    />
+                                </Grid>
+                                <Grid item xs={6}>
+                                    <TextField
+                                        label='region_1'
+                                        value={regions.region_1}
+                                        onChange={event => {
+                                            setRegions(prev => {
+                                                return { ...prev, region_1: event.target.value };
+                                            });
+                                        }}
+                                        variant='standard'
+                                        fullWidth
+                                    />
+                                </Grid>
+                                <Grid item xs={6}>
+                                    <TextField
+                                        label='region_2'
+                                        value={regions.region_2}
+                                        onChange={event => {
+                                            setRegions(prev => {
+                                                return { ...prev, region_2: event.target.value };
+                                            });
+                                        }}
+                                        variant='standard'
+                                        fullWidth
+                                    />
+                                </Grid>
+                                <Grid item xs={6}>
+                                    <TextField
+                                        label='region_3'
+                                        value={regions.region_3}
+                                        onChange={event => {
+                                            setRegions(prev => {
+                                                return { ...prev, region_3: event.target.value };
+                                            });
+                                        }}
+                                        variant='standard'
+                                        fullWidth
+                                    />
+                                </Grid>
+                                <Grid item xs={6}>
+                                    <TextField
+                                        label='region_4'
+                                        value={regions.region_4}
+                                        onChange={event => {
+                                            setRegions(prev => {
+                                                return { ...prev, region_4: event.target.value };
+                                            });
+                                        }}
+                                        variant='standard'
+                                        fullWidth
+                                    />
+                                </Grid>
+                                <Grid item xs={6}>
+                                    <TextField
+                                        label='region_5'
+                                        value={regions.region_5}
+                                        onChange={event => {
+                                            setRegions(prev => {
+                                                return { ...prev, region_5: event.target.value };
+                                            });
+                                        }}
+                                        variant='standard'
+                                        fullWidth
+                                    />
+                                </Grid>
+                            </Grid>
+                        </AccordionDetails>
+                    </Accordion>
                 </>
             )}
         </>
