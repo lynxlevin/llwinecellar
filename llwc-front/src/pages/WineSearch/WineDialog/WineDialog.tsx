@@ -358,18 +358,6 @@ const WineDialog = (props: WineDialogProps) => {
                             Drink
                         </Button>
                     </Grid>
-                    {/* <Grid item xs={12}>
-                        <TextField
-                            label='note'
-                            value={note}
-                            onChange={event => {
-                                setNote(event.target.value);
-                            }}
-                            variant='standard'
-                            fullWidth
-                            multiline
-                        />
-                    </Grid> */}
                     <CellarPositionForm
                         cellarId={cellarId}
                         position={position}
