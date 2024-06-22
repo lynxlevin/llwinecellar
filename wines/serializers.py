@@ -27,6 +27,7 @@ class WineSerializer(serializers.Serializer):
     drunk_at = serializers.DateField(allow_null=True)
     note = serializers.CharField(allow_blank=True)
     tag_texts = serializers.ListField(allow_empty=True, child=serializers.CharField(max_length=256))
+    value = serializers.IntegerField(allow_null=True, min_value=1, max_value=100, default=None)
 
     def validate_country(self, value):
         if value:
