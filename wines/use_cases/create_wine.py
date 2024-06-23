@@ -35,6 +35,7 @@ class CreateWine:
             drunk_at=data["drunk_at"],
             note=data["note"],
             user_id=user.id,
+            value=data["value"],
         )
         wine.save()
         if len(data["cepages"]) > 0:

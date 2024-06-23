@@ -38,6 +38,7 @@ class UpdateWine:
         wine.price = data["price"]
         wine.drunk_at = data["drunk_at"]
         wine.note = data["note"]
+        wine.value = data["value"]
 
         wine.save()
         wine.cepages.all().delete()

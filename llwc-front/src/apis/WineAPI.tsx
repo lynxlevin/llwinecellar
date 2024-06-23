@@ -43,6 +43,7 @@ export interface WineRequestBody {
     tag_texts: string[];
     cellar_id?: string | null;
     position?: string | null;
+    value: number | null;
 }
 
 export const WineAPI = {

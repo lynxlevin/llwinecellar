@@ -21,6 +21,7 @@ const columnKeys = [
     'tag_texts',
     'cellar_id',
     'position',
+    'value',
 ] as const;
 
 export type ColumnKeys = (typeof columnKeys)[number];
@@ -45,6 +46,7 @@ export interface WineData {
     tag_texts: string[];
     cellar_id: string | null;
     position: string | null;
+    value: number | null;
 }
 
 export interface WineDataWithRegions {
@@ -68,6 +70,7 @@ export interface WineDataWithRegions {
     tag_texts: string[];
     cellar_id: string | null;
     position: string | null;
+    value: number | null;
 }
 
 export interface WineSearchQuery {

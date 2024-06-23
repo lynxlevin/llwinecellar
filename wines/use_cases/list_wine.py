@@ -53,6 +53,7 @@ class ListWine:
             "drunk_at": None,
             "note": "",
             "tag_texts": [],
+            "value": None,
         }
 
     def execute(self, user: User, queries: "ListWineQuery"):

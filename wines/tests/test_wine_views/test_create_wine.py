@@ -41,6 +41,7 @@ class TestCreateWine(TestCase):
             "drunk_at": None,
             "note": "テスト用のノート",
             "tag_texts": ["drink_soon", "birthday_present"],
+            "value": 50,
         }
 
     def test_create(self):
@@ -80,6 +81,7 @@ class TestCreateWine(TestCase):
         self.assertEqual(params["drunk_at"], wine.drunk_at)
         self.assertEqual(params["note"], wine.note)
         self.assertEqual(params["tag_texts"], wine.tag_texts)
+        self.assertEqual(params["value"], wine.value)
 
     def test_empty_params(self):
         """
@@ -103,6 +105,7 @@ class TestCreateWine(TestCase):
             "drunk_at": None,
             "note": "",
             "tag_texts": [],
+            "value": None,
         }
 
         # Act
@@ -131,6 +134,7 @@ class TestCreateWine(TestCase):
         self.assertEqual(params["drunk_at"], wine.drunk_at)
         self.assertEqual(params["note"], wine.note)
         self.assertEqual(params["tag_texts"], wine.tag_texts)
+        self.assertEqual(params["value"], wine.value)
 
     def test_create__to_empty_rack(self):
         # Arrange
