@@ -17,6 +17,7 @@ import {
     Slide,
     TextField,
     Toolbar,
+    Typography,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { TransitionProps } from '@mui/material/transitions';
@@ -45,7 +46,7 @@ const WineSearchDialog = (props: WineSearchDialogProps) => {
     const { isOpen, handleClose } = props;
     const wineContext = useContext(WineContext);
     const cellarContext = useContext(CellarContext);
-    const { searchWine, setQuery } = useWineContext();
+    const { searchWine, setQuery, aggregation } = useWineContext();
 
     const [cellarId, setCellarId] = useState<string>(wineContext.wineSearchQuery.cellarId);
     const [showStock, setShowStock] = useState<boolean>(wineContext.wineSearchQuery.showStock);
@@ -181,6 +182,15 @@ const WineSearchDialog = (props: WineSearchDialogProps) => {
                         freeSolo={false}
                     />
                     <CepagesForm cepages={cepages} setCepages={setCepages} />
+                    <Grid item xs={12}>
+                        <Typography variant="h4">Aggregation</Typography>
+                    </Grid>
+                    <Grid item xs={12}>
+                        <Typography>Total Price: {aggregation.price.total.toLocaleString()}</Typography>
+                    </Grid>
+                    <Grid item xs={12}>
+                        <Typography>Average Price: {aggregation.price.average.toLocaleString()}</Typography>
+                    </Grid>
                 </Grid>
             </Container>
         </Dialog>
