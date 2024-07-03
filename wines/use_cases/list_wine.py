@@ -11,6 +11,8 @@ from ..models import Wine
 if TYPE_CHECKING:
     from uuid import UUID
 
+    from ..models.wine import WineQuerySet
+
     class ListWineQuery(TypedDict, total=False):
         cellar_id: "UUID"
         name: str
@@ -73,6 +75,24 @@ class ListWine:
         if name_or_producer := queries.get("name_or_producer"):
             qs = qs.filter_eq_name_or_producer(name_or_producer)
 
+        if cepage_names := queries.get("cepage_names"):
+            for cepage_name in cepage_names:
+                qs = qs.filter(cepages__grape__name=cepage_name)
+
+        if (out_of_cellars := queries.get("out_of_cellars")) is not None:
+            qs = qs.filter_eq_cellarspace__isnull(out_of_cellars)
+
+        qs = self._filter_by_regions(qs, queries)
+        qs = self._filter_by_drunk_status(qs, queries)
+
+        wines = qs.prefetch_tags().prefetch_cepages().order_by("created_at").all()
+
+        if cellar_id and not queries.get("is_drunk"):
+            return self._get_wines_with_empty_racks(wines, cellar_id)
+        else:
+            return wines
+
+    def _filter_by_regions(self, qs: "WineQuerySet", queries: "ListWineQuery") -> "WineQuerySet":
         if country := queries.get("country"):
             qs = qs.filter_eq_country(country)
 
@@ -91,10 +111,9 @@ class ListWine:
         if region_5 := queries.get("region_5"):
             qs = qs.filter(region_5__unaccent=region_5)
 
-        if cepage_names := queries.get("cepage_names"):
-            for cepage_name in cepage_names:
-                qs = qs.filter(cepages__grape__name=cepage_name)
+        return qs
 
+    def _filter_by_drunk_status(self, qs: "WineQuerySet", queries: "ListWineQuery") -> "WineQuerySet":
         if (is_drunk := queries.get("is_drunk")) is not None:
             qs = qs.filter_is_drunk(is_drunk)
 
@@ -105,29 +124,24 @@ class ListWine:
         elif show_stock and not show_drunk:
             qs = qs.filter_is_drunk(False)
 
-        if (out_of_cellars := queries.get("out_of_cellars")) is not None:
-            qs = qs.filter_eq_cellarspace__isnull(out_of_cellars)
+        return qs
 
-        wines = qs.prefetch_tags().prefetch_cepages().order_by("created_at").all()
-
-        if cellar_id and not is_drunk:
-            empty_racks = (
-                CellarSpace.objects.filter(cellar_id=cellar_id)
-                .filter_by_type(CellarSpaceType.RACK)
-                .filter_empty()
-                .order_by_position()
-            )
-            return (
-                *wines,
-                *(
-                    {
-                        **self.empty_rack,
-                        "id": uuid.uuid4(),
-                        "cellar_id": cellar_id,
-                        "position": f"{rack.row}-{rack.column}",
-                    }
-                    for rack in empty_racks
-                ),
-            )
-        else:
-            return wines
+    def _get_wines_with_empty_racks(self, wines: "WineQuerySet", cellar_id: "UUID"):
+        empty_racks = (
+            CellarSpace.objects.filter(cellar_id=cellar_id)
+            .filter_by_type(CellarSpaceType.RACK)
+            .filter_empty()
+            .order_by_position()
+        )
+        return (
+            *wines,
+            *(
+                {
+                    **self.empty_rack,
+                    "id": uuid.uuid4(),
+                    "cellar_id": cellar_id,
+                    "position": f"{rack.row}-{rack.column}",
+                }
+                for rack in empty_racks
+            ),
+        )
