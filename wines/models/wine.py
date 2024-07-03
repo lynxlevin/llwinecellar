@@ -40,6 +40,12 @@ class WineQuerySet(models.QuerySet["Wine"]):
     def filter_is_drunk(self, flag=True) -> "WineQuerySet":
         return self.filter(drunk_at__isnull=not flag)
 
+    def filter_gte_drunk_at(self, gte) -> "WineQuerySet":
+        return self.filter(drunk_at__gte=gte)
+
+    def filter_lte_drunk_at(self, lte) -> "WineQuerySet":
+        return self.filter(drunk_at__lte=lte)
+
     def filter_eq_cellarspace__isnull(self, flag=True) -> "WineQuerySet":
         return self.filter(cellarspace__isnull=flag)
 

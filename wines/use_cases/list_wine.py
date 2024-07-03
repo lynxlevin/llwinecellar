@@ -84,6 +84,7 @@ class ListWine:
 
         qs = self._filter_by_regions(qs, queries)
         qs = self._filter_by_drunk_status(qs, queries)
+        qs = self._filter_by_drunk_at(qs, queries)
 
         wines = qs.prefetch_tags().prefetch_cepages().order_by("created_at").all()
 
@@ -123,6 +124,15 @@ class ListWine:
             qs = qs.filter_is_drunk(True)
         elif show_stock and not show_drunk:
             qs = qs.filter_is_drunk(False)
+
+        return qs
+
+    def _filter_by_drunk_at(self, qs: "WineQuerySet", queries: "ListWineQuery") -> "WineQuerySet":
+        if drunk_at_gte := queries.get("drunk_at_gte"):
+            qs = qs.filter_gte_drunk_at(drunk_at_gte)
+
+        if drunk_at_lte := queries.get("drunk_at_lte"):
+            qs = qs.filter_lte_drunk_at(drunk_at_lte)
 
         return qs
 
