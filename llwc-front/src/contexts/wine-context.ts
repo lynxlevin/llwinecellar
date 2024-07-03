@@ -85,6 +85,7 @@ export interface WineSearchQuery {
     region_4: string;
     region_5: string;
     cepages: Cepage[];
+    drunkAt: { gte: string, lte: string};
 }
 
 export const ALL_WINES_QUERY: WineSearchQuery = {
@@ -99,6 +100,7 @@ export const ALL_WINES_QUERY: WineSearchQuery = {
     region_4: '',
     region_5: '',
     cepages: [],
+    drunkAt: { gte: '', lte: '' },
 };
 
 interface WineContextType {

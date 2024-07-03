@@ -61,6 +61,7 @@ const WineSearchDialog = (props: WineSearchDialogProps) => {
         region_5: wineContext.wineSearchQuery.region_5 ?? '',
     });
     const [cepages, setCepages] = useState<Cepage[]>([]); // MYMEMO: これだけcontextからとってこれてない
+    const [drunkAt, setDrunkAt] = useState<{ gte: string; lte: string; }>({ gte: '', lte: '' });
     // MYMEMO: add hasNote
 
     const handleSearch = () => {
@@ -71,6 +72,7 @@ const WineSearchDialog = (props: WineSearchDialogProps) => {
             nameOrProducer,
             ...regions,
             cepages,
+            drunkAt,
         };
         searchWine(searchQuery);
         handleClose();
@@ -182,6 +184,28 @@ const WineSearchDialog = (props: WineSearchDialogProps) => {
                         freeSolo={false}
                     />
                     <CepagesForm cepages={cepages} setCepages={setCepages} />
+                    <Grid item xs={6}>
+                        <TextField
+                            label='drunk_at_gte'
+                            value={drunkAt.gte}
+                            onChange={event => {
+                                setDrunkAt(prev => { return { gte: event.target.value, lte: prev.lte }; });
+                            }}
+                            variant='standard'
+                            fullWidth
+                        />
+                    </Grid>
+                    <Grid item xs={6}>
+                        <TextField
+                            label='drunk_at_lte'
+                            value={drunkAt.lte}
+                            onChange={event => {
+                                setDrunkAt(prev => { return { lte: event.target.value, gte: prev.gte }; });
+                            }}
+                            variant='standard'
+                            fullWidth
+                        />
+                    </Grid>
                     <Grid item xs={12}>
                         <Typography variant="h4">Aggregation</Typography>
                     </Grid>

@@ -22,6 +22,8 @@ export interface ListWineQuery {
     region_4?: string;
     region_5?: string;
     cepage_names?: string[];
+    drunk_at_gte?: string;
+    drunk_at_lte?: string;
 }
 
 export interface WineRequestBody {
