@@ -19,6 +19,7 @@ import {
     Toolbar,
     Typography,
 } from '@mui/material';
+import { DatePicker } from '@mui/x-date-pickers';
 import CloseIcon from '@mui/icons-material/Close';
 import { TransitionProps } from '@mui/material/transitions';
 import { ALL_WINES_QUERY, Cepage, WineContext, WineSearchQuery } from '../../contexts/wine-context';
@@ -27,6 +28,7 @@ import { WineRegionsObject } from './WineDialog/WineDialog';
 import RegionForm from './WineDialog/RegionForm';
 import CepagesForm from './WineDialog/CepagesForm';
 import useWineContext from '../../hooks/useWineContext';
+import { format } from 'date-fns';
 
 const Transition = React.forwardRef(function Transition(
     props: TransitionProps & {
@@ -61,7 +63,7 @@ const WineSearchDialog = (props: WineSearchDialogProps) => {
         region_5: wineContext.wineSearchQuery.region_5 ?? '',
     });
     const [cepages, setCepages] = useState<Cepage[]>([]); // MYMEMO: これだけcontextからとってこれてない
-    const [drunkAt, setDrunkAt] = useState<{ gte: string; lte: string; }>({ gte: '', lte: '' });
+    const [drunkAt, setDrunkAt] = useState<{ gte: Date | null; lte: Date | null }>({ gte: null, lte: null });
     // MYMEMO: add hasNote
 
     const handleSearch = () => {
@@ -72,7 +74,7 @@ const WineSearchDialog = (props: WineSearchDialogProps) => {
             nameOrProducer,
             ...regions,
             cepages,
-            drunkAt,
+            drunkAt: { gte: drunkAt.gte ? format(drunkAt.gte, 'yyyy-MM-dd') : '', lte: drunkAt.lte ? format(drunkAt.lte, 'yyyy-MM-dd') : '' },
         };
         searchWine(searchQuery);
         handleClose();
@@ -185,29 +187,51 @@ const WineSearchDialog = (props: WineSearchDialogProps) => {
                     />
                     <CepagesForm cepages={cepages} setCepages={setCepages} />
                     <Grid item xs={6}>
-                        <TextField
+                        <DatePicker
                             label='drunk_at_gte'
                             value={drunkAt.gte}
-                            onChange={event => {
-                                setDrunkAt(prev => { return { gte: event.target.value, lte: prev.lte }; });
+                            onChange={(date: Date | null) => {
+                                setDrunkAt(prev => {
+                                    return { ...prev, gte: date };
+                                });
                             }}
-                            variant='standard'
-                            fullWidth
+                            showDaysOutsideCurrentMonth
+                            closeOnSelect
+                            slotProps={{
+                                field: {
+                                    clearable: true,
+                                    onClear: () =>
+                                        setDrunkAt(prev => {
+                                            return { ...prev, gte: null };
+                                        }),
+                                },
+                            }}
                         />
                     </Grid>
                     <Grid item xs={6}>
-                        <TextField
+                        <DatePicker
                             label='drunk_at_lte'
                             value={drunkAt.lte}
-                            onChange={event => {
-                                setDrunkAt(prev => { return { lte: event.target.value, gte: prev.gte }; });
+                            onChange={(date: Date | null) => {
+                                setDrunkAt(prev => {
+                                    return { ...prev, lte: date };
+                                });
                             }}
-                            variant='standard'
-                            fullWidth
+                            showDaysOutsideCurrentMonth
+                            closeOnSelect
+                            slotProps={{
+                                field: {
+                                    clearable: true,
+                                    onClear: () =>
+                                        setDrunkAt(prev => {
+                                            return { ...prev, lte: null };
+                                        }),
+                                },
+                            }}
                         />
                     </Grid>
                     <Grid item xs={12}>
-                        <Typography variant="h4">Aggregation</Typography>
+                        <Typography variant='h4'>Aggregation</Typography>
                     </Grid>
                     <Grid item xs={12}>
                         <Typography>Total Price: {aggregation.price.total.toLocaleString()}</Typography>

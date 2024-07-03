@@ -1,5 +1,6 @@
 import React, { useState, useContext } from 'react';
-import { AppBar, Button, Container, Dialog, Grid, IconButton, Slide, TextField, Toolbar, Typography, Autocomplete, Chip, Slider, LinearProgress } from '@mui/material';
+import { AppBar, Button, Container, Dialog, Grid, IconButton, Slide, TextField, Toolbar, Typography, Autocomplete, Chip, Slider } from '@mui/material';
+import { DatePicker } from '@mui/x-date-pickers';
 import CloseIcon from '@mui/icons-material/Close';
 import { TransitionProps } from '@mui/material/transitions';
 import { Cepage, WineData } from '../../../contexts/wine-context';
@@ -14,6 +15,7 @@ import RegionForm from './RegionForm';
 import CellarPositionForm from './CellarPositionForm';
 import SameWinesDialog from './SameWinesDialog';
 import useWineContext from '../../../hooks/useWineContext';
+import { format } from 'date-fns';
 
 const Transition = React.forwardRef(function Transition(
     props: TransitionProps & {
@@ -51,11 +53,6 @@ export interface apiErrorsType {
     cellar_id?: string;
     position?: string;
 }
-
-const getLocaleISODateString = (date_?: Date) => {
-    const date = date_ ? date_ : new Date();
-    return `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
-};
 
 const noCellarCode = 'NOT_IN_CELLAR';
 
@@ -104,10 +101,10 @@ const WineDialog = (props: WineDialogProps) => {
         region_5: selectedWine.region_5,
     });
     const [cepages, setCepages] = useState<Cepage[]>(selectedWine.cepages);
-    const [boughtAt, setBoughtAt] = useState<string | null>(selectedWine.bought_at ?? getLocaleISODateString());
+    const [boughtAt, setBoughtAt] = useState<Date | null>(selectedWine.bought_at ? new Date(selectedWine.bought_at) : action === 'create' ? new Date() : null);
     const [boughtFrom, setBoughtFrom] = useState<string>(selectedWine.bought_from);
     const [price, setPrice] = useState<number | null>(selectedWine.price);
-    const [drunkAt, setDrunkAt] = useState<string | null>(selectedWine.drunk_at);
+    const [drunkAt, setDrunkAt] = useState<Date | null>(selectedWine.drunk_at ? new Date(selectedWine.drunk_at) : null);
     const [note, setNote] = useState<string>(selectedWine.note);
     const [cellarId, setCellarId] = useState<string | null>(selectedWine.cellar_id ?? noCellarCode);
     const [position, setPosition] = useState<string | null>(selectedWine.position);
@@ -135,7 +132,7 @@ const WineDialog = (props: WineDialogProps) => {
     };
 
     const fillDrunkAtAndMoveOutOfCellar = () => {
-        if (!drunkAt) setDrunkAt(getLocaleISODateString());
+        if (!drunkAt) setDrunkAt(new Date());
         setDontMove(false);
         setCellarId(noCellarCode);
     };
@@ -178,10 +175,10 @@ const WineDialog = (props: WineDialogProps) => {
             ...regions,
             cepages: cepages.sort((a, b) => Number(b.percentage)! - Number(a.percentage)!),
             vintage: vintage,
-            bought_at: boughtAt,
+            bought_at: boughtAt ? format(boughtAt, 'yyyy-MM-dd') : null,
             bought_from: boughtFrom,
             price: price,
-            drunk_at: drunkAt,
+            drunk_at: drunkAt ? format(drunkAt, 'yyyy-MM-dd') : null,
             note: note,
             tag_texts: tagTexts,
             cellar_id: cellarId,
@@ -308,15 +305,16 @@ const WineDialog = (props: WineDialogProps) => {
                             fullWidth
                         />
                     </Grid>
-                    <Grid item xs={4}>
-                        <TextField
+                    <Grid item xs={9}>
+                        <DatePicker
                             label='bought_at'
-                            value={boughtAt ?? ''}
-                            onChange={event => {
-                                setBoughtAt(event.target.value || null);
+                            onChange={(date: Date | null) => {
+                                setBoughtAt(date);
                             }}
-                            variant='standard'
-                            fullWidth
+                            value={boughtAt}
+                            showDaysOutsideCurrentMonth
+                            closeOnSelect
+                            slotProps={{ field: { clearable: true, onClear: () => setBoughtAt(null) } }}
                         />
                     </Grid>
                     <Grid item xs={3}>
@@ -331,7 +329,7 @@ const WineDialog = (props: WineDialogProps) => {
                             fullWidth
                         />
                     </Grid>
-                    <Grid item xs={5}>
+                    <Grid item xs={12}>
                         {/* MYMEMO: Change to autoComplete */}
                         <TextField
                             label='bought_from'
@@ -346,14 +344,15 @@ const WineDialog = (props: WineDialogProps) => {
                     <RegionForm regions={regions} setRegions={setRegions} showDetails />
                     <CepagesForm cepages={cepages} setCepages={setCepages} showDetails />
                     <Grid item xs={8}>
-                        <TextField
+                        <DatePicker
                             label='drunk_at'
-                            value={drunkAt ?? ''}
-                            onChange={event => {
-                                setDrunkAt(event.target.value || null);
+                            value={drunkAt}
+                            onChange={(date: Date | null) => {
+                                setDrunkAt(date);
                             }}
-                            variant='standard'
-                            fullWidth
+                            showDaysOutsideCurrentMonth
+                            closeOnSelect
+                            slotProps={{ field: { clearable: true, onClear: () => setBoughtAt(null) } }}
                         />
                     </Grid>
                     <Grid item xs={4} sx={{ textAlign: 'center' }}>
@@ -378,7 +377,13 @@ const WineDialog = (props: WineDialogProps) => {
             <Dialog fullWidth scroll='paper' onClose={() => setIsNoteDialogOpen(false)} open={isNoteDialogOpen}>
                 <Container sx={{ padding: 2 }}>
                     <Typography>value</Typography>
-                    <Slider value={value} min={0} max={100} sx={ value === 0 ? {color: 'lightgrey'}: {}} onChange={(_, newValue) => setValue(newValue as number)} />
+                    <Slider
+                        value={value}
+                        min={0}
+                        max={100}
+                        sx={value === 0 ? { color: 'lightgrey' } : {}}
+                        onChange={(_, newValue) => setValue(newValue as number)}
+                    />
                     <TextField
                         label='note'
                         value={note}
