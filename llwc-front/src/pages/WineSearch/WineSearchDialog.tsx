@@ -17,7 +17,9 @@ import {
     Slide,
     TextField,
     Toolbar,
+    Typography,
 } from '@mui/material';
+import { DatePicker } from '@mui/x-date-pickers';
 import CloseIcon from '@mui/icons-material/Close';
 import { TransitionProps } from '@mui/material/transitions';
 import { ALL_WINES_QUERY, Cepage, WineContext, WineSearchQuery } from '../../contexts/wine-context';
@@ -26,6 +28,7 @@ import { WineRegionsObject } from './WineDialog/WineDialog';
 import RegionForm from './WineDialog/RegionForm';
 import CepagesForm from './WineDialog/CepagesForm';
 import useWineContext from '../../hooks/useWineContext';
+import { format } from 'date-fns';
 
 const Transition = React.forwardRef(function Transition(
     props: TransitionProps & {
@@ -45,7 +48,7 @@ const WineSearchDialog = (props: WineSearchDialogProps) => {
     const { isOpen, handleClose } = props;
     const wineContext = useContext(WineContext);
     const cellarContext = useContext(CellarContext);
-    const { searchWine, setQuery } = useWineContext();
+    const { searchWine, setQuery, aggregation } = useWineContext();
 
     const [cellarId, setCellarId] = useState<string>(wineContext.wineSearchQuery.cellarId);
     const [showStock, setShowStock] = useState<boolean>(wineContext.wineSearchQuery.showStock);
@@ -60,6 +63,7 @@ const WineSearchDialog = (props: WineSearchDialogProps) => {
         region_5: wineContext.wineSearchQuery.region_5 ?? '',
     });
     const [cepages, setCepages] = useState<Cepage[]>([]); // MYMEMO: これだけcontextからとってこれてない
+    const [drunkAt, setDrunkAt] = useState<{ gte: Date | null; lte: Date | null }>({ gte: null, lte: null });
     // MYMEMO: add hasNote
 
     const handleSearch = () => {
@@ -70,6 +74,7 @@ const WineSearchDialog = (props: WineSearchDialogProps) => {
             nameOrProducer,
             ...regions,
             cepages,
+            drunkAt: { gte: drunkAt.gte ? format(drunkAt.gte, 'yyyy-MM-dd') : '', lte: drunkAt.lte ? format(drunkAt.lte, 'yyyy-MM-dd') : '' },
         };
         searchWine(searchQuery);
         handleClose();
@@ -90,6 +95,7 @@ const WineSearchDialog = (props: WineSearchDialogProps) => {
         });
         setCepages(ALL_WINES_QUERY.cepages);
         setQuery();
+        setDrunkAt(ALL_WINES_QUERY.drunkAt as { gte: null; lte: null });
     };
 
     const resetQuery = () => {
@@ -108,6 +114,7 @@ const WineSearchDialog = (props: WineSearchDialogProps) => {
         });
         setCepages(ALL_WINES_QUERY.cepages);
         setQuery({ cellarId: firstCellarId, showDrunk: false, showStock: true });
+        setDrunkAt(ALL_WINES_QUERY.drunkAt as { gte: null; lte: null });
     };
 
     return (
@@ -181,6 +188,59 @@ const WineSearchDialog = (props: WineSearchDialogProps) => {
                         freeSolo={false}
                     />
                     <CepagesForm cepages={cepages} setCepages={setCepages} />
+                    <Grid item xs={6}>
+                        <DatePicker
+                            label='drunk_at_gte'
+                            value={drunkAt.gte}
+                            onChange={(date: Date | null) => {
+                                setDrunkAt(prev => {
+                                    return { ...prev, gte: date };
+                                });
+                            }}
+                            showDaysOutsideCurrentMonth
+                            closeOnSelect
+                            slotProps={{
+                                field: {
+                                    clearable: true,
+                                    onClear: () =>
+                                        setDrunkAt(prev => {
+                                            return { ...prev, gte: null };
+                                        }),
+                                },
+                            }}
+                        />
+                    </Grid>
+                    <Grid item xs={6}>
+                        <DatePicker
+                            label='drunk_at_lte'
+                            value={drunkAt.lte}
+                            onChange={(date: Date | null) => {
+                                setDrunkAt(prev => {
+                                    return { ...prev, lte: date };
+                                });
+                            }}
+                            showDaysOutsideCurrentMonth
+                            closeOnSelect
+                            slotProps={{
+                                field: {
+                                    clearable: true,
+                                    onClear: () =>
+                                        setDrunkAt(prev => {
+                                            return { ...prev, lte: null };
+                                        }),
+                                },
+                            }}
+                        />
+                    </Grid>
+                    <Grid item xs={12}>
+                        <Typography variant='h4'>Aggregation</Typography>
+                    </Grid>
+                    <Grid item xs={12}>
+                        <Typography>Total Price: {aggregation.price.total.toLocaleString()}</Typography>
+                    </Grid>
+                    <Grid item xs={12}>
+                        <Typography>Average Price: {aggregation.price.average.toLocaleString()}</Typography>
+                    </Grid>
                 </Grid>
             </Container>
         </Dialog>

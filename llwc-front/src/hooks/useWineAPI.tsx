@@ -38,6 +38,8 @@ const useWineAPI = () => {
         if (searchQuery.region_4) query.region_4 = searchQuery.region_4;
         if (searchQuery.region_5) query.region_5 = searchQuery.region_5;
         if (searchQuery.cepages.length > 0) query.cepage_names = searchQuery.cepages.map(cepage => cepage.name);
+        if (searchQuery.drunkAt.gte) query.drunk_at_gte = searchQuery.drunkAt.gte;
+        if (searchQuery.drunkAt.lte) query.drunk_at_lte = searchQuery.drunkAt.lte;
         const wines = (await WineAPI.list(query)).data.wines;
         const winesWithRegions: WineDataWithRegions[] = wines.map(wine => {
             return { ...wine, regions: getWineRegionValue(wine) };

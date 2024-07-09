@@ -1,4 +1,4 @@
-import { useCallback, useContext, useState } from 'react';
+import { useCallback, useContext, useMemo, useState } from 'react';
 import { ALL_WINES_QUERY, Cepage, WineContext, ColumnKeys, WineSearchQuery } from '../contexts/wine-context';
 import { CellarContext } from '../contexts/cellar-context';
 import useWineAPI from './useWineAPI';
@@ -114,6 +114,16 @@ const useWineContext = () => {
         }
     };
 
+    const aggregation = useMemo(() => {
+        const totalPrice = wineContext.wineList.reduce((acc, curr) => { return acc + (curr.price ?? 0); }, 0);
+        return {
+            price: {
+                total: totalPrice,
+                average: Math.floor(totalPrice / wineContext.wineList.filter(wine => wine.price !== null).length),
+            }
+        };
+    }, [wineContext.wineList]);
+
     return {
         isLoading,
         wineCount,
@@ -122,6 +132,7 @@ const useWineContext = () => {
         initializeWineSearch,
         searchWine,
         setQuery,
+        aggregation,
     };
 };
 

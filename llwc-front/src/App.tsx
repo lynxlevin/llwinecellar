@@ -12,6 +12,8 @@ import { GrapeMaster, GrapeMasterContext } from './contexts/grape-master-context
 import { Settings } from './pages/Settings';
 import { GrapeList } from './pages/GrapeList';
 import WineMemos from './pages/WineMemos';
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFnsV3';
 
 function App() {
     const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
@@ -30,31 +32,33 @@ function App() {
                         <WineTagContext.Provider value={{ wineTagList, setWineTagList }}>
                             <WineRegionContext.Provider value={{ wineRegionList, setWineRegionList }}>
                                 <GrapeMasterContext.Provider value={{ grapeMasterList, setGrapeMasterList }}>
-                                    <Routes>
-                                        <Route
-                                            path='/'
-                                            element={
-                                                <div style={{ fontSize: '24px' }}>
-                                                    <br />
-                                                    <Link to='/wine-search'>Wine Search</Link>
-                                                    <br />
-                                                    <br />
-                                                    <Link to='/wine-memos'>WineMemo</Link>
-                                                    <br />
-                                                    <br />
-                                                    <Link to='/settings'>Settings</Link>
-                                                    <br />
-                                                    <br />
-                                                    <Link to='/grape-list'>GrapeList</Link>
-                                                </div>
-                                            }
-                                        />
-                                        <Route path='/login' element={<Login />} />
-                                        <Route path='/wine-search' element={<WineSearch />} />
-                                        <Route path='/wine-memos' element={<WineMemos />} />
-                                        <Route path='/settings' element={<Settings />} />
-                                        <Route path='/grape-list' element={<GrapeList />} />
-                                    </Routes>
+                                    <LocalizationProvider dateAdapter={AdapterDateFns} dateFormats={{keyboardDate: 'yyyy/MM/dd', normalDate: 'yyyy/MM/dd'}}>
+                                        <Routes>
+                                            <Route
+                                                path='/'
+                                                element={
+                                                    <div style={{ fontSize: '24px' }}>
+                                                        <br />
+                                                        <Link to='/wine-search'>Wine Search</Link>
+                                                        <br />
+                                                        <br />
+                                                        <Link to='/wine-memos'>WineMemo</Link>
+                                                        <br />
+                                                        <br />
+                                                        <Link to='/settings'>Settings</Link>
+                                                        <br />
+                                                        <br />
+                                                        <Link to='/grape-list'>GrapeList</Link>
+                                                    </div>
+                                                }
+                                            />
+                                            <Route path='/login' element={<Login />} />
+                                            <Route path='/wine-search' element={<WineSearch />} />
+                                            <Route path='/wine-memos' element={<WineMemos />} />
+                                            <Route path='/settings' element={<Settings />} />
+                                            <Route path='/grape-list' element={<GrapeList />} />
+                                        </Routes>
+                                    </LocalizationProvider>
                                 </GrapeMasterContext.Provider>
                             </WineRegionContext.Provider>
                         </WineTagContext.Provider>

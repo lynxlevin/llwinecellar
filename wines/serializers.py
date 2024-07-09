@@ -79,6 +79,9 @@ class ListWineQuerySerializer(serializers.Serializer):
     region_5 = serializers.CharField(required=False, max_length=128)
     cepage_names = CommaSeparatedField(child=serializers.CharField(), required=False)
 
+    drunk_at_gte = serializers.DateField(required=False)
+    drunk_at_lte = serializers.DateField(required=False)
+
 
 class MoveWineSerializer(serializers.Serializer):
     id = serializers.UUIDField(read_only=True)
