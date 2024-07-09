@@ -120,7 +120,7 @@ export const WineSearchToolbar = (props: WineSearchToolbarProps) => {
                     </MenuItem>
                 </MenuList>
             </Menu>
-            <WineSearchDialog isOpen={isWineSearchDialogOpen} handleClose={() => setIsWineSearchDialogOpen(false)} />
+            {isWineSearchDialogOpen && <WineSearchDialog isOpen={isWineSearchDialogOpen} handleClose={() => setIsWineSearchDialogOpen(false)} />}
         </Toolbar>
     );
 };
