@@ -141,9 +141,9 @@ const WineSearchDialog = (props: WineSearchDialogProps) => {
                     {cellarContext.cellarList.length > 2 ? (
                         <Grid item xs={6}>
                             <Select id='cellar-select' value={cellarId} onChange={event => setCellarId(event.target.value)} fullWidth>
-                                {cellarContext.cellarList.map(cellar => (
+                                {cellarContext.cellarList.map((cellar, i) => (
                                     <MenuItem key={cellar.id} value={cellar.id}>
-                                        {cellar.name}
+                                        {i + 1}: {cellar.name}
                                     </MenuItem>
                                 ))}
                                 <MenuItem value='NOT_IN_CELLAR'>NOT_IN_CELLAR</MenuItem>
@@ -155,10 +155,10 @@ const WineSearchDialog = (props: WineSearchDialogProps) => {
                             <FormControl>
                                 <FormLabel>Cellar Select</FormLabel>
                                 <RadioGroup name='cellar-select-radio-group' value={cellarId} onChange={event => setCellarId(event.target.value)}>
-                                    {cellarContext.cellarList.map(cellar => (
-                                        <FormControlLabel key={cellar.id} value={cellar.id} control={<Radio />} label={cellar.name} />
+                                    {cellarContext.cellarList.map((cellar, i) => (
+                                        <FormControlLabel key={cellar.id} value={cellar.id} control={<Radio />} label={`${i + 1}: ${cellar.name}`} />
                                     ))}
-                                    <FormControlLabel value='NOT_IN_CELLAR' control={<Radio />} label='NOT_IN_CELLAR' />
+                                    <FormControlLabel value='NOT_IN_CELLAR' control={<Radio />} label='-: NOT_IN_CELLAR' />
                                     <FormControlLabel value='-' control={<Radio />} label='ALL_WINES' />
                                 </RadioGroup>
                             </FormControl>

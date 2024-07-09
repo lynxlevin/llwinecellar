@@ -1,6 +1,6 @@
 import React, { useContext, useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { Toolbar, Typography, Menu, MenuList, MenuItem, ListItemText, IconButton, Tooltip } from '@mui/material';
+import { Toolbar, Typography, Menu, MenuList, MenuItem, ListItemText, IconButton, Tooltip, ToggleButton, ToggleButtonGroup } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -11,6 +11,7 @@ import SecurityUpdateGoodIcon from '@mui/icons-material/SecurityUpdateGood';
 import { WineContext } from '../../contexts/wine-context';
 import AppIcon from '../../components/AppIcon';
 import WineSearchDialog from './WineSearchDialog';
+import { CellarContext } from '../../contexts/cellar-context';
 
 interface WineSearchToolbarProps {
     handleLogout: () => Promise<void>;
@@ -21,20 +22,20 @@ export const WineSearchToolbar = (props: WineSearchToolbarProps) => {
     const { handleLogout, openCreateWineDialog } = props;
 
     const wineContext = useContext(WineContext);
+    const cellarContext = useContext(CellarContext);
 
+    const [cellarSelect, setCellarSelect] = useState<string>('NOT_IN_CELLAR');
     const [isWineSearchDialogOpen, setIsWineSearchDialogOpen] = useState<boolean>(false);
     const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null);
     const isMenuOpen = Boolean(menuAnchor);
 
     const pageTitle = useMemo(() => {
-        let title = 'Wines';
-
         if (!['-', 'NOT_IN_CELLAR'].includes(wineContext.wineSearchQuery.cellarId)) {
             const cellarCapacity = wineContext.wineList.length;
             const winesInCellarCount = wineContext.wineList.filter(wine => wine.name !== '').length;
-            title += ` (${winesInCellarCount}/${cellarCapacity})`;
+            return `${winesInCellarCount}/${cellarCapacity}`;
         }
-        return title;
+        return '';
     }, [wineContext.wineSearchQuery.cellarId, wineContext.wineList]);
 
     const openMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -59,6 +60,23 @@ export const WineSearchToolbar = (props: WineSearchToolbarProps) => {
             <Typography sx={{ flex: '1 1 10%' }} variant='h6' id='tableTitle' component='div'>
                 {pageTitle}
             </Typography>
+            {cellarContext.cellarList.length < 3 && (
+                <ToggleButtonGroup
+                    value={cellarSelect}
+                    exclusive
+                    onChange={(_, newSellection) => {
+                        if (newSellection !== null) setCellarSelect(newSellection);
+                    }}
+                >
+                    {cellarContext.cellarList.map((cellar, i) => (
+                        <ToggleButton key={cellar.id} value={cellar.id}>
+                            {i + 1}
+                        </ToggleButton>
+                    ))}
+                    <ToggleButton value='NOT_IN_CELLAR'>-</ToggleButton>
+                    <ToggleButton value='-'>⚪︎</ToggleButton>
+                </ToggleButtonGroup>
+            )}
             <Tooltip title='Add wine'>
                 <IconButton onClick={openCreateWineDialog}>
                     <AddIcon />
