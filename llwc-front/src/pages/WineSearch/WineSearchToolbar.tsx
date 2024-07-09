@@ -12,6 +12,7 @@ import { WineContext } from '../../contexts/wine-context';
 import AppIcon from '../../components/AppIcon';
 import WineSearchDialog from './WineSearchDialog';
 import { CellarContext } from '../../contexts/cellar-context';
+import useWineContext from '../../hooks/useWineContext';
 
 interface WineSearchToolbarProps {
     handleLogout: () => Promise<void>;
@@ -23,8 +24,9 @@ export const WineSearchToolbar = (props: WineSearchToolbarProps) => {
 
     const wineContext = useContext(WineContext);
     const cellarContext = useContext(CellarContext);
+    const { searchWine } = useWineContext();
 
-    const [cellarSelect, setCellarSelect] = useState<string>('NOT_IN_CELLAR');
+    const [cellarSelect, setCellarSelect] = useState<string>(wineContext.wineSearchQuery.cellarId);
     const [isWineSearchDialogOpen, setIsWineSearchDialogOpen] = useState<boolean>(false);
     const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null);
     const isMenuOpen = Boolean(menuAnchor);
@@ -37,6 +39,12 @@ export const WineSearchToolbar = (props: WineSearchToolbarProps) => {
         }
         return '';
     }, [wineContext.wineSearchQuery.cellarId, wineContext.wineList]);
+
+    const onCellarSelect = (_: React.MouseEvent<HTMLElement, MouseEvent>, newSelection: string | null) => {
+        if (newSelection === null) return;
+        setCellarSelect(newSelection);
+        searchWine({ ...wineContext.wineSearchQuery, cellarId: newSelection });
+    };
 
     const openMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
         setMenuAnchor(event.currentTarget);
@@ -61,13 +69,7 @@ export const WineSearchToolbar = (props: WineSearchToolbarProps) => {
                 {pageTitle}
             </Typography>
             {cellarContext.cellarList.length < 3 && (
-                <ToggleButtonGroup
-                    value={cellarSelect}
-                    exclusive
-                    onChange={(_, newSellection) => {
-                        if (newSellection !== null) setCellarSelect(newSellection);
-                    }}
-                >
+                <ToggleButtonGroup value={cellarSelect} exclusive onChange={onCellarSelect}>
                     {cellarContext.cellarList.map((cellar, i) => (
                         <ToggleButton key={cellar.id} value={cellar.id}>
                             {i + 1}
