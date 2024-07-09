@@ -95,6 +95,7 @@ const WineSearchDialog = (props: WineSearchDialogProps) => {
         });
         setCepages(ALL_WINES_QUERY.cepages);
         setQuery();
+        setDrunkAt(ALL_WINES_QUERY.drunkAt as { gte: null; lte: null });
     };
 
     const resetQuery = () => {
@@ -113,6 +114,7 @@ const WineSearchDialog = (props: WineSearchDialogProps) => {
         });
         setCepages(ALL_WINES_QUERY.cepages);
         setQuery({ cellarId: firstCellarId, showDrunk: false, showStock: true });
+        setDrunkAt(ALL_WINES_QUERY.drunkAt as { gte: null; lte: null });
     };
 
     return (
