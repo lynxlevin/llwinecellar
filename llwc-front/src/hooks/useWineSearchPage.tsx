@@ -24,7 +24,7 @@ const useWineSearchPage = () => {
 
     const [sortOrder, setSortOrder] = useState<SortOrder>({ key: 'position', order: 'asc' });
     const [page, setPage] = useState(0);
-    const [rowsPerPage, setRowsPerPage] = useState(100);
+    const [rowsPerPage, setRowsPerPage] = useState(9999);
     const [selectedWine, setSelectedWine] = useState<WineData>();
     const [wineDialogState, setWineDialogState] = useState<{ open: boolean; action: WineDialogAction }>({ open: false, action: 'create' });
 

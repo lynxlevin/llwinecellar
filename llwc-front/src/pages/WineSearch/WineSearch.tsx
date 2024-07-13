@@ -27,15 +27,15 @@ export const WineSearch = () => {
         handleClickRow,
         closeWineDialog,
         emptyRows,
-        rowsPerPage,
-        page,
-        handleChangePage,
-        handleChangeRowsPerPage,
+        // rowsPerPage,
+        // page,
+        // handleChangePage,
+        // handleChangeRowsPerPage,
     } = useWineSearchPage();
 
     const { isLoading, wineCount, getCepageAbbreviations, initializeWineSearch } = useWineContext();
 
-    const tableHeight = `${window.innerHeight - 56 - 52}px`;
+    const tableHeight = `${window.innerHeight - 56}px`;
 
     useEffect(() => {
         if (wineCount > 0) return;
@@ -84,14 +84,13 @@ export const WineSearch = () => {
                                                             {content}
                                                         </TableCell>
                                                     );
-                                                } else if (column === 'value') {
+                                                }
+                                                if (column === 'value') {
                                                     return (
                                                         <TableCell component='th' id={labelId} scope='row' key={row.id + column}>
-                                                            {row.value === null ? (<></>) : (
-                                                                <LinearProgress variant="determinate" value={row.value} />
-                                                            )}
+                                                            {row.value === null ? <></> : <LinearProgress variant='determinate' value={row.value} />}
                                                         </TableCell>
-                                                    )
+                                                    );
                                                 }
                                                 return <TableCell key={row.id + column}>{content}</TableCell>;
                                             })}
@@ -110,7 +109,7 @@ export const WineSearch = () => {
                             </TableBody>
                         </Table>
                     </TableContainer>
-                    <TablePagination
+                    {/* <TablePagination
                         component='div'
                         count={wineCount}
                         rowsPerPage={rowsPerPage}
@@ -119,7 +118,7 @@ export const WineSearch = () => {
                         onPageChange={handleChangePage}
                         onRowsPerPageChange={handleChangeRowsPerPage}
                         sx={{ maxHeight: '52px' }}
-                    />
+                    /> */}
                 </Paper>
             </Box>
             {wineDialogState.open && (

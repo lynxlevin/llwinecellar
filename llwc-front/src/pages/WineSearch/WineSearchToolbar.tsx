@@ -32,12 +32,12 @@ export const WineSearchToolbar = (props: WineSearchToolbarProps) => {
     const isMenuOpen = Boolean(menuAnchor);
 
     const pageTitle = useMemo(() => {
+        const winesInCellarCount = wineContext.wineList.filter(wine => wine.name !== '').length;
         if (!['-', 'NOT_IN_CELLAR'].includes(wineContext.wineSearchQuery.cellarId)) {
             const cellarCapacity = wineContext.wineList.length;
-            const winesInCellarCount = wineContext.wineList.filter(wine => wine.name !== '').length;
             return `${winesInCellarCount}/${cellarCapacity}`;
         }
-        return '';
+        return winesInCellarCount;
     }, [wineContext.wineSearchQuery.cellarId, wineContext.wineList]);
 
     const onCellarSelect = (_: React.MouseEvent<HTMLElement, MouseEvent>, newSelection: string | null) => {
